@@ -1,0 +1,8 @@
+/example
+/*.h
+/*.so
+/*.a
+/test
+/test_*
+/*.o
+/bin
