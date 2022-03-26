@@ -14,3 +14,6 @@ RUN apt install -y python3-pip
 
 COPY root /
 RUN /setup.sh
+
+
+RUN apt install -y gcc-arm-linux-gnueabihf

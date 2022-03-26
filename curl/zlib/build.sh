@@ -1,13 +1,12 @@
 #!/bin/bash
 
-export ZLIB_TAG="v1.2.11"
+export ZLIB_TAG=v1.2.11
 
+[ ! -z "$1" ] && export PLATFORM="$1"
 cd `dirname $0`
-export SRCDIR=`realpath ../../`
 export ZLIB_SRC=`realpath src`
 export ZLIB_LIBS=`realpath libs`
 
-[ ! -z "$1" ] && export PLATFORM="$1"
 source ../../env.sh
 
 export PREFIX="$ZLIB_LIBS/$PLATFORM"
@@ -35,7 +34,6 @@ clean_src > /dev/null
 #export CC="clang --target=x86_64-linux-android23"
 #export RANLIB=$KONAN_DATA_DIR/dependencies/target-toolchain-2-linux-android_ndk/bin/x86_64-linux-android-ranlib
 cd $ZLIB_SRC
-export RANLIB=${HOST}-ranlib
 echo CC $CC HOST: $HOST
 echo CXX $CXX
 sleep 2

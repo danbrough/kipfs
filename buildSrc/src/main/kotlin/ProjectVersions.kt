@@ -19,7 +19,7 @@ object ProjectVersions {
   var VERSION_OFFSET = 1
   lateinit var MAVEN_REPO: URI
 
-  var GROUP_ID = "danbroid.kipfs"
+  var GROUP_ID = "com.github.danbrough.kipfs"
 
   val VERSION_NAME: String
     get() = getVersionName()
@@ -32,10 +32,7 @@ object ProjectVersions {
     MAVEN_REPO = URI.create(
       project.findProperty("LOCAL_MAVEN_REPO")?.toString()?.trim()
         ?: "https://h1.danbrough.org/maven"
-    ).also {
-      println("MAVEN REPO $it")
-    }
-
+    )
   }
 
   fun getIncrementedVersionName() = getVersionName(BUILD_VERSION + 1)

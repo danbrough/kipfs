@@ -108,8 +108,11 @@ $PLATFORM_LINUX_AMD64)
   export HOST=x86_64-unknown-linux-gnu
   export GOARCH=amd64
   export OPENSSL_PLATFORM=linux-x86_64
-  export TOOLCHAIN=$KONAN_DATA_DIR/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2
-  configure_clang
+  #export TOOLCHAIN=$KONAN_DATA_DIR/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2
+  export CC=gcc
+  export CXX=g++
+
+  #configure_clang
   ;;
 
 $PLATFORM_LINUX_386)
@@ -118,13 +121,18 @@ $PLATFORM_LINUX_386)
   ;;
 
 $PLATFORM_LINUX_ARM)
-  export HOST=arm-unknown-linux-gnueabihf
+  HOST=arm-unknown-linux-gnueabihf
   export GOARCH=arm
   export GOARM=7
   export OPENSSL_PLATFORM=linux-armv4
   export CFLAGS="$CFLAGS -mfloat-abi=hard -mcpu=cortex-a53"
-  export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2"
-  configure_clang
+  #export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2"
+  #configure_clang
+  export TARGET=arm-linux-gnueabihf
+  export CROSS_PREFIX=$TARGET-
+  export CC=$TARGET-gcc
+  export CXX=$TARGET-g++
+
 
   #export CC=${CROSS_PREFIX}gcc
   ;;
