@@ -26,7 +26,7 @@ if [ ! -d $SRC ]; then
 fi
 
 #EXTRAS=" --sysroot=$SYSROOT"
-EXTRAS="enable-md4 enable-des disable-shared"
+#EXTRAS="enable-md4 enable-des disable-shared"
 
 
 
@@ -46,8 +46,8 @@ function clean_src(){
 
 
 
-if [ -d $OPENSSL ]; then
-  echo not building openssl as $OPENSSL exists
+if [ -f $OPENSSL/lib/libcrypto.a ]; then
+  echo not building openssl as $OPENSSL/lib/libcryto.a exists
 else
   echo OPENSSL_PLATFORM $OPENSSL_PLATFORM
   echo OPENSSL $OPENSSL

@@ -1,4 +1,6 @@
-[ -z "$SRCDIR" ] && echo SRCDIR NOT SET && exit 1 #set it to the root of the source folder
+export SRCDIR=$(dirname $(realpath $BASH_SOURCE))
+
+#[ -z "$SRCDIR" ] && echo SRCDIR NOT SET. Set SRCDIR to the root of the kipfs source tree && sleep 5 && exit 1 #set it to the root of the source folder
 PS1="\[\033[01;34m\]\u@\h\[\033[01;33m\] \w \$\[\033[00m\] "
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -21,7 +23,9 @@ export CURL_VERSION=curl-7_82_0
 export CURL_LIBS=$SRCDIR/curl/libs/$PLATFORM
 
 export OPENSSL=$SRCDIR/openssl/libs/$PLATFORM
-export OPENSSL_TAG=kipfs #OpenSSL_1_1_1n
+export OPENSSL_TAG=kipfs_1_1_1n #OpenSSL_1_1_1n
+
+
 export PKG_CONFIG_PATH=$OPENSSL/lib/pkgconfig
 export PLATFORMS="$PLATFORM_LINUX_AMD64  $PLATFORM_ANDROID_AMD64 $PLATFORM_ANDROID_386  $PLATFORM_ANDROID_ARM $PLATFORM_ANDROID_ARM64$PLATFORM_PLATFORM_LINUX_386 $PLATFORM_LINUX_ARM $PLATFORM_LINUX_ARM64"
 
@@ -34,29 +38,23 @@ function dir_path() {
 PATH=$GOROOT/bin:$PATH
 
 if [ -z "$CACHEDIR" ]; then
-  # a place to store build cache files
+  # a place to store temporary build files outside of docker S
   export CACHEDIR=$HOME/.cache
 fi
 
 [ -z "KONAN_DATA_DIR" ] && export KONAN_DATA_DIR=$CACHEDIR/konan
 export KONAN_DATA_DIR=$CACHEDIR/konan
-export ANDROID_NDK_HOME=$KONAN_DATA_DIR/dependencies/target-toolchain-2-linux-android_ndk
 
-#if [ -z "$ANDROID_NDK_ROOT" ]; then
-#  export ANDROID_NDK_ROOT=/opt/ndk
-#fi
+[ -z "$ANDROID_HOME" ] && export ANDROID_HOME=/opt/sdk/android
 
-#export ANDROID_NDK_ROOT=$ANDROID_NDK_ROOT
-
-#if [ -z "$ANDROID_HOME" ]; then
-#  export ANDROID_HOME=/usr/lib/android-sdk
-#fi
-
-#[ -z "$ANDROID_HOME" ] && export ANDROID_HOME=/opt/sdk/android
-#[ -z "$ANDROID_NDK_ROOT" ] && export ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/23.1.7779620
-#
-#export ANDROID_NDK_HOME=$ANDROID_NDK_ROOT
-#export PATH=$ANDROID_HOME/platform-tools:$PATH
+NDK_VERSION=23.1.7779620
+export ANDROID_NDK_ROOT="$ANDROID_HOME/ndk/$NDK_VERSION"
+if [ ! -d "$ANDROID_NDK_ROOT" ]; then
+  echo ANDROID_NDK_ROOT $ANDROID_NDK_ROOT not found.
+  sleep 5
+  exit 1
+fi
+export ANDROID_NDK_HOME="$ANDROID_NDK_ROOT"
 
 if [ -z "$PLATFORM" ]; then
   ARCH=$(uname -m)
@@ -85,9 +83,24 @@ function configure_clang() {
   [ -z "$SYSROOT" ] && export SYSROOT=$(dir_path sysroot "$TOOLCHAIN")
   #export SYSROOT="/src/.cache/konan/dependencies/target-sysroot-1-android_ndk/android-21/arch-arm64"
 
+
   export CC="clang --target=$HOST${ANDROID_API} --gcc-toolchain=$TOOLCHAIN  --sysroot=$SYSROOT"
   export CXX="clang++ --target=$HOST${ANDROID_API} --gcc-toolchain=$TOOLCHAIN --sysroot=$SYSROOT"
 
+}
+
+function configure_android() {
+  export TOOLCHAIN=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
+  #export SYSROOT=$TOOLCHAIN/sysroot
+  export GOOS=android
+  [  -z "$ANDROID_API" ] && export ANDROID_API=$DEFAULT_ANDROID_API
+
+  export PATH=$(dir_path bin $TOOLCHAIN):$PATH
+  export TARGET=$HOST
+  export CC=$TARGET$ANDROID_API-clang
+  export CXX=$TARGET$ANDROID_API-clang++
+  export AR=$TOOLCHAIN/bin/llvm-ar
+  export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
 }
 
 case "$PLATFORM" in
@@ -112,7 +125,6 @@ $PLATFORM_LINUX_ARM)
   export CFLAGS="$CFLAGS -mfloat-abi=hard -mcpu=cortex-a53"
   export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2"
   configure_clang
-
 
   #export CC=${CROSS_PREFIX}gcc
   ;;
@@ -144,11 +156,10 @@ $PLATFORM_WINDOWS_AMD64)
   export TARGET=$HOST${ANDROID_API}
   #export PATH=$(dir_path bin $TOOLCHAIN):$PATH
   configure_clang
-
-
   ;;
 
-$PLATFORM_WINDOWS_386)
+\
+  $PLATFORM_WINDOWS_386)
   export WINDRES=i686-w64-mingw32-windres
   export CC=i686-w64-mingw32-gcc
   export GOOS=windows
@@ -159,53 +170,37 @@ $PLATFORM_WINDOWS_386)
 
 $PLATFORM_ANDROID_ARM64)
   export HOST=aarch64-linux-android
-  export ANDROID_API=$DEFAULT_ANDROID_API
   export OPENSSL_PLATFORM=android-arm64
-  export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/target-toolchain-2-linux-android_ndk"
-  export RANLIB=aarch64-linux-android-ranlib
-  export GOOS=android
   export GOARCH=arm64
   export GOARM=7
   export ANDROID_LIB_NAME=arm64-v8a
-  configure_clang
-
+  configure_android
   ;;
 
 \
   $PLATFORM_ANDROID_ARM)
   export OPENSSL_PLATFORM=android-arm
   export HOST=armv7a-linux-androideabi
-  export ANDROID_API=$DEFAULT_ANDROID_API
-  export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/target-toolchain-2-linux-android_ndk"
-  export GOOS=android
   export GOARCH=arm
   export GOARM=7
   export ANDROID_LIB_NAME=armeabi-v7a
-  configure_clang
-  #export LIBDIR=arm64-v8a  armeabi-v7a  x86  x86_64
-  #export LIBDIR=android/arm64-v8a
+  configure_android
   ;;
 
 $PLATFORM_ANDROID_386)
   export OPENSSL_PLATFORM=android-x86
-  export ANDROID_API=$DEFAULT_ANDROID_API
   export HOST=i686-linux-android
-  export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/target-toolchain-2-linux-android_ndk"
-  export GOOS=android
   export GOARCH=386
   export ANDROID_LIB_NAME=x86
-  configure_clang
+  configure_android
   ;;
 
 $PLATFORM_ANDROID_AMD64)
   export OPENSSL_PLATFORM=android-x86_64
   export HOST=x86_64-linux-android
-  export ANDROID_API=$DEFAULT_ANDROID_API
-  export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/target-toolchain-2-linux-android_ndk"
-  export GOOS=android
   export GOARCH=amd64
   export ANDROID_LIB_NAME=x86_64
-  configure_clang
+  configure_android
   ;;
 
 *)
@@ -234,7 +229,7 @@ export GOBIN=$GOCACHEDIR/$PLATFORM/bin
 export GOMODCACHE=$GOCACHEDIR/mod
 
 if [ "$GOOS" == "android" ]; then
-  PATH=$(dir_path bin $ANDROID_NDK_HOME):$PATH
+  PATH=$(dir_path bin $ANDROID_NDK_ROOT):$PATH
 fi
 
 export PATH=$GOBIN:$PATH

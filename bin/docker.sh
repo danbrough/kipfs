@@ -27,10 +27,10 @@ CMD="docker run -it  --tmpfs /tmp \
 	-v $CACHEDIR:$HOMEDIR/.cache \
 	-v $CACHEDIR/konan:$HOMEDIR/.konan \
 	-v $CACHEDIR/conan:$HOMEDIR/.conan \
+	-v $ANDROID_HOME:/opt/sdk/android  \
 	--rm -u $USER -w $HOMEDIR \
 	$DOCKER_IMAGE  $DOCKER_COMMAND"
 
-#	-v $ANDROID_HOME:/opt/sdk/android  \
 
 
 echo running $CMD

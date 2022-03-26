@@ -112,6 +112,5 @@ if ! shopt -oq posix; then
   fi
 fi
 
-SRCDIR=$HOME
 source env.sh
 
