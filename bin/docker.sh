@@ -26,6 +26,7 @@ CMD="docker run -it  --tmpfs /tmp \
 	-v $SRCDIR:$HOMEDIR \
 	-v $CACHEDIR:$HOMEDIR/.cache \
 	-v $CACHEDIR/konan:$HOMEDIR/.konan \
+	-v $CACHEDIR/conan:$HOMEDIR/.conan \
 	--rm -u $USER -w $HOMEDIR \
 	$DOCKER_IMAGE  $DOCKER_COMMAND"
 

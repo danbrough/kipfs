@@ -19,3 +19,5 @@
 /.local
 /ktor
 /lint.xml
+/.ssh
+/.conan

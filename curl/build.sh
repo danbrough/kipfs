@@ -5,7 +5,8 @@ export SRCDIR=$(realpath ..)
 export CURL_SRC=`realpath src`
 [ ! -z "$1" ] && export PLATFORM="$1"
 source ../env.sh
-#./zlib/build.sh
+../openssl/build.sh 
+./zlib/build.sh
 [ -d "$CURL_LIBS" ] && echo not building curl as $CURL_LIBS exists && exit 0
 
 [ "$GOOS" == "android" ] && echo not building for $PLATFORM && exit 0

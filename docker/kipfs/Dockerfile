@@ -10,7 +10,7 @@ RUN apt update
 
 RUN apt install -y temurin-11-jdk
 RUN sed -i  /etc/sudoers -e  's:ALL$:NOPASSWD\:ALL:g'
-
+RUN apt install -y python3-pip
 
 COPY root /
 RUN /setup.sh

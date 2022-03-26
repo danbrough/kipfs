@@ -107,7 +107,7 @@ kotlin {
       if (jniDir == null) {
         cinterops.create("jni") {
           packageName("danbroid.kipfs.jni")
-          val jdkIncludes = rootProject.file("jdk").resolve(platform).resolve("include")
+          val jdkIncludes = rootProject.file("jdk").resolve("include")
 
           includeDirs(mutableListOf<File>().apply {
             add(jdkIncludes)
@@ -216,12 +216,14 @@ kotlin {
         implementation(AndroidX.test.ext.junitKtx)
       }
     }
+
+    /*
     val android386Main by getting {
       dependsOn(androidNativeMain)
     }
 
 
-/*    val linuxAmd64Main by getting {
+    val linuxAmd64Main by getting {
       dependsOn(linuxMain)
     }
 

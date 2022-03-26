@@ -2,7 +2,7 @@
 PS1="\[\033[01;34m\]\u@\h\[\033[01;33m\] \w \$\[\033[00m\] "
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
+[ -d /src/.local ] && PATH=/src/.local/bin:$PATH
 export PLATFORM_LINUX_AMD64="linuxAmd64"
 export PLATFORM_LINUX_386="linux386"
 export PLATFORM_LINUX_ARM="linuxArm"
@@ -113,6 +113,7 @@ $PLATFORM_LINUX_ARM)
   export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2"
   configure_clang
 
+
   #export CC=${CROSS_PREFIX}gcc
   ;;
 
@@ -132,14 +133,19 @@ $PLATFORM_WINDOWS_AMD64)
   export HOST=x86_64-w64-mingw32
   export GOOS=windows
   export CFLAGS="$CFLAGS -pthread"
-  export WINDRES=x86_64-w64-mingw32-windres
+  #export WINDRES=winres
+  export RC=windres
   export GOARCH=amd64
   export OPENSSL_PLATFORM=mingw64
   export LIBNAME="libkipfs.dll"
   #export PATH=/usr/x86_64-w64-mingw32/bin:$PATH
   export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/msys2-mingw-w64-x86_64-1"
-  export SYSROOT="$KONAN_DATA_DIR/dependencies/msys2-mingw-w64-x86_64-1/x86_64-w64-mingw32"
+  export SYSROOT="$TOOLCHAIN/x86_64-w64-mingw32"
+  export TARGET=$HOST${ANDROID_API}
+  #export PATH=$(dir_path bin $TOOLCHAIN):$PATH
   configure_clang
+
+
   ;;
 
 $PLATFORM_WINDOWS_386)
