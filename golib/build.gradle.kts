@@ -97,7 +97,7 @@ kotlin {
 
     compilations["main"].apply {
 
-      println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
+      //println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
 
 
       defaultSourceSet {
@@ -151,6 +151,8 @@ kotlin {
   }
 
   android()
+
+  mingwX64("windowsAmd64").configureLibrary()
 
   linuxX64("linuxAmd64") {
     configureLibrary()
@@ -290,10 +292,7 @@ publishing {
       }.all {
 
 
-        val publicationName =
-          "${baseName}${
-            buildType.toString().toLowerCase().capitalize()
-          }${target.name.capitalize()}Jni"
+        val publicationName = "jni-${target.name}"
 
         afterEvaluate {
           tasks.named(
@@ -302,9 +301,9 @@ publishing {
           ).dependsOn(linkTaskProvider)
         }
 
-        val stripTask = tasks.create("strip${publicationName.capitalize()}",Exec::class){
+ /*       val stripTask = tasks.create("strip${publicationName.capitalize()}",Exec::class){
 
-        }
+        }*/
 
 
         val jarTask = tasks.create("${publicationName}Jar", Jar::class) {

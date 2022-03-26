@@ -16,4 +16,3 @@ COPY root /
 RUN /setup.sh
 
 
-RUN apt install -y gcc-arm-linux-gnueabihf

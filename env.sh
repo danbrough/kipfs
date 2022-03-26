@@ -154,19 +154,19 @@ $PLATFORM_WINDOWS_AMD64)
   export GOOS=windows
   export CFLAGS="$CFLAGS -pthread"
   #export WINDRES=winres
-  export RC=windres
+  export WINDRES=/usr/bin/x86_64-w64-mingw32-windres
+  export RC=$WINDRES
   export GOARCH=amd64
   export OPENSSL_PLATFORM=mingw64
   export LIBNAME="libkipfs.dll"
   #export PATH=/usr/x86_64-w64-mingw32/bin:$PATH
-  export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/msys2-mingw-w64-x86_64-1"
-  export SYSROOT="$TOOLCHAIN/x86_64-w64-mingw32"
-  export TARGET=$HOST${ANDROID_API}
+  export TARGET=$HOST
   #export PATH=$(dir_path bin $TOOLCHAIN):$PATH
-  configure_clang
+  export CROSS_PREFIX=$TARGET-
+  export CC=$TARGET-gcc
+  export CXX=$TARGET-g++
   ;;
 
-\
   $PLATFORM_WINDOWS_386)
   export WINDRES=i686-w64-mingw32-windres
   export CC=i686-w64-mingw32-gcc

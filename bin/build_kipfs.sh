@@ -34,16 +34,18 @@ export CGO_CFLAGS="-fPIC -I$SRCDIR/build/native/$PLATFORM -I$OPENSSL/include $CG
 export CGO_LDFLAGS="-fPIC -L$OPENSSL/lib"
 ;;
 "linux")
+export CGO_LDFLAGS="$CGO_LDFLAGS -ldl"
 #export CGO_CFLAGS="--sysroot=$SYSROOT -fPIC -I$SYSROOT/usr/include -I$SRCDIR/build/native/$PLATFORM -I$OPENSSL/include $CGO_CFLAGS"
 #export CGO_LDFLAGS="--sysroot=$SYSROOT -fPIC -L$SYSROOT/lib -L$SYSROOT/usr/lib -L$OPENSSL/lib"
 ;;
 "android")
+export CGO_LDFLAGS="$CGO_LDFLAGS -ldl"
 #export CGO_CFLAGS="--sysroot=$SYSROOT -fPIC -I$SYSROOT/usr/include -I$SRCDIR/build/native/$PLATFORM -I$OPENSSL/include $CGO_CFLAGS"
 #export CGO_LDFLAGS="--sysroot=$SYSROOT -fPIC -L$SYSROOT/lib -L$SYSROOT/usr/lib -L$OPENSSL/lib"
 ;;
 esac
 
-export CGO_LDFLAGS="$CGO_LDFLAGS -ldl"
+
 
 echo
 echo '#### CONF:'

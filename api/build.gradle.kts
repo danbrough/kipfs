@@ -20,12 +20,12 @@ kotlin {
 
   val nativeMain by sourceSets.creating {
     dependencies {
-      //implementation("org.jetbrains.kotlinx:atomicfu:0.17.1-danbroid")
-      //implementation("org.jetbrains.kotlins:kotlinx-coroutines-core:1.6.0-native-mt-danbroid")
-      implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-danbroid-native-mt")
+      //implementation("org.jetbrains.kotlinx:atomicfu:_")
+      //implementation("org.jetbrains.kotlins:kotlinx-coroutines-core:_")
+      implementation(KotlinX.coroutines.core)
       implementation(AndroidUtils.logging)
       //implementation(Ktor.client.curl)
-      implementation("io.ktor:ktor-client-curl:1.6.8-danbroid")
+      implementation(Ktor.client.curl)
       // implementation(kotlin("stdlib"))
       //implementation("danbroid.kipfs:golib:_")
     }
