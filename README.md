@@ -10,6 +10,8 @@ and windows 64bit (via mingw).
 
 I haven't access to a mac but support for that might be something you could help with.
 
+Regular updates will be in the dev branch with tagged versions in the main branch.
+
 
 ## Status
 
