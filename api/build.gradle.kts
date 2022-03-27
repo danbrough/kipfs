@@ -20,14 +20,6 @@ kotlin {
 
   val nativeMain by sourceSets.creating {
     dependencies {
-      //implementation("org.jetbrains.kotlinx:atomicfu:_")
-      //implementation("org.jetbrains.kotlins:kotlinx-coroutines-core:_")
-      implementation(KotlinX.coroutines.core)
-      implementation(AndroidUtils.logging)
-      //implementation(Ktor.client.curl)
-      implementation(Ktor.client.curl)
-      // implementation(kotlin("stdlib"))
-      //implementation("danbroid.kipfs:golib:_")
     }
   }
 
@@ -38,15 +30,9 @@ kotlin {
       }
     }
 
-
-
-
     sourceSets.getAt("${name}Main").dependsOn(nativeMain)
 
   }
-
-
-  //jvm()
 
   sourceSets {
 
@@ -57,41 +43,6 @@ kotlin {
 
       }
     }
-
-/*    val jvmMain by getting {
-      dependencies {
-        implementation(Ktor.client.core)
-        implementation(Ktor.client.cio)
-      }
-    }
-
-
-    val linuxAmd64Main by getting {
-      dependencies {
-        implementation(Ktor.client.core)
-        //   implementation(Ktor.client.cio)
-        //  implementation("org.jetbrains.kotlinx:atomicfu:_")
-      }
-
-    }
-
-    val linuxAmd64Test by getting {
-      dependencies {
-        implementation(Ktor.client.curl)
-      }
-    }*/
-
-/*    val jvmMain by getting {
-      dependencies {
-        implementation(Ktor.client.cio)
-      }
-    }
-
-    val jvmTest by getting {
-
-    }*/
-
-
   }
 }
 

@@ -4,14 +4,14 @@ import kotlinx.cinterop.cstr
 import platform.posix.free
 
 
-object KIPFSNative : KIPFS {
+object KIPFSNative : KIPFSImpl {
   override fun getMessage(): String = libkipfs.KGetMessage()!!.copyToString()
   override fun getMessage2(): String = libkipfs.KGetMessage2()!!.copyToString()
   override fun dagCID(json: String): String = libkipfs.KCID(json.cstr)!!.copyToString()
 
 }
 
-actual fun initLib():KIPFS  = KIPFSNative
+actual fun initKIPFS():KIPFSImpl = KIPFSNative
 
 
 @CName("Java_GoKIPFS_getMessage")

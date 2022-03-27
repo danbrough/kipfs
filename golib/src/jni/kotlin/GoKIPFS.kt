@@ -1,4 +1,4 @@
-object KIPFSJNI  : KIPFS {
+object KIPFSJNI : KIPFSImpl {
   val log = danbroid.logging.configure("TEST", coloured = true)
 
   init {
@@ -18,5 +18,5 @@ object KIPFSJNI  : KIPFS {
 }
 
 
-actual fun initLib(): KIPFS = KIPFSJNI
+actual fun initKIPFS():KIPFSImpl = KIPFSJNI
 

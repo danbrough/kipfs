@@ -4,7 +4,7 @@ class Test {
 
   companion object {
     val log = danbroid.logging.configure("TEST", coloured = true)
-    val kipfs = initLib()
+    val kipfs = initKIPFS()
   }
 
 
