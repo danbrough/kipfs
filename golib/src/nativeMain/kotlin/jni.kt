@@ -58,7 +58,3 @@ fun CPointer<ByteVar>.copyToString(): String = this.toKString().also {
 }
 
 
-fun testNative() {
-  println("Hello from native land")
-
-}

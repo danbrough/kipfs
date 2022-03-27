@@ -63,7 +63,7 @@ kotlin {
     val platform = name
     val kipfsBuild = kipfsBuild(platform)
 
-    println("KONAN TARGET: ${this.konanTarget.name}")
+    //println("KONAN TARGET: ${this.konanTarget.name}")
     val jniDir = when (platform) {
       "android386" -> "x86"
       "androidAmd64" -> "x86_64"
@@ -75,9 +75,9 @@ kotlin {
     binaries {
       sharedLib {
         baseName = "kipfs"
-        println("Sharedlib: ${this.buildType} class: ${this.buildType.javaClass}")
+      //  println("Sharedlib: ${this.buildType} class: ${this.buildType.javaClass}")
 
-        if (jniDir != null && buildType == org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG) {
+        if (jniDir != null && buildType == NativeBuildType.DEBUG) {
           val copyTask = tasks.register<Copy>("copyToJniLibs${platform.capitalize()}") {
             from(linkTask.outputs)
             from(kipfsBuild.get().outputs)
@@ -204,7 +204,8 @@ kotlin {
       }
     }
 
-    /*
+
+  }    /*
     val android386Main by getting {
       dependsOn(androidNativeMain)
     }
@@ -225,7 +226,6 @@ kotlin {
     val androidArm64Main by getting {
       dependsOn(androidNativeMain)
     }*/
-  }
 }
 
 tasks.withType(KotlinJvmTest::class) {
@@ -244,6 +244,7 @@ tasks.withType(KotlinJvmTest::class) {
 
 android {
   compileSdk = ProjectVersions.SDK_VERSION
+  namespace = "com.github.danbrough.kipfs"
 
   defaultConfig {
     minSdk = ProjectVersions.MIN_SDK_VERSION
@@ -313,7 +314,7 @@ afterEvaluate {
   kotlin.targets.withType(KotlinNativeTarget::class).asMap.values.flatMap { it.binaries.toList() }
     .filterIsInstance<SharedLibrary>()
     .filter {
-      it.buildType == org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG &&
+      it.buildType == NativeBuildType.DEBUG &&
           it.linkTask.target.startsWith("android")
     }
     .forEach {

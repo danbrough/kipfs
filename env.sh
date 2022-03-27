@@ -46,6 +46,7 @@ fi
 export KONAN_DATA_DIR=$CACHEDIR/konan
 
 [ -z "$ANDROID_HOME" ] && export ANDROID_HOME=/opt/sdk/android
+PATH=$PATH:$ANDROID_HOME/platform-tools
 
 NDK_VERSION=23.1.7779620
 export ANDROID_NDK_ROOT="$ANDROID_HOME/ndk/$NDK_VERSION"
