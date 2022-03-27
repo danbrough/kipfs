@@ -3,11 +3,16 @@ import kotlinx.cinterop.cstr
 
 import platform.posix.free
 
-actual fun getMessage(): String = libkipfs.KGetMessage()!!.copyToString()
-actual fun getMessage2(): String = libkipfs.KGetMessage2()!!.copyToString()
-actual fun initLib() {}
 
-actual fun dagCID(json: String): String = libkipfs.KCID(json.cstr)!!.copyToString()
+object KIPFSNative : KIPFS {
+  fun getMessage(): String = libkipfs.KGetMessage()!!.copyToString()
+  fun getMessage2(): String = libkipfs.KGetMessage2()!!.copyToString()
+  fun dagCID(json: String): String = libkipfs.KCID(json.cstr)!!.copyToString()
+
+}
+
+actual fun initLib() = KIPFSNative
+
 
 @CName("Java_GoKIPFS_getMessage")
 fun getMessage(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
