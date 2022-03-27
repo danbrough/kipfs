@@ -27,7 +27,7 @@ or to cross compile the demo for other targets:
 
 The [demos](./demos/) use precompiled binaries from my maven repository at https://h1.danbrough.org/maven
 
-They are compiled on at docker image. See: [./bin/docker.sh](./bin/docker.sh) and the Docker files in [./docker/](./docker/).
+They are compiled on a docker image. See: [./bin/docker.sh](./bin/docker.sh) and the Docker files in [./docker/](./docker/).
 
 
 
