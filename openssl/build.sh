@@ -45,9 +45,10 @@ function clean_src(){
 }
 
 
+CRYPTO_LIB=$OPENSSL/lib/libcrypto.a
 
-if [ -f $OPENSSL/lib/libcrypto.a ]; then
-  echo not building openssl as $OPENSSL/lib/libcryto.a exists
+if [ -f $CRYPTO_LIB ]; then
+  echo not building openssl as $CRYPTO_LIB exists
 else
   echo OPENSSL_PLATFORM $OPENSSL_PLATFORM
   echo OPENSSL $OPENSSL
