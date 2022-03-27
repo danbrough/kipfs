@@ -20,12 +20,6 @@ plugins {
 group = ProjectVersions.GROUP_ID
 version = ProjectVersions.VERSION_NAME
 
-val ndkHome =
-  System.getenv()["ANDROID_NDK_ROOT"] ?: throw GradleException("ANDROID_NDK_ROOT is not set")
-
-val androidIncludes =
-  File("$ndkHome/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/")
-
 val jniLibsDir = project.buildDir.resolve("jniLibs")
 
 
@@ -152,33 +146,24 @@ kotlin {
 
   android()
 
-  mingwX64("windowsAmd64").configureLibrary()
+  mingwX64("windowsAmd64")
 
-  linuxX64("linuxAmd64") {
-    configureLibrary()
-  }
+  linuxX64("linuxAmd64")
 
-  linuxArm32Hfp("linuxArm") {
-    configureLibrary()
-  }
+  linuxArm32Hfp("linuxArm")
 
-  linuxArm64("linuxArm64") {
-    configureLibrary()
-  }
+  linuxArm64("linuxArm64")
 
-  androidNativeX86("android386") {
-    configureLibrary()
-  }
+  androidNativeX86("android386")
 
-  androidNativeX64("androidAmd64") {
-    configureLibrary()
-  }
+  androidNativeX64("androidAmd64")
 
-  androidNativeArm64("androidArm64") {
-    configureLibrary()
-  }
+  androidNativeArm64("androidArm64")
 
-  androidNativeArm32("androidArm") {
+  androidNativeArm32("androidArm")
+
+
+  targets.withType(KotlinNativeTarget::class).all {
     configureLibrary()
   }
 
