@@ -62,12 +62,10 @@ kotlin {
   }
 
 
-  fun KotlinNativeTarget.configureLibrary() {
-
+  fun KotlinNativeTarget.configureSharedLib() {
     val platform = name
     val kipfsBuild = kipfsBuild(platform)
 
-    //println("KONAN TARGET: ${this.konanTarget.name}")
     val jniDir = when (platform) {
       "android386" -> "x86"
       "androidAmd64" -> "x86_64"
@@ -79,7 +77,6 @@ kotlin {
     binaries {
       sharedLib {
         baseName = "kipfs"
-      //  println("Sharedlib: ${this.buildType} class: ${this.buildType.javaClass}")
 
         if (jniDir != null && buildType == NativeBuildType.DEBUG) {
           val copyTask = tasks.register<Copy>("copyToJniLibs${platform.capitalize()}") {
@@ -87,6 +84,7 @@ kotlin {
             from(kipfsBuild.get().outputs)
             into(jniLibsDir.resolve(jniDir))
           }
+          //created a jar of the shared library for use in android/jvm jni applications
           kipfsBuild.get().finalizedBy(copyTask)
         }
       }
@@ -128,11 +126,6 @@ kotlin {
           project.buildDir.resolve("native/$platform"),
           rootProject.file("openssl/libs/$platform/include")
         )
-/*
-          linkerOpts(
-            "-L${rootProject.file("openssl/libs/$platform/lib").absolutePath}",
-            "-L${project.buildDir.resolve("native/$platform").absolutePath}"
-          )*/
 
         extraOpts(
           mutableListOf<String>().apply {
@@ -168,7 +161,7 @@ kotlin {
 
 
   targets.withType(KotlinNativeTarget::class).all {
-    configureLibrary()
+    configureSharedLib()
   }
 
   jvm {
@@ -207,29 +200,7 @@ kotlin {
         implementation(AndroidX.test.ext.junitKtx)
       }
     }
-
-
-  }    /*
-    val android386Main by getting {
-      dependsOn(androidNativeMain)
-    }
-
-
-    val linuxAmd64Main by getting {
-      dependsOn(linuxMain)
-    }
-
-    val linuxArmMain by getting {
-      dependsOn(linuxMain)
-    }
-
-    val android386Main by getting {
-      dependsOn(androidNativeMain)
-    }
-
-    val androidArm64Main by getting {
-      dependsOn(androidNativeMain)
-    }*/
+  }
 }
 
 tasks.withType(KotlinJvmTest::class) {
@@ -291,11 +262,6 @@ publishing {
           ).dependsOn(linkTaskProvider)
         }
 
- /*       val stripTask = tasks.create("strip${publicationName.capitalize()}",Exec::class){
-
-        }*/
-
-
         val jarTask = tasks.create("${publicationName}Jar", Jar::class) {
           from(linkTask)
           dependsOn(linkTask)
@@ -315,6 +281,7 @@ publishing {
 }
 
 afterEvaluate {
+  //make connectedDebugAndroidTest tasks dependent on the jni shared library
   kotlin.targets.withType(KotlinNativeTarget::class).asMap.values.flatMap { it.binaries.toList() }
     .filterIsInstance<SharedLibrary>()
     .filter {
@@ -322,7 +289,6 @@ afterEvaluate {
           it.linkTask.target.startsWith("android")
     }
     .forEach {
-      //  println("ANDROIDTEST depends on ${it.linkTask.target}")
       tasks.named("connectedDebugAndroidTest").dependsOn(it.linkTaskProvider)
     }
 }
