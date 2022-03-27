@@ -47,7 +47,11 @@ fun kipfsBuild(platform: String) =
 
 kotlin {
 
-  val nativeMain by sourceSets.creating
+  val commonMain by sourceSets.getting
+
+  val nativeMain by sourceSets.creating{
+    dependsOn(commonMain)
+  }
 
   val linuxMain by sourceSets.creating {
     dependsOn(nativeMain)

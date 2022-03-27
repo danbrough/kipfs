@@ -4,10 +4,7 @@ class Test {
 
   companion object {
     val log = danbroid.logging.configure("TEST", coloured = true)
-
-    init {
-      initLib()
-    }
+    val kipfs = initLib()
   }
 
 
@@ -16,9 +13,9 @@ class Test {
     log.info("test1()!")
 
 
-    log.debug(getMessage())
-    log.debug(getMessage2())
-    log.trace("DAG ${dagCID("\"Hello World\"")}")
+    log.debug(kipfs.getMessage())
+    log.debug(kipfs.getMessage2())
+    log.trace("DAG ${kipfs.dagCID("\"Hello World\"")}")
 /*    log.debug("message is: ${KIgetMessage()}")
     log.warn("message2 is: ${getMessage2()}")
     log.trace("DAG ${dagCID("\"Hello World\"")}")*/
