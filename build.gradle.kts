@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import  org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
+
 plugins {
   kotlin("multiplatform") apply false
 
@@ -57,5 +58,6 @@ allprojects {
     }
   }
 
-
 }
+
+println("IDE MODE: ${ProjectVersions.IDE_MODE}")

@@ -1,6 +1,8 @@
 //go:build shell
 // +build shell
+
 package main
+
 // #cgo CFLAGS: -fPIC
 import "C"
 import (
@@ -49,7 +51,6 @@ func KGetMessage3() *C.char {
 	return C.CString(misc.GetMessage3())
 }
 
-
 //export KIpfsID
 func KIpfsID() *C.char {
 	if shell == nil {
@@ -60,6 +61,7 @@ func KIpfsID() *C.char {
 	if err != nil {
 		return C.CString(err.Error())
 	}
+
 	return C.CString(s.ID)
 }
 
@@ -68,5 +70,4 @@ func KRequest(command *C.char) {
 	if shell == nil {
 		return
 	}
-
 }

@@ -49,7 +49,7 @@ kotlin {
 
   val commonMain by sourceSets.getting
 
-  val nativeMain by sourceSets.creating{
+  val nativeMain by sourceSets.creating {
     dependsOn(commonMain)
   }
 
@@ -97,7 +97,8 @@ kotlin {
 
 
       defaultSourceSet {
-        dependsOn(if (jniDir != null) androidNativeMain else linuxMain)
+        if (!ProjectVersions.IDE_MODE)
+          dependsOn(if (jniDir != null) androidNativeMain else linuxMain)
       }
 
       if (jniDir == null) {
@@ -143,21 +144,17 @@ kotlin {
 
   android()
 
-  mingwX64("windowsAmd64")
-
   linuxX64("linuxAmd64")
 
-  linuxArm32Hfp("linuxArm")
-
-  linuxArm64("linuxArm64")
-
-  androidNativeX86("android386")
-
-  androidNativeX64("androidAmd64")
-
-  androidNativeArm64("androidArm64")
-
-  androidNativeArm32("androidArm")
+  if (!ProjectVersions.IDE_MODE) {
+    mingwX64("windowsAmd64")
+    linuxArm32Hfp("linuxArm")
+    linuxArm64("linuxArm64")
+    androidNativeX86("android386")
+    androidNativeX64("androidAmd64")
+    androidNativeArm64("androidArm64")
+    androidNativeArm32("androidArm")
+  }
 
 
   targets.withType(KotlinNativeTarget::class).all {
@@ -176,7 +173,7 @@ kotlin {
       }
     }
 
-    commonTest {
+    val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
       }
@@ -190,6 +187,17 @@ kotlin {
 
     val jvmMain by getting {
       dependsOn(jni)
+    }
+
+    if (ProjectVersions.IDE_MODE) {
+      val linuxAmd64Main by getting {
+        kotlin.srcDirs("src/linuxMain/kotlin", "src/nativeMain/kotlin")
+      }
+    }
+
+
+    val linuxAmd64Test by getting {
+      kotlin.srcDir("src/nativeTest/kotlin")
     }
 
     val androidAndroidTest by getting {

@@ -1,11 +1,11 @@
 
-interface KIPFSImpl {
+interface KIPFSLib {
   fun getMessage(): String
   fun getMessage2(): String
   fun dagCID(json: String): String
 }
 
-expect fun initKIPFS(): KIPFSImpl
+expect fun initKIPFSLib(): KIPFSLib
 
 
 

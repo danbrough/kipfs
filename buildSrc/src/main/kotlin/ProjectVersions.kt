@@ -11,6 +11,8 @@ object ProjectVersions {
   var VERSION_FORMAT = "0.0.1-%02d"
   const val KOTLIN_JVM_VERSION = "11"
 
+  var IDE_MODE = true
+
   lateinit var KEYSTORE_PASSWORD: String
   val COMPOSE_VERSION = "1.1.1"
   val JITPACK_BUILD = System.getenv().containsKey("JITPACK")
@@ -25,13 +27,14 @@ object ProjectVersions {
     get() = getVersionName()
 
   fun init(project: Project, props: Properties) {
+    IDE_MODE = project.findProperty("KIPFS_IDEMODE")?.toString()?.trim()?.toBoolean() ?: true
     BUILD_VERSION = props.getProperty("buildVersion", "1").toInt()
     VERSION_OFFSET = props.getProperty("versionOffset", "1").toInt()
     VERSION_FORMAT = props.getProperty("versionFormat", "0.0.%d").trim()
     KEYSTORE_PASSWORD = project.properties.get("KEYSTORE_PASSWORD")?.toString() ?: ""
     MAVEN_REPO = URI.create(
       project.findProperty("LOCAL_MAVEN_REPO")?.toString()?.trim()
-        ?: "https://h1.danbrough.org/maven"
+        ?: project.rootProject.buildDir.resolve(".m2").absolutePath
     )
   }
 

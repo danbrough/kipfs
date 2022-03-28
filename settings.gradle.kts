@@ -13,7 +13,7 @@ plugins {
 rootProject.name = "kipfs"
 include(":api")
 include(":golib")
-include(":deps")
+//include(":deps")
 include(":demos:native_cmdline")
 //include(":demo")
 

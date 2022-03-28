@@ -4,20 +4,21 @@ import kotlinx.cinterop.cstr
 import platform.posix.free
 
 
-object KIPFSNative : KIPFSImpl {
+object KIPFSLibNative : KIPFSLib {
   override fun getMessage(): String = libkipfs.KGetMessage()!!.copyToString()
   override fun getMessage2(): String = libkipfs.KGetMessage2()!!.copyToString()
   override fun dagCID(json: String): String = libkipfs.KCID(json.cstr)!!.copyToString()
 
 }
 
-actual fun initKIPFS():KIPFSImpl = KIPFSNative
+actual fun initKIPFSLib(): KIPFSLib = KIPFSLibNative
 
 
-@CName("Java_GoKIPFS_getMessage")
+@CName("Java_KIPFSLibJNI_getMessage")
 fun getMessage(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     init()
+
     return env.pointed.pointed!!.NewStringUTF!!.invoke(
       env,
       libkipfs.KGetMessage()!!.getPointer(this)
@@ -26,7 +27,7 @@ fun getMessage(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   }
 }
 
-@CName("Java_GoKIPFS_getMessage2")
+@CName("Java_KIPFSLibJNI_getMessage2")
 fun getMessage2(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     init()
@@ -38,7 +39,7 @@ fun getMessage2(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   }
 }
 
-@CName("Java_GoKIPFS_dagCID")
+@CName("Java_KIPFSLibJNI_dagCID")
 fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   memScoped {
     init()

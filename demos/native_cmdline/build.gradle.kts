@@ -23,11 +23,15 @@ kotlin {
   androidNativeArm64("androidArm64")
   mingwX64("windowsAmd64")
 
+  val nativeMain by sourceSets.creating {
+
+  }
+
   targets.withType(KotlinNativeTarget::class).all {
     compilations["main"].apply {
       //defaultSourceSet.dependsOn(nativeMain)
       defaultSourceSet {
-        kotlin.srcDir("src/nativeMain/kotlin")
+        dependsOn(nativeMain)
 
         dependencies {
           implementation("com.github.danbrough.kipfs:golib:_")

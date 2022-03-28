@@ -14,9 +14,6 @@ java {
   targetCompatibility = javaVersion
 }
 
-
-
 kotlinDslPluginOptions {
-  //jvmTarget.set(java.toolchain.languageVersion.map { it.toString() })
   jvmTarget.set(provider { java.targetCompatibility.toString() })
 }
