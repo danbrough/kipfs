@@ -1,13 +1,13 @@
 
-interface  KShell {
-
+interface KShell {
+  fun id(): String
 }
 
 interface KIPFSLib {
   fun getMessage(): String
   fun getMessage2(): String
   fun dagCID(json: String): String
-  fun createShell(url:String): KShell
+  fun createShell(url: String): KShell
 }
 
 

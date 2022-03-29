@@ -14,6 +14,7 @@ linkerOpts.android_arm32 = -Lopenssl/libs/androidArm/lib -L./golib/build/native/
 
 linkerOpts.android_arm64 = -Lopenssl/libs/androidArm64/lib -L./golib/build/native/androidArm64
 linkerOpts.android_x64 = -Lopenssl/libs/androidAmd64/lib -L./golib/build/native/androidAmd64
+linkerOpts.android_x86 = -Lopenssl/libs/android386/lib -L./golib/build/native/android386
 
 linkerOpts.linux_x64 = -Lopenssl/libs/linuxAmd64/lib -L./golib/build/native/linuxAmd64
 linkerOpts.linux_arm32_hfp = -Lopenssl/libs/linuxArm/lib -L./golib/build/native/linuxArm

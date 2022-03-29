@@ -7,11 +7,11 @@ package main
 import "C"
 import (
 	"github.com/danbrough/kipfs/cids"
+	"github.com/danbrough/kipfs/core"
 	"github.com/danbrough/kipfs/misc"
-	ipfsapi "github.com/ipfs/go-ipfs-api"
 )
 
-var shell *ipfsapi.Shell
+var shell *core.Shell
 
 //export KCID
 func KCID(json *C.char) *C.char {
@@ -21,8 +21,8 @@ func KCID(json *C.char) *C.char {
 //export KCreateShell
 func KCreateShell(url *C.char) {
 	if shell == nil {
-		println("creating shell...")
-		shell = ipfsapi.NewShell(C.GoString(url))
+		println("creating shell....")
+		shell = core.NewShell(C.GoString(url))
 	} else {
 		println("ERROR: shell already exists")
 	}
@@ -53,18 +53,19 @@ func KGetMessage3() *C.char {
 	return C.CString(misc.GetMessage3())
 }
 
-//export KIpfsID
-func KIpfsID() *C.char {
+//export KCmdID
+func KCmdID() *C.char {
 	if shell == nil {
 		return nil
 	}
 
-	s, err := shell.ID()
+	s, err := shell.NewRequest("id").Send()
 	if err != nil {
 		return C.CString(err.Error())
 	}
 
-	return C.CString(s.ID)
+	println("RECEIVED: ", string(s))
+	return C.CString(string(s))
 }
 
 //export KRequest

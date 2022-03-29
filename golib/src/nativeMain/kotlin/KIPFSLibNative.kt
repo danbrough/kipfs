@@ -15,6 +15,8 @@ object KIPFSLibNative : KIPFSLib {
     libkipfs.KCreateShell(url.cstr)
     return object : KShell {
 
+      override fun id(): String = libkipfs.KCmdID()!!.copyToString()
+
     }
   }
 }

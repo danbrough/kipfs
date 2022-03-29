@@ -67,7 +67,7 @@ cd go
 
 
 
-CMD="go build -trimpath -v -tags=shell,node,openssl   -buildmode=$BUILDMODE -o $LIBNAME  ./libs/"
+CMD="go build -trimpath -v -tags=shell,node,openssl   -buildmode=$BUILDMODE -o $LIBNAME  ./libs/libkshell.go ./libs/main.go"
 echo running $CMD
 $CMD
 

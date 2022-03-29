@@ -16,10 +16,6 @@ class Test {
     log.debug(kipfs.getMessage())
     log.debug(kipfs.getMessage2())
     log.trace("DAG ${kipfs.dagCID("\"Hello World\"")}")
-    var t:Thang? = Thang{
-      log.warn("Finished with thang")
-    }
-    t = null
 
 
 

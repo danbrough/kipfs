@@ -19,27 +19,29 @@ kotlin {
     mingwX64("windowsAmd64")
   }
 
-  val nativeMain by sourceSets.creating {
-
-    dependencies {
-      implementation(KotlinX.coroutines.core)
-    }
-  }
 
   targets.withType(KotlinNativeTarget::class).all {
     compilations["main"].apply {
       //defaultSourceSet.dependsOn(nativeMain)
       defaultSourceSet {
-        dependsOn(nativeMain)
-
-        dependencies {
-          if (ProjectVersions.IDE_MODE) {
+        if (ProjectVersions.IDE_MODE) {
+          kotlin.srcDir("src/nativeMain/kotlin")
+          dependencies {
             implementation(project(":golib"))
-          } else {
+          }
+        } else {
+          sourceSets.maybeCreate("nativeMain").apply {
+            dependencies {
+              implementation(KotlinX.coroutines.core)
+            }
+          }
+
+          dependsOn(sourceSets.getByName("nativeMain"))
+
+          dependencies {
             implementation("com.github.danbrough.kipfs:golib:_")
           }
         }
-
       }
     }
 

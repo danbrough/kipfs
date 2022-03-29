@@ -105,6 +105,7 @@ kotlin {
 
         //defFile(project.file("src/nativeInterop/cinterop/KIpfsGo.def"))
         tasks.getAt(interopProcessingTaskName).also {
+          it.inputs.files(kipfsBuild.get().outputs)
           it.dependsOn(kipfsBuild)
         }
 
@@ -133,12 +134,15 @@ kotlin {
 
   //ide mode is linuxX64 target only. Turned off by ./gradlew -Pkipfs.ideMode=false  see ./scripts/publishAll.sh
   if (!ProjectVersions.IDE_MODE) {
+
+
+    val nativeMain by sourceSets.creating
     val linuxMain by sourceSets.creating {
-      dependsOn(sourceSets.getByName("nativeMain"))
+      dependsOn(nativeMain)
     }
 
     val androidNativeMain by sourceSets.creating {
-      dependsOn(sourceSets.getByName("nativeMain"))
+      dependsOn(nativeMain)
     }
 
 

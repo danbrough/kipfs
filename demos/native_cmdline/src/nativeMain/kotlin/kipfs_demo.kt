@@ -12,4 +12,11 @@ fun main() {
   }
 
 
+  val shell = kipfs.createShell("/ip4/192.168.1.4/tcp/5001")
+  log.debug("created shell: $shell")
+
+  log.trace("ID: ${shell.id()}")
+
+
+
 }
