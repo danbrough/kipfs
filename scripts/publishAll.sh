@@ -2,4 +2,4 @@
 
 cd $(dirname $0) && cd .. 
 
-exec ./gradlew golib:publishAllPublicationsToMavenRepository $@
+exec ./gradlew -Pkipfs.ideMode=false golib:publishAllPublicationsToMavenRepository $@

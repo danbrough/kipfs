@@ -19,12 +19,18 @@ kotlin {
 
 
   linuxX64("linuxAmd64")
-  linuxArm32Hfp("linuxArm")
-  androidNativeArm64("androidArm64")
-  mingwX64("windowsAmd64")
+
+  if (!ProjectVersions.IDE_MODE) {
+    linuxArm32Hfp("linuxArm")
+    androidNativeArm64("androidArm64")
+    mingwX64("windowsAmd64")
+  }
 
   val nativeMain by sourceSets.creating {
 
+    dependencies {
+      implementation(KotlinX.coroutines.core)
+    }
   }
 
   targets.withType(KotlinNativeTarget::class).all {
@@ -34,7 +40,11 @@ kotlin {
         dependsOn(nativeMain)
 
         dependencies {
-          implementation("com.github.danbrough.kipfs:golib:_")
+          if (ProjectVersions.IDE_MODE) {
+            implementation(project(":golib"))
+          } else {
+            implementation("com.github.danbrough.kipfs:golib:_")
+          }
         }
 
       }

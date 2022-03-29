@@ -1,18 +1,15 @@
-import kotlinx.cinterop.*
-import kotlinx.cinterop.cstr
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.pointed
+import libkipfs.KCID
+import libkipfs.KGetMessage
+import libkipfs.KGetMessage2
 
-import platform.posix.free
-
-
-object KIPFSLibNative : KIPFSLib {
-  override fun getMessage(): String = libkipfs.KGetMessage()!!.copyToString()
-  override fun getMessage2(): String = libkipfs.KGetMessage2()!!.copyToString()
-  override fun dagCID(json: String): String = libkipfs.KCID(json.cstr)!!.copyToString()
-
+private fun init() {
+  initRuntimeIfNeeded()
+  Platform.isMemoryLeakCheckerActive = true
 }
-
-actual fun initKIPFSLib(): KIPFSLib = KIPFSLibNative
-
 
 @CName("Java_KIPFSLibJNI_getMessage")
 fun getMessage(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
@@ -21,7 +18,7 @@ fun getMessage(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
 
     return env.pointed.pointed!!.NewStringUTF!!.invoke(
       env,
-      libkipfs.KGetMessage()!!.getPointer(this)
+      KGetMessage()!!.getPointer(this)
       //"The time is ${Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())}!".cstr.ptr
     )!!
   }
@@ -33,7 +30,7 @@ fun getMessage2(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
     init()
     return env.pointed.pointed!!.NewStringUTF!!.invoke(
       env,
-      libkipfs.KGetMessage2()!!.getPointer(this)
+      KGetMessage2()!!.getPointer(this)
       //"The time is ${Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())}!".cstr.ptr
     )!!
   }
@@ -44,23 +41,10 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   memScoped {
     init()
     val jsonC = env.pointed.pointed!!.GetStringUTFChars!!(env, json, null)
-    val s = libkipfs.KCID(jsonC)!!
+    val s = KCID(jsonC)!!
     return env.pointed.pointed!!.NewStringUTF!!.invoke(
       env,
       s.getPointer(this)
     )!!
   }
 }
-
-
-private fun init() {
-  initRuntimeIfNeeded()
-  Platform.isMemoryLeakCheckerActive = true
-}
-
-
-fun CPointer<ByteVar>.copyToString(): String = this.toKString().also {
-  free(this)
-}
-
-

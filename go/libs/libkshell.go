@@ -26,11 +26,13 @@ func KCreateShell(url *C.char) {
 	} else {
 		println("ERROR: shell already exists")
 	}
+
 }
 
 //export KCloseShell
 func KCloseShell() {
 	if shell != nil {
+		println("closing shell...")
 		shell = nil
 	}
 

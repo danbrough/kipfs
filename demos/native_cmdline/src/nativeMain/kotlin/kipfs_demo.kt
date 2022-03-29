@@ -1,14 +1,28 @@
+import kotlinx.coroutines.*
+
+class Thang(val atEnd: () -> Unit) {
+  protected fun finalize() {
+    println("Finalize")
+    atEnd()
+  }
+}
+
 fun main() {
 
-
   val log = danbroid.logging.configure("TEST", coloured = true)
+  val kipfs = initKIPFSLib()
 
-  initLib()
+  runBlocking {
+    log.warn("message: ${kipfs.getMessage()}")
 
-  log.warn("message: ${getMessage()}")
 
-  dagCID("\"Hello World\"").also {
-    log.debug("cid: $it")
+
+    kipfs.dagCID("\"Hello World\"").also {
+      log.debug("cid: $it")
+    }
+
+
   }
+
 
 }

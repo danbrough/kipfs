@@ -8,7 +8,6 @@ plugins {
 group = ProjectVersions.GROUP_ID
 version = ProjectVersions.VERSION_NAME
 
-
 kotlin {
 
 //  android()

@@ -17,6 +17,7 @@ plugins {
   `maven-publish`
 }
 
+println("IDEMODE: ${ProjectVersions.IDE_MODE}")
 group = ProjectVersions.GROUP_ID
 version = ProjectVersions.VERSION_NAME
 
@@ -46,21 +47,6 @@ fun kipfsBuild(platform: String) =
 
 
 kotlin {
-
-  val commonMain by sourceSets.getting
-
-  val nativeMain by sourceSets.creating {
-    dependsOn(commonMain)
-  }
-
-  val linuxMain by sourceSets.creating {
-    dependsOn(nativeMain)
-  }
-
-  val androidNativeMain by sourceSets.creating {
-    dependsOn(nativeMain)
-  }
-
 
   fun KotlinNativeTarget.configureSharedLib() {
     val platform = name
@@ -94,11 +80,10 @@ kotlin {
     compilations["main"].apply {
 
       //println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
-
-
-      defaultSourceSet {
-        if (!ProjectVersions.IDE_MODE)
-          dependsOn(if (jniDir != null) androidNativeMain else linuxMain)
+      if (!ProjectVersions.IDE_MODE) {
+        defaultSourceSet {
+          dependsOn(sourceSets.getByName(if (jniDir != null) "androidNativeMain" else "linuxMain"))
+        }
       }
 
       if (jniDir == null) {
@@ -146,7 +131,17 @@ kotlin {
 
   linuxX64("linuxAmd64")
 
+  //ide mode is linuxX64 target only. Turned off by ./gradlew -Pkipfs.ideMode=false  see ./scripts/publishAll.sh
   if (!ProjectVersions.IDE_MODE) {
+    val linuxMain by sourceSets.creating {
+      dependsOn(sourceSets.getByName("nativeMain"))
+    }
+
+    val androidNativeMain by sourceSets.creating {
+      dependsOn(sourceSets.getByName("nativeMain"))
+    }
+
+
     mingwX64("windowsAmd64")
     linuxArm32Hfp("linuxArm")
     linuxArm64("linuxArm64")
@@ -193,12 +188,12 @@ kotlin {
       val linuxAmd64Main by getting {
         kotlin.srcDirs("src/linuxMain/kotlin", "src/nativeMain/kotlin")
       }
+
+      val linuxAmd64Test by getting {
+        kotlin.srcDir("src/nativeTest/kotlin")
+      }
     }
 
-
-    val linuxAmd64Test by getting {
-      kotlin.srcDir("src/nativeTest/kotlin")
-    }
 
     val androidAndroidTest by getting {
       dependencies {

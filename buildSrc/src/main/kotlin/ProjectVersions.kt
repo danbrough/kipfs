@@ -27,7 +27,7 @@ object ProjectVersions {
     get() = getVersionName()
 
   fun init(project: Project, props: Properties) {
-    IDE_MODE = project.findProperty("KIPFS_IDEMODE")?.toString()?.trim()?.toBoolean() ?: true
+    IDE_MODE = project.findProperty("kipfs.ideMode")?.toString()?.trim()?.toBoolean() ?: true
     BUILD_VERSION = props.getProperty("buildVersion", "1").toInt()
     VERSION_OFFSET = props.getProperty("versionOffset", "1").toInt()
     VERSION_FORMAT = props.getProperty("versionFormat", "0.0.%d").trim()
