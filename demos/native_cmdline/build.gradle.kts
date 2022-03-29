@@ -11,13 +11,6 @@ version = ProjectVersions.VERSION_NAME
 
 kotlin {
 
-  /*val nativeMain by sourceSets.creating {
-    dependencies {
-      implementation("com.github.danbrough.kipfs:golib:_")
-    }
-  }*/
-
-
   linuxX64("linuxAmd64")
 
   if (!ProjectVersions.IDE_MODE) {
@@ -54,8 +47,6 @@ kotlin {
       executable("kipfsDemo", buildTypes = setOf(NativeBuildType.DEBUG))
     }
   }
-
-
 }
 
 
