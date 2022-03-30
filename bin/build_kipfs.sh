@@ -17,8 +17,8 @@ LIBNAME=$LIBSDIR/libgokipfs.a
 export CGO_CFLAGS="$CFLAGS"
 #BUILDMODE=c-archive
 #
-BUILDMODE=c-shared
-LIBNAME=$LIBSDIR/libgokipfs.so
+BUILDMODE=c-archive
+LIBNAME=$LIBSDIR/libgokipfs.a
 
 
 if [ "$GOOS" == "android" ]; then

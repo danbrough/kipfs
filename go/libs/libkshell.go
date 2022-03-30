@@ -64,7 +64,6 @@ func KCmdID() *C.char {
 		return C.CString(err.Error())
 	}
 
-	println("RECEIVED: ", string(s))
 	return C.CString(string(s))
 }
 

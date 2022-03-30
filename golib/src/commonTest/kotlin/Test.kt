@@ -18,10 +18,11 @@ class Test {
 
     log.trace("DAG ${kipfs.dagCID("\"Hello World\"")}")
 
-    runCatching {
-
+    val shell = kipfs.createShell("/ip4/192.168.1.4/tcp/5001")
+    log.trace("created shell")
+    shell.id().also {
+      log.warn("ID: $it")
     }
-
 
 
   }

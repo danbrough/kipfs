@@ -11,9 +11,7 @@ object KIPFSLibNative : KIPFSLib {
   override fun createShell(url: String): KShell {
     libkipfs.KCreateShell(url.cstr)
     return object : KShell {
-
       override fun id(): String = idRequest()
-
     }
   }
 }
