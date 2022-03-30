@@ -31,13 +31,16 @@ fun kipfsBuild(platform: String) =
 
     inputs.files(rootProject.fileTree("go") {
       include("**/*.go")
-    })
+    } + rootProject.file("bin/build_kipfs.sh"))
 
+    //project.buildDir.resolve("native/$platform")
+    /* outputs.files(project.fileTree(project.buildDir.resolve("native/$platform")) {
+       include("libgokipfs.so")
+       include("libgokipfs.h")
+     })*/
     outputs.files(
-      project.files(
-        "build/native/$platform/libgokipfs.${if (platform.startsWith("android")) "so" else "a"}",
-        "build/native/$platform/libgokipfs.h"
-      )
+      project.buildDir.resolve("native/$platform/libgokipfs.so"),
+      project.buildDir.resolve("native/$platform/libgokipfs.h")
     )
 
     doLast {
@@ -63,7 +66,9 @@ kotlin {
     binaries {
       sharedLib {
         baseName = "kipfs"
-
+        kipfsBuild.get().outputs.also {
+          println("KIPFSBUILD OUTPUTS $platform: $name: ${it.files.files}")
+        }
         if (jniDir != null && buildType == NativeBuildType.DEBUG) {
           val copyTask = tasks.register<Copy>("copyToJniLibs${platform.capitalize()}") {
             from(linkTask.outputs)

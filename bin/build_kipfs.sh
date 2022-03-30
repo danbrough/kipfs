@@ -15,7 +15,10 @@ source env.sh
 LIBSDIR=$SRCDIR/golib/build/native/$PLATFORM
 LIBNAME=$LIBSDIR/libgokipfs.a
 export CGO_CFLAGS="$CFLAGS"
-BUILDMODE=c-archive
+#BUILDMODE=c-archive
+#
+BUILDMODE=c-shared
+LIBNAME=$LIBSDIR/libgokipfs.so
 
 
 if [ "$GOOS" == "android" ]; then

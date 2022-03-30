@@ -11,10 +11,11 @@ class Test {
 
   @Test
   fun test() {
-    log.info("test1()")
+    log.info("test1() ..")
 
     log.debug(kipfs.getMessage())
     log.debug(kipfs.getMessage2())
+
     log.trace("DAG ${kipfs.dagCID("\"Hello World\"")}")
 
 
