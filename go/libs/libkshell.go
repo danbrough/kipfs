@@ -68,9 +68,22 @@ func KCmdID() *C.char {
 	return C.CString(string(s))
 }
 
-//export KRequest
-func KRequest(command *C.char) {
+type KResponse struct {
+	data  *C.char
+	error *C.char
+}
+
+//export KCmdID2
+func KCmdID2() (*C.char, *C.char) {
 	if shell == nil {
-		return
+		return nil, C.CString("shell is null")
 	}
+
+	s, err := shell.NewRequest("id").Send()
+	if err != nil {
+		return nil, C.CString(err.Error())
+	}
+
+	println("RECEIVED: ", string(s))
+	return C.CString(string(s)), nil
 }

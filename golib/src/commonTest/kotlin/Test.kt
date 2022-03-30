@@ -18,6 +18,9 @@ class Test {
 
     log.trace("DAG ${kipfs.dagCID("\"Hello World\"")}")
 
+    runCatching {
+
+    }
 
 
 

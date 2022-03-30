@@ -20,6 +20,10 @@ object KIPFSLibJNI : KIPFSLib {
   override fun createShell(url: String): KShell {
     TODO("Not yet implemented")
   }
+
+  override fun id(): String {
+    TODO("Not yet implemented")
+  }
 }
 
 

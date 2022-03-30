@@ -2,10 +2,10 @@ headers = libgokipfs.h
 staticLibraries.mingw  = libgokipfs.a libssl.a libcrypto.a
 #staticLibraries.linux  = libgokipfs.a
 
-
-compilerOpts.linux=-fPIC -Wl,-Bsymbolic
-compilerOpts.android=-fPIC -Wl,-Bsymbolic
-linkerOpts.mingw_w64=-fPIC
+compilerOpts = -fPIC
+#compilerOpts.linux=-fPIC -Wl,-Bsymbolic
+#compilerOpts.android=-fPIC -Wl,-Bsymbolic
+#linkerOpts.mingw_w64=-fPIC
 
 #linkerOpts.linux =  -Bsymbolic -ldl -lssl -lcrypto -l:libgokipfs.a
 linkerOpts.linux =  -Bsymbolic -ldl -lssl -lcrypto -lgokipfs
