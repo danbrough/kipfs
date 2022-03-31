@@ -21,9 +21,7 @@ object KIPFSLibJNI : KIPFSLib {
     TODO("Not yet implemented")
   }
 
-  override fun id(): String {
-    TODO("Not yet implemented")
-  }
+
 }
 
 

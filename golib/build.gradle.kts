@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 plugins {
   kotlin("multiplatform")
+  kotlin("plugin.serialization")
   id("com.android.library")
   `maven-publish`
 }
@@ -204,6 +205,8 @@ kotlin {
     }
 
 
+
+
     val androidAndroidTest by getting {
       dependencies {
         implementation(AndroidX.test.coreKtx)
@@ -231,7 +234,7 @@ tasks.withType(KotlinJvmTest::class) {
 
 android {
   compileSdk = ProjectVersions.SDK_VERSION
-  namespace = "com.github.danbrough.kipfs"
+  namespace = ProjectVersions.GROUP_ID
 
   defaultConfig {
     minSdk = ProjectVersions.MIN_SDK_VERSION
@@ -263,7 +266,6 @@ publishing {
         it is SharedLibrary && !it.linkTask.target.startsWith("android") &&
             it.buildType == NativeBuildType.RELEASE
       }.all {
-
 
         val publicationName = "jni-${target.name}"
 

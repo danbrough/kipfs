@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
   kotlin("multiplatform")
+  kotlin("plugin.serialization")
 //  id("com.android.library")
 }
 
@@ -13,37 +14,78 @@ kotlin {
 //  android()
 
   linuxX64("linuxAmd64")
-  linuxArm32Hfp("linuxArm")
-  linuxArm64("linuxArm64")
-
-
-  val nativeMain by sourceSets.creating {
-    dependencies {
-    }
-  }
-
-  targets.matching { it is KotlinNativeTarget }.all {
-    this as KotlinNativeTarget
-    binaries {
-      executable("kipfsApiTest") {
-      }
-    }
-
-    sourceSets.getAt("${name}Main").dependsOn(nativeMain)
-
-  }
 
   sourceSets {
-
+    commonMain {
+      dependencies {
+        implementation(AndroidUtils.logging)
+        implementation(KotlinX.serialization.json)
+        implementation(KotlinX.serialization.cbor)
+        implementation(project(":golib"))
+      }
+    }
 
     commonTest {
       dependencies {
         implementation(kotlin("test"))
+      }
+    }
+  }
 
+  if (ProjectVersions.IDE_MODE) {
+    sourceSets {
+      val linuxAmd64Main by getting {
+        kotlin.srcDirs("src/nativeMain/kotlin")
+        dependencies {
+          //implementation(KotlinX.serialization.json)
+          //implementation(project(":golib"))
+        }
+      }
+    }
+
+  } else {
+
+    linuxArm32Hfp("linuxArm")
+    linuxArm64("linuxArm64")
+
+    sourceSets {
+      val nativeMain by creating {
+        dependencies {
+          //implementation(KotlinX.serialization.json)
+          implementation("com.github.danbrough.kipfs:golib:_")
+        }
+      }
+    }
+
+    val nativeMain by sourceSets.creating
+
+    targets.withType(KotlinNativeTarget::class).configureEach {
+      compilations["main"].apply {
+        defaultSourceSet.dependsOn(nativeMain)
+      }
+    }
+  }
+
+  targets.all {
+    compilations.all {
+      kotlinOptions {
+        listOf(
+          "kotlin.RequiresOptIn",
+          //  "kotlinx.serialization.InternalSerializationApi",
+          "kotlinx.serialization.ExperimentalSerializationApi",
+          // "kotlinx.coroutines.ExperimentalCoroutinesApi",
+          // "kotlin.time.ExperimentalTime",
+        ).map { "-Xopt-in=$it" }.also {
+
+          freeCompilerArgs = freeCompilerArgs + it
+        }
       }
     }
   }
 }
+
+
+
 
 /*
 
