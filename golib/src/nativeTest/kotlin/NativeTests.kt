@@ -1,5 +1,5 @@
-import kotlinx.cinterop.cstr
-import kotlinx.cinterop.useContents
+import kotlinx.cinterop.*
+import platform.linux.free
 import kotlin.test.Test
 
 class NativeTests {
@@ -7,21 +7,68 @@ class NativeTests {
 
   @Test
   fun test1() {
-    log.info("test1()")
-    libkipfs.KGetMessage()!!.copyToString().also {
-      log.debug("The message is $it")
-    }
+    memScoped {
+      log.info("test1()")
+      libkipfs.KGetMessage()!!.copyToString().also {
+        log.debug("The message is $it")
+      }
 
-    libkipfs.KCreateShell("/ip4/192.168.1.4/tcp/5001".cstr)
+      libkipfs.KCreateShell("/ip4/192.168.1.4/tcp/5001".cstr)
 
-    libkipfs.KCmdID2().also {
-      it.useContents {
-        r1?.copyToString()?.also { err->
-          throw Exception(err)
-        } ?: r0!!.copyToString()
-      }.also {
-        log.debug("RESULT: $it")
+      libkipfs.KCmdID2().also {
+        it.useContents {
+          r1?.copyToString()?.also { err ->
+            throw Exception(err)
+          } ?: r0!!.copyToString()
+        }.also {
+          log.debug("RESULT: $it")
+        }
       }
     }
+  }
+
+  @Test
+  fun test2() {
+    memScoped {
+      libkipfs.KTest()?.also { cptr ->
+        log.warn("got pointer $cptr")
+
+        /*    cptr.reinterpret<ByteVar>().also {
+          log.info("STRING: ${it.copyToString()}")
+        }
+*/
+        cptr.readBytes(12).also { arr ->
+          log.trace("read bytes length: ${arr.size}: ${arr.joinToString { "[${it.toUByte()}]" }}")
+
+        }
+
+        var str = cptr.reinterpret<ByteVar>().toKString()
+        log.debug("str: $str")
+
+      }
+    }
+  }
+
+  @Test
+  fun test3() {
+    memScoped {
+      val response = libkipfs.KRequest2("id".cstr)
+      log.trace("got response: $response")
+      response.useContents {
+        r2?.copyToString()?.also {
+          log.error("ERROR: $it")
+          return@memScoped
+        }
+        r0?.reinterpret<ByteVar>()?.copyToString()?.also {
+          log.info("RESPONSE: $it len: $r1")
+        }
+      }
+
+    }
+  }
+
+  @Test
+  fun printerTest(){
+
   }
 }

@@ -21,28 +21,30 @@ BUILDMODE=c-archive
 LIBNAME=$LIBSDIR/libgokipfs.a
 
 
-if [ "$GOOS" == "android" ]; then
+#if [ "$GOOS" == "android" ]; then
   BUILDMODE=c-shared
   LIBNAME=$LIBSDIR/libgokipfs.so
-fi
+#fi
 
 export CGO_ENABLED=1
 export OPENSSL=$SRCDIR/openssl/libs/$PLATFORM
 export PKG_CONFIG_PATH=$OPENSSL/lib/pkgconfig
 
+export CGO_LDFLAGS="$CGO_CFLAGS -fPIC -pthread"
+export CGO_LDFLAGS="$CGO_LDFLAGS -L$OPENSSL/lib -fPIC -ldl -lpthread"
 
 case "$GOOS" in
 "windows")
-export CGO_CFLAGS="-fPIC -I$SRCDIR/build/native/$PLATFORM -I$OPENSSL/include $CGO_CFLAGS"
-export CGO_LDFLAGS="-fPIC -L$OPENSSL/lib"
+export CGO_CFLAGS=" -I$SRCDIR/build/native/$PLATFORM -I$OPENSSL/include $CGO_CFLAGS"
+
 ;;
 "linux")
-export CGO_LDFLAGS="$CGO_LDFLAGS -ldl"
-#export CGO_CFLAGS="--sysroot=$SYSROOT -fPIC -I$SYSROOT/usr/include -I$SRCDIR/build/native/$PLATFORM -I$OPENSSL/include $CGO_CFLAGS"
+#export CGO_LDFLAGS="$CGO_LDFLAGS -fPIC -ldl -lpthread"
+#export CGO_CFLAGS="--sysroot=$SYSROOT -fPIC -I$SYSROOT/usr/i nclude -I$SRCDIR/build/native/$PLATFORM -I$OPENSSL/include $CGO_CFLAGS"
 #export CGO_LDFLAGS="--sysroot=$SYSROOT -fPIC -L$SYSROOT/lib -L$SYSROOT/usr/lib -L$OPENSSL/lib"
 ;;
 "android")
-export CGO_LDFLAGS="$CGO_LDFLAGS -ldl"
+#export CGO_LDFLAGS="$CGO_LDFLAGS -fPIC  -ldl -lpthread"
 #export CGO_CFLAGS="--sysroot=$SYSROOT -fPIC -I$SYSROOT/usr/include -I$SRCDIR/build/native/$PLATFORM -I$OPENSSL/include $CGO_CFLAGS"
 #export CGO_LDFLAGS="--sysroot=$SYSROOT -fPIC -L$SYSROOT/lib -L$SYSROOT/usr/lib -L$OPENSSL/lib"
 ;;
@@ -70,7 +72,7 @@ cd go
 
 
 
-CMD="go build -trimpath -v -tags=shell,node,openssl   -buildmode=$BUILDMODE -o $LIBNAME  ./libs/libkshell.go ./libs/main.go"
+CMD="go build -trimpath -v -tags=shell,openssl   -buildmode=$BUILDMODE -o $LIBNAME  ./libs/libkshell.go ./libs/main.go"
 echo running $CMD
 $CMD
 

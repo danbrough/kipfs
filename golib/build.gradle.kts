@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeHostTest
 
 plugins {
   kotlin("multiplatform")
@@ -25,8 +26,36 @@ version = ProjectVersions.VERSION_NAME
 val jniLibsDir = project.buildDir.resolve("jniLibs")
 
 
+android {
+  compileSdk = ProjectVersions.SDK_VERSION
+  namespace = ProjectVersions.GROUP_ID
+
+
+  defaultConfig {
+    minSdk = ProjectVersions.MIN_SDK_VERSION
+    targetSdk = ProjectVersions.SDK_VERSION
+    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  compileOptions {
+    sourceCompatibility = ProjectVersions.JAVA_VERSION
+    targetCompatibility = ProjectVersions.JAVA_VERSION
+  }
+
+  sourceSets {
+    named("main") {
+      manifest.srcFile("src/androidMain/AndroidManifest.xml")
+      res.srcDirs("src/androidMain/res")
+      jniLibs.srcDirs(project.buildDir.resolve("jniLibs"))
+    }
+  }
+}
+
+
 fun kipfsBuild(platform: String) =
   tasks.register<Exec>("kipfsDebug${platform.capitalize()}") {
+
+    environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
 
     commandLine(rootProject.file("bin/build_kipfs.sh"), platform)
 
@@ -56,6 +85,7 @@ kotlin {
     val platform = name
     val kipfsBuild = kipfsBuild(platform)
 
+
     val jniDir = when (platform) {
       "android386" -> "x86"
       "androidAmd64" -> "x86_64"
@@ -67,17 +97,17 @@ kotlin {
     binaries {
       sharedLib {
         baseName = "kipfs"
-        kipfsBuild.get().outputs.also {
-          println("KIPFSBUILD OUTPUTS $platform: $name: ${it.files.files}")
-        }
+
         if (jniDir != null && buildType == NativeBuildType.DEBUG) {
-          val copyTask = tasks.register<Copy>("copyToJniLibs${platform.capitalize()}") {
+          tasks.register<Copy>("copyToJniLibs${platform.capitalize()}") {
             from(linkTask.outputs)
             from(kipfsBuild.get().outputs)
             into(jniLibsDir.resolve(jniDir))
+            kipfsBuild.get().finalizedBy(this)
           }
           //created a jar of the shared library for use in android/jvm jni applications
-          kipfsBuild.get().finalizedBy(copyTask)
+
+
         }
       }
     }
@@ -111,8 +141,9 @@ kotlin {
 
         //defFile(project.file("src/nativeInterop/cinterop/KIpfsGo.def"))
         tasks.getAt(interopProcessingTaskName).also {
+
           it.inputs.files(kipfsBuild.get().outputs)
-          it.dependsOn(kipfsBuild)
+          it.dependsOn(kipfsBuild.name)
         }
 
         includeDirs(
@@ -205,8 +236,6 @@ kotlin {
     }
 
 
-
-
     val androidAndroidTest by getting {
       dependencies {
         implementation(AndroidX.test.coreKtx)
@@ -232,36 +261,18 @@ tasks.withType(KotlinJvmTest::class) {
 }
 
 
-android {
-  compileSdk = ProjectVersions.SDK_VERSION
-  namespace = ProjectVersions.GROUP_ID
-
-  defaultConfig {
-    minSdk = ProjectVersions.MIN_SDK_VERSION
-    targetSdk = ProjectVersions.SDK_VERSION
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-  }
-
-  compileOptions {
-    sourceCompatibility = ProjectVersions.JAVA_VERSION
-    targetCompatibility = ProjectVersions.JAVA_VERSION
-  }
-
-  sourceSets {
-    named("main") {
-      manifest.srcFile("src/androidMain/AndroidManifest.xml")
-      res.srcDirs("src/androidMain/res")
-      jniLibs.srcDirs(project.buildDir.resolve("jniLibs"))
-    }
-  }
-}
-
 
 publishing {
 
   publications {
 
     kotlin.targets.withType(KotlinNativeTarget::class) {
+
+
+      compilations["test"].apply {
+        println("NATIVE TARGET TEST COMPILATIOn: $this  type: ${this::javaClass}")
+      }
+
       binaries.matching {
         it is SharedLibrary && !it.linkTask.target.startsWith("android") &&
             it.buildType == NativeBuildType.RELEASE
@@ -292,6 +303,11 @@ publishing {
   repositories {
     maven(ProjectVersions.MAVEN_REPO)
   }
+}
+
+tasks.withType(KotlinNativeHostTest::class).all {
+  //println("NativeHostTest: ${this.name} ${this.targetName}")
+  environment("LD_LIBRARY_PATH",project.buildDir.resolve("native/$targetName").absolutePath)
 }
 
 afterEvaluate {
