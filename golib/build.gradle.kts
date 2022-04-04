@@ -269,9 +269,9 @@ publishing {
     kotlin.targets.withType(KotlinNativeTarget::class) {
 
 
-      compilations["test"].apply {
+/*      compilations["test"].apply {
         println("NATIVE TARGET TEST COMPILATIOn: $this  type: ${this::javaClass}")
-      }
+      }*/
 
       binaries.matching {
         it is SharedLibrary && !it.linkTask.target.startsWith("android") &&

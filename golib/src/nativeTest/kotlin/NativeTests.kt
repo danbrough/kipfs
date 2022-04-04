@@ -69,6 +69,6 @@ class NativeTests {
 
   @Test
   fun printerTest(){
-
+    libkipfs.print_test("Dude!")
   }
 }
