@@ -109,11 +109,10 @@ $PLATFORM_LINUX_AMD64)
   export HOST=x86_64-unknown-linux-gnu
   export GOARCH=amd64
   export OPENSSL_PLATFORM=linux-x86_64
-  #export TOOLCHAIN=$KONAN_DATA_DIR/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2
-  export CC=gcc
-  export CXX=g++
-
-  #configure_clang
+  export TOOLCHAIN=$KONAN_DATA_DIR/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2
+  export CC=clang
+  export CXX=clang++
+  configure_clang
   ;;
 
 $PLATFORM_LINUX_386)

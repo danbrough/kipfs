@@ -1,4 +1,5 @@
 import kotlinx.cinterop.*
+import libkipfs.KCreateShell2_return
 import platform.linux.free
 import kotlin.test.Test
 
@@ -13,7 +14,7 @@ class NativeTests {
         log.debug("The message is $it")
       }
 
-      libkipfs.KCreateShell("/ip4/192.168.1.4/tcp/5001".cstr)
+      libkipfs.KCreateShell("/ip4/127.0.0.1/tcp/5001".cstr)
 
       libkipfs.KCmdID2().also {
         it.useContents {
@@ -42,7 +43,7 @@ class NativeTests {
 
         }
 
-        var str = cptr.reinterpret<ByteVar>().toKString()
+        val str = cptr.reinterpret<ByteVar>().toKString()
         log.debug("str: $str")
 
       }
@@ -71,4 +72,15 @@ class NativeTests {
   fun printerTest(){
     libkipfs.print_test("Dude!")
   }
+
+ @Test
+  fun shellTest() {
+
+   libkipfs.KCreateShell2("/ip4/192.168.1.4/tcp/5001".cstr).also { ptr ->
+     ptr.useContents {
+       log.trace("ref is ${this.r0}")
+       libkipfs.KTest2(r0)
+     }
+   }
+ }
 }

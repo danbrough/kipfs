@@ -3,6 +3,7 @@ package shell
 import (
 	"bytes"
 	"context"
+
 	"github.com/danbrough/kipfs/misc"
 	ipfsapi "github.com/ipfs/go-ipfs-api"
 	files "github.com/ipfs/go-ipfs-files"
@@ -14,6 +15,10 @@ import (
 	"path/filepath"
 	"strings"
 )
+
+func init(){
+    println("shell.init()")
+}
 
 type Shell struct {
 	ishell *ipfsapi.Shell
