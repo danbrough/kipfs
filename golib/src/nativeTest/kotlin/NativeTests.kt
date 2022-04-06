@@ -1,12 +1,11 @@
 import kotlinx.cinterop.*
-import libkipfs.KCreateShell2_return
 import platform.linux.free
 import kotlin.test.Test
 
 class NativeTests {
 
 
-  @Test
+/*  @Test
   fun test1() {
     memScoped {
       log.info("test1()")
@@ -26,7 +25,7 @@ class NativeTests {
         }
       }
     }
-  }
+  }*/
 
   @Test
   fun test2() {
@@ -50,7 +49,7 @@ class NativeTests {
     }
   }
 
-  @Test
+/*  @Test
   fun test3() {
     memScoped {
       val response = libkipfs.KRequest2("id".cstr)
@@ -66,21 +65,41 @@ class NativeTests {
       }
 
     }
-  }
+  }*/
 
   @Test
-  fun printerTest(){
+  fun printerTest() {
     libkipfs.print_test("Dude!")
   }
 
- @Test
+  @Test
   fun shellTest() {
 
-   libkipfs.KCreateShell2("/ip4/192.168.1.4/tcp/5001".cstr).also { ptr ->
-     ptr.useContents {
-       log.trace("ref is ${this.r0}")
-       libkipfs.KTest2(r0)
-     }
-   }
- }
+    val refNum = libkipfs.KCreateShell("/ip4/127.0.0.1/tcp/5001".cstr).useContents {
+
+      r1?.copyToString()?.let {
+        log.error("An error occurred: $it")
+        -1
+      } ?: let {
+        log.trace("ref is $r0")
+        r0
+      }
+    }
+
+
+    if (refNum != -1) {
+      log.trace("calling id..")
+      libkipfs.KRequest(refNum, "id".utf8).also { ptr ->
+        ptr.useContents {
+          r2?.copyToString()?.also {
+            throw Exception("Request failed: $it")
+          } ?: run {
+            r0!!.readBytes(r1.toInt()).decodeToString().also {
+              log.info("RESULT: $it")
+            }
+          }
+        }
+      }
+    }
+  }
 }

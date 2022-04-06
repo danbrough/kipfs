@@ -11,22 +11,13 @@ object KIPFSLibNative : KIPFSLib {
   override fun createShell(url: String): KShell {
     libkipfs.KCreateShell(url.cstr)
     return object : KShell {
-      override fun id(): String = idRequest()
+      override fun id(): String = "fake_id"
     }
   }
 }
 
 actual fun initKIPFSLib(): KIPFSLib = KIPFSLibNative
 
-
-private fun KShell.idRequest(): String = libkipfs.KCmdID2().useContents {
-  r1?.let {
-    it.copyToString().also { err ->
-
-      throw Exception(err)
-    }
-  } ?: return r0!!.copyToString()
-}
 
 
 fun CPointer<ByteVar>.copyToString(): String = this.toKString().also {

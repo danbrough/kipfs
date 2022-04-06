@@ -172,8 +172,12 @@ kotlin {
   //ide mode is linuxX64 target only. Turned off by ./gradlew -Pkipfs.ideMode=false  see ./scripts/publishAll.sh
   if (!ProjectVersions.IDE_MODE) {
 
+    jvm {
+      compilations["main"].compileKotlinTaskProvider.dependsOn("linkDebugSharedLinuxAmd64")
+    }
 
     val nativeMain by sourceSets.creating
+
     val linuxMain by sourceSets.creating {
       dependsOn(nativeMain)
     }
@@ -197,9 +201,7 @@ kotlin {
     configureSharedLib()
   }
 
-  jvm {
-    compilations["main"].compileKotlinTaskProvider.dependsOn("linkDebugSharedLinuxAmd64")
-  }
+
 
   sourceSets {
 
@@ -215,15 +217,6 @@ kotlin {
       }
     }
 
-    val jni by creating
-
-    val androidMain by getting {
-      dependsOn(jni)
-    }
-
-    val jvmMain by getting {
-      dependsOn(jni)
-    }
 
     if (ProjectVersions.IDE_MODE) {
       val linuxAmd64Main by getting {
@@ -233,17 +226,30 @@ kotlin {
       val linuxAmd64Test by getting {
         kotlin.srcDir("src/nativeTest/kotlin")
       }
-    }
+    } else {
+      val jni by creating
 
-
-    val androidAndroidTest by getting {
-      dependencies {
-        implementation(AndroidX.test.coreKtx)
-        implementation(AndroidX.test.rules)
-        implementation(AndroidX.test.runner)
-        implementation(AndroidX.test.ext.junitKtx)
+      val androidMain by getting {
+        dependsOn(jni)
       }
+
+      val jvmMain by getting {
+        dependsOn(jni)
+      }
+
+      val androidAndroidTest by getting {
+        dependencies {
+          implementation(AndroidX.test.coreKtx)
+          implementation(AndroidX.test.rules)
+          implementation(AndroidX.test.runner)
+          implementation(AndroidX.test.ext.junitKtx)
+        }
+      }
+
     }
+
+
+
   }
 }
 
