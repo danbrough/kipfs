@@ -11,6 +11,8 @@ object ProjectVersions {
   var VERSION_FORMAT = "0.0.1-%02d"
   const val KOTLIN_JVM_VERSION = "11"
 
+
+
   var IDE_MODE = false
 
   lateinit var KEYSTORE_PASSWORD: String

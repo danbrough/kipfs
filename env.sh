@@ -16,6 +16,10 @@ export PLATFORM_ANDROID_AMD64="androidAmd64"
 export PLATFORM_ANDROID_ARM="androidArm"
 export PLATFORM_ANDROID_ARM64="androidArm64"
 
+
+export IPFS_ADDRESS=/ip4/127.0.0.1/tcp/5001
+
+
 export CGO_ENABLED=1
 export MAKE="make -j5"
 
@@ -274,3 +278,7 @@ function git_save() {
     git push
   fi
 }
+
+# override default environmental values in "local.env"
+[ -f "$SRCDIR/localenv.sh" ] && source "$SRCDIR/localenv.sh"
+

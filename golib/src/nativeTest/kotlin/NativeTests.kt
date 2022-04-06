@@ -74,28 +74,37 @@ class NativeTests {
 
   @Test
   fun shellTest() {
-
-    val refNum = libkipfs.KCreateShell("/ip4/127.0.0.1/tcp/5001".cstr).useContents {
-
-      r1?.copyToString()?.let {
-        log.error("An error occurred: $it")
-        -1
-      } ?: let {
-        log.trace("ref is $r0")
-        r0
+    memScoped {
+      log.trace("getting ipfs address from environment: $ENV_IPFS_ADDRESS")
+      val ipfsAddr = platform.posix.getenv(ENV_IPFS_ADDRESS) ?: DEFAULT_IPFS_ADDRESS.let {
+        log.trace("Not found. Using default ipfs address $it")
+        it.cstr
       }
-    }
+
+      log.trace("creating shell to ${ipfsAddr.getPointer(this).toKString()}")
+
+      val refNum = libkipfs.KCreateShell(ipfsAddr).useContents {
+
+        r1?.copyToString()?.let {
+          log.error("An error occurred: $it")
+          -1
+        } ?: let {
+          log.trace("ref is $r0")
+          r0
+        }
+      }
 
 
-    if (refNum != -1) {
-      log.trace("calling id..")
-      libkipfs.KRequest(refNum, "id".utf8).also { ptr ->
-        ptr.useContents {
-          r2?.copyToString()?.also {
-            throw Exception("Request failed: $it")
-          } ?: run {
-            r0!!.readBytes(r1.toInt()).decodeToString().also {
-              log.info("RESULT: $it")
+      if (refNum != -1) {
+        log.trace("calling id..")
+        libkipfs.KRequest(refNum, "id".utf8).also { ptr ->
+          ptr.useContents {
+            r2?.copyToString()?.also {
+              throw Exception("Request failed: $it")
+            } ?: run {
+              r0!!.readBytes(r1.toInt()).decodeToString().also {
+                log.info("RESULT: $it")
+              }
             }
           }
         }

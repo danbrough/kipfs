@@ -21,3 +21,5 @@
 /lint.xml
 /.ssh
 /.conan
+/localenv.sh
+
