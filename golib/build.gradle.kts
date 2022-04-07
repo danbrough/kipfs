@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeHostTest
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
 plugins {
   kotlin("multiplatform")
@@ -56,6 +57,7 @@ fun kipfsBuild(platform: String) =
   tasks.register<Exec>("kipfsDebug${platform.capitalize()}") {
 
     environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
+    environment("PLATFORM", platform)
 
     commandLine(rootProject.file("bin/build_kipfs.sh"), platform)
 
@@ -245,11 +247,7 @@ kotlin {
           implementation(AndroidX.test.ext.junitKtx)
         }
       }
-
     }
-
-
-
   }
 }
 
@@ -266,6 +264,11 @@ tasks.withType(KotlinJvmTest::class) {
   )
 }
 
+tasks.withType(KotlinNativeTest::class) {
+  kipfsEnvironment(project).forEach {
+    environment(it.key,it.value)
+  }
+}
 
 
 publishing {
@@ -313,7 +316,7 @@ publishing {
 
 tasks.withType(KotlinNativeHostTest::class).all {
   //println("NativeHostTest: ${this.name} ${this.targetName}")
-  environment("LD_LIBRARY_PATH",project.buildDir.resolve("native/$targetName").absolutePath)
+  environment("LD_LIBRARY_PATH", project.buildDir.resolve("native/$targetName").absolutePath)
 }
 
 afterEvaluate {

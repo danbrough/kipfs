@@ -75,8 +75,8 @@ class NativeTests {
   @Test
   fun shellTest() {
     memScoped {
-      log.trace("getting ipfs address from environment: $ENV_IPFS_ADDRESS")
-      val ipfsAddr = platform.posix.getenv(ENV_IPFS_ADDRESS) ?: DEFAULT_IPFS_ADDRESS.let {
+      log.trace("getting ipfs address from environment: $ENV_KIPFS_ADDRESS")
+      val ipfsAddr = platform.posix.getenv(ENV_KIPFS_ADDRESS) ?: DEFAULT_KIPFS_ADDRESS.let {
         log.trace("Not found. Using default ipfs address $it")
         it.cstr
       }

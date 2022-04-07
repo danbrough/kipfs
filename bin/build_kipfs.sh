@@ -4,7 +4,7 @@ cd $(dirname $0) && cd ..
 export SRCDIR=$PWD
 [ ! -z "$1" ] && export PLATFORM="$1"
 
-./openssl/build.sh
+./openssl/build.sh $PLATFORM
 
 echo
 echo '##########' KIPFS build `realpath $0`  $PLATFORM

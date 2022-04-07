@@ -17,14 +17,10 @@ import (
 	"unsafe"
 )
 
-
-
 //export KCID
 func KCID(json *C.char) *C.char {
 	return C.CString(cids.DagCid(C.GoString(json)))
 }
-
-
 
 //export KDestroyRef
 func KDestroyRef(refnum C.int32_t) {
@@ -45,7 +41,7 @@ func KCreateShell(cUrl *C.char) (C.int32_t, *C.char) {
 		ptr = C.int32_t(_seq.ToRefNum(kShell))
 		println("returning refnum", ptr)
 	} else {
-	    return ptr,C.CString("Failed to created shell")
+		return ptr, C.CString("Failed to created shell")
 	}
 
 	return ptr, nil
@@ -65,8 +61,6 @@ func KTest2(refnum C.int32_t) {
 	println("Response:", string(data))
 }
 
-
-
 //export KGetMessage
 func KGetMessage() *C.char {
 	return C.CString(misc.GetMessage())
@@ -82,25 +76,33 @@ func KGetMessage3() *C.char {
 	return C.CString(misc.GetMessage3())
 }
 
-
-
 //export KTest
 func KTest() unsafe.Pointer {
 	return C.CBytes([]byte("123abc$"))
 }
 
 //export KRequest
-func KRequest(refnum C.int32_t,name *C.char) (unsafe.Pointer, int, *C.char) {
-		ref := _seq.FromRefNum(int32(refnum))
-    	kShell := ref.Get().(*shell.Shell)
+func KRequest(refnum C.int32_t, name *C.char) (unsafe.Pointer, int, *C.char) {
+	ref := _seq.FromRefNum(int32(refnum))
+	kShell := ref.Get().(*shell.Shell)
 
 	s, err := kShell.NewRequest(C.GoString(name)).Send()
 	if err != nil {
-	    println("Throwing an error",err.Error())
 		return nil, -1, C.CString(err.Error())
 	}
 
-	println("returning bytes..")
 	return C.CBytes(s), len(s), nil
 }
 
+//export KRequest2
+func KRequest2(refnum C.int32_t, name *C.char) (unsafe.Pointer, int, *C.char) {
+	ref := _seq.FromRefNum(int32(refnum))
+	kShell := ref.Get().(*shell.Shell)
+
+	s, err := kShell.NewRequest(C.GoString(name)).Send()
+	if err != nil {
+		return nil, -1, C.CString(err.Error())
+	}
+
+	return C.CBytes(s), len(s), nil
+}

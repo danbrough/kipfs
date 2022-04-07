@@ -16,9 +16,20 @@ export PLATFORM_ANDROID_AMD64="androidAmd64"
 export PLATFORM_ANDROID_ARM="androidArm"
 export PLATFORM_ANDROID_ARM64="androidArm64"
 
+if [ -z "$PLATFORM" ]; then
+  ARCH=$(uname -m)
+  if [ "$ARCH" == "x86_64" ]; then
+    ARCH=amd64
+    export PLATFORM=linuxAmd64
+  elif [ "$ARCH" == "aarch64" ]; then
+    export PLATFORM=linuxArm64
+  elif [ "$ARCH" == "armv7l" ]; then
+    export PLATFORM=linuxArm
+  fi
+fi
 
-export IPFS_ADDRESS=/ip4/127.0.0.1/tcp/5001
 
+export LD_LIBRARY_PATH="$SRCDIR/golib/build/native/linuxAmd64"
 
 export CGO_ENABLED=1
 export MAKE="make -j5"
@@ -61,17 +72,7 @@ if [ ! -d "$ANDROID_NDK_ROOT" ]; then
 fi
 export ANDROID_NDK_HOME="$ANDROID_NDK_ROOT"
 
-if [ -z "$PLATFORM" ]; then
-  ARCH=$(uname -m)
-  if [ "$ARCH" == "x86_64" ]; then
-    ARCH=amd64
-    export PLATFORM=linuxAmd64
-  elif [ "$ARCH" == "aarch64" ]; then
-    export PLATFORM=linuxArm64
-  elif [ "$ARCH" == "armv7l" ]; then
-    export PLATFORM=linuxArm
-  fi
-fi
+
 
 export GOARM=7
 export GOOS=linux

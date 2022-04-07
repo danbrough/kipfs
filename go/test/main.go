@@ -18,4 +18,6 @@ func main() {
 	}
 	println(string(data))
 
+	println("subscribing to \"test\" ...")
+
 }
