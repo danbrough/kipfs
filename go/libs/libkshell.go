@@ -38,7 +38,9 @@ func KCreateShell(cUrl *C.char) (C.int32_t, *C.char) {
 	kShell := shell.NewShell(url)
 
 	if kShell != nil {
-		ptr = C.int32_t(_seq.ToRefNum(kShell))
+		refnum := _seq.ToRefNum(kShell)
+		_seq.Inc(refnum)
+		ptr = C.int32_t(refnum)
 		println("returning refnum", ptr)
 	} else {
 		return ptr, C.CString("Failed to created shell")
