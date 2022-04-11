@@ -16,8 +16,8 @@ import (
 	"strings"
 )
 
-func init(){
-    println("shell.init()")
+func init() {
+	println("shell.init()")
 }
 
 type Shell struct {

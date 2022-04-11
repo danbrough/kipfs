@@ -8,9 +8,10 @@ const val KIPFS_ADDRESS = "KIPFS_ADDRESS"
 private fun MutableMap<String, String>.loadProps(file: File) {
   if (file.exists()) {
     FileInputStream(file).use { input ->
-      Properties().also { it.load(input) }.also { props ->
-        props.forEach { key, value ->
-          put(key.toString(), value.toString())
+      Properties().apply {
+        load(input)
+        forEach { key, value ->
+          this@loadProps[key.toString()] = value.toString()
         }
       }
     }
@@ -20,12 +21,11 @@ private fun MutableMap<String, String>.loadProps(file: File) {
 
 fun kipfsEnvironment(project: Project): Map<String, String> =
   mutableMapOf<String, String>().apply {
-
-
-
     project.properties.filter { it.key.startsWith("KIPFS_") }.forEach {
       set(it.key,it.value?.toString() ?: "")
     }
+
+    //override default values in local.properties
     loadProps(project.rootProject.file("local.properties"))
 
   }

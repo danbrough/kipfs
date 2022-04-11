@@ -20,7 +20,6 @@ plugins {
   `maven-publish`
 }
 
-println("IDEMODE: ${ProjectVersions.IDE_MODE}")
 group = ProjectVersions.GROUP_ID
 version = ProjectVersions.VERSION_NAME
 

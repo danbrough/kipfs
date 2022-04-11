@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/ipfs/go-cid v0.1.0
 	github.com/ipfs/go-datastore v0.5.1
-	github.com/ipfs/go-ipfs v0.12.1
+	github.com/ipfs/go-ipfs v0.12.2
 	github.com/ipfs/go-ipfs-api v0.3.0
 	github.com/ipfs/go-ipfs-config v0.19.0
 	github.com/ipfs/go-ipfs-files v0.1.1
@@ -18,6 +18,7 @@ require (
 	github.com/multiformats/go-multihash v0.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
+	golang.org/x/mobile v0.0.0-20220325161704-447654d348e3
 )
 
 require (
@@ -112,7 +113,7 @@ require (
 	github.com/ipfs/go-verifcid v0.0.1 // indirect
 	github.com/ipfs/tar-utils v0.0.2 // indirect
 	github.com/ipld/go-car v0.3.2 // indirect
-	github.com/ipld/go-codec-dagpb v1.3.0 // indirect
+	github.com/ipld/go-codec-dagpb v1.3.2 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jbenet/go-temp-err-catcher v0.1.0 // indirect
 	github.com/jbenet/goprocess v0.1.4 // indirect
@@ -224,7 +225,6 @@ require (
 	go4.org v0.0.0-20200411211856-f5505b9728dd // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/mobile v0.0.0-20220325161704-447654d348e3 // indirect
 	golang.org/x/mod v0.4.2 // indirect
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d // indirect
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c // indirect

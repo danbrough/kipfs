@@ -36,16 +36,6 @@ object ProjectVersions {
       project.findProperty("LOCAL_MAVEN_REPO")?.toString()?.trim()
         ?: project.rootProject.buildDir.resolve(".m2").absolutePath
     )
-
-    project.properties.entries.filter { it.key.startsWith("kipfs.") }.forEach {
-      println("PROPERTY: ${it.key}  value: ${it.value} type: ${it.value?.javaClass}")
-    }
-
-    project.properties.entries.filter { it.key.startsWith("kipfs.") }.joinToString("\n") {
-      "${it.key.replace('.', '_').uppercase()}=${it.value?.toString() ?: ""}"
-    }.also {
-      project.rootProject.file("gradle.env").writeText(it + "\n")
-    }
   }
 
   fun getIncrementedVersionName() = getVersionName(BUILD_VERSION + 1)

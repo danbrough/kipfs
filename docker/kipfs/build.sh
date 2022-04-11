@@ -14,7 +14,7 @@ cd `dirname $0`
 #docker  build --no-cache=true   -t danbrough/$NAME:latest --push .
 
 NOCACHE=false 
-docker  build --no-cache=true  -t danbrough/kipfs:latest --push .
+docker  buildx build --platform linux/amd64,linux/arm64 --no-cache=false  -t danbrough/kipfs:latest --push .
 #docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7   -t danbrough/debby:latest --push .
 # docker buildx imagetools inspect danbrough/$NAME:latest
 

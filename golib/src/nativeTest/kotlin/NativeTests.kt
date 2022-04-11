@@ -95,20 +95,25 @@ class NativeTests {
       }
 
 
-      if (refNum != -1) {
-        log.trace("calling id..")
-        libkipfs.KRequest(refNum, "id".utf8).also { ptr ->
-          ptr.useContents {
-            r2?.copyToString()?.also {
-              throw Exception("Request failed: $it")
-            } ?: run {
-              r0!!.readBytes(r1.toInt()).decodeToString().also {
-                log.info("RESULT: $it")
-              }
+      if (refNum == -1) return
+
+      log.trace("calling id..")
+      libkipfs.KRequest(refNum, "id".utf8).also { ptr ->
+        ptr.useContents {
+          r2?.copyToString()?.also {
+            throw Exception("Request failed: $it")
+          } ?: run {
+            r0!!.readBytes(r1.toInt()).decodeToString().also {
+              log.info("RESULT: $it")
             }
           }
         }
       }
+
+      log.trace("disposing of shell")
+      libkipfs.KDestroyRef(refNum)
+      log.trace("finished")
+
     }
   }
 }

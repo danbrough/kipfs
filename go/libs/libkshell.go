@@ -47,6 +47,12 @@ func KCreateShell(cUrl *C.char) (C.int32_t, *C.char) {
 	return ptr, nil
 }
 
+/*
+func NewShell2(url string) C.int32_t {
+	return C.int32_t(_seq.ToRefNum(new(shell.Shell)))
+}
+*/
+
 //export KTest2
 func KTest2(refnum C.int32_t) {
 	println("KTest2() refNum: ", refnum)
@@ -83,19 +89,6 @@ func KTest() unsafe.Pointer {
 
 //export KRequest
 func KRequest(refnum C.int32_t, name *C.char) (unsafe.Pointer, int, *C.char) {
-	ref := _seq.FromRefNum(int32(refnum))
-	kShell := ref.Get().(*shell.Shell)
-
-	s, err := kShell.NewRequest(C.GoString(name)).Send()
-	if err != nil {
-		return nil, -1, C.CString(err.Error())
-	}
-
-	return C.CBytes(s), len(s), nil
-}
-
-//export KRequest2
-func KRequest2(refnum C.int32_t, name *C.char) (unsafe.Pointer, int, *C.char) {
 	ref := _seq.FromRefNum(int32(refnum))
 	kShell := ref.Get().(*shell.Shell)
 
