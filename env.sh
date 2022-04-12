@@ -131,15 +131,8 @@ $PLATFORM_LINUX_ARM)
   export GOARM=7
   export OPENSSL_PLATFORM=linux-armv4
   export CFLAGS="$CFLAGS -mfloat-abi=hard -mcpu=cortex-a53"
-  #export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2"
-  #configure_clang
-  export TARGET=arm-linux-gnueabihf
-  export CROSS_PREFIX=$TARGET-
-  export CC=$TARGET-gcc
-  export CXX=$TARGET-g++
-
-
-  #export CC=${CROSS_PREFIX}gcc
+  export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2"
+  configure_clang
   ;;
 
 $PLATFORM_LINUX_ARM64)
@@ -190,7 +183,6 @@ $PLATFORM_ANDROID_ARM64)
   configure_android
   ;;
 
-\
   $PLATFORM_ANDROID_ARM)
   export OPENSSL_PLATFORM=android-arm
   export HOST=armv7a-linux-androideabi

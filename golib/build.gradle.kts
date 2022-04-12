@@ -54,14 +54,15 @@ android {
 
 fun kipfsBuild(platform: String) =
   tasks.register<Exec>("kipfsDebug${platform.capitalize()}") {
-
     environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
     environment("PLATFORM", platform)
 
-    commandLine(rootProject.file("bin/build_kipfs.sh"), platform)
+    commandLine(rootProject.file("bin/build_kipfs.sh"))
 
     inputs.files(rootProject.fileTree("go") {
       include("**/*.go")
+      include("**/*.c")
+      include("**/*.h")
     } + rootProject.file("bin/build_kipfs.sh"))
 
     //project.buildDir.resolve("native/$platform")
@@ -77,15 +78,29 @@ fun kipfsBuild(platform: String) =
     doLast {
       logger.info("finished building kipfs for $platform")
     }
+
   }
+
 
 
 kotlin {
 
+  val nativeMain by sourceSets.creating{
+    dependsOn(sourceSets.getByName("commonMain"))
+  }
+
+  val linuxMain by sourceSets.creating {
+    dependsOn(nativeMain)
+  }
+
+  val androidNativeMain by sourceSets.creating {
+    dependsOn(nativeMain)
+  }
+
+
   fun KotlinNativeTarget.configureSharedLib() {
     val platform = name
     val kipfsBuild = kipfsBuild(platform)
-
 
     val jniDir = when (platform) {
       "android386" -> "x86"
@@ -100,27 +115,24 @@ kotlin {
         baseName = "kipfs"
 
         if (jniDir != null && buildType == NativeBuildType.DEBUG) {
+          //copy android libs to jniLibs directory
           tasks.register<Copy>("copyToJniLibs${platform.capitalize()}") {
             from(linkTask.outputs)
             from(kipfsBuild.get().outputs)
             into(jniLibsDir.resolve(jniDir))
-            kipfsBuild.get().finalizedBy(this)
+          }.also {
+            linkTask.finalizedBy(it)
           }
           //created a jar of the shared library for use in android/jvm jni applications
-
-
         }
       }
     }
 
-
     compilations["main"].apply {
 
-      //println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
-      if (!ProjectVersions.IDE_MODE) {
-        defaultSourceSet {
-          dependsOn(sourceSets.getByName(if (jniDir != null) "androidNativeMain" else "linuxMain"))
-        }
+      println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
+      defaultSourceSet {
+        dependsOn(if (jniDir != null) androidNativeMain else linuxMain)
       }
 
       if (jniDir == null) {
@@ -155,7 +167,7 @@ kotlin {
 
         extraOpts(
           mutableListOf<String>().apply {
-            add("-verbose")
+            //add("-verbose")
             //-Lopenssl/libs/linuxArm64/lib -L./golib/build/native/linuxArm64
             add("-libraryPath")
             add("${rootProject.file("openssl/libs/$platform/lib")}")
@@ -169,44 +181,29 @@ kotlin {
 
   android()
 
-  linuxX64("linuxAmd64")
 
   //ide mode is linuxX64 target only. Turned off by ./gradlew -Pkipfs.ideMode=false  see ./scripts/publishAll.sh
-  if (!ProjectVersions.IDE_MODE) {
 
-    jvm {
-      compilations["main"].compileKotlinTaskProvider.dependsOn("linkDebugSharedLinuxAmd64")
-    }
-
-    val nativeMain by sourceSets.creating
-
-    val linuxMain by sourceSets.creating {
-      dependsOn(nativeMain)
-    }
-
-    val androidNativeMain by sourceSets.creating {
-      dependsOn(nativeMain)
-    }
-
-
-    mingwX64("windowsAmd64")
-    linuxArm32Hfp("linuxArm")
-    linuxArm64("linuxArm64")
-    androidNativeX86("android386")
-    androidNativeX64("androidAmd64")
-    androidNativeArm64("androidArm64")
-    androidNativeArm32("androidArm")
+  jvm {
+    compilations["main"].compileKotlinTaskProvider.dependsOn("linkDebugSharedLinuxAmd64")
   }
 
+  linuxX64("linuxAmd64")
+  mingwX64("windowsAmd64")
+  linuxArm32Hfp("linuxArm")
+
+  linuxArm64("linuxArm64")
+  androidNativeX86("android386")
+  androidNativeX64("androidAmd64")
+  androidNativeArm64("androidArm64")
+  androidNativeArm32("androidArm")
 
   targets.withType(KotlinNativeTarget::class).all {
     configureSharedLib()
   }
 
 
-
   sourceSets {
-
     commonMain {
       dependencies {
         implementation(AndroidUtils.logging)
@@ -220,35 +217,31 @@ kotlin {
     }
 
 
-    if (ProjectVersions.IDE_MODE) {
-      val linuxAmd64Main by getting {
-        kotlin.srcDirs("src/linuxMain/kotlin", "src/nativeMain/kotlin")
+    val jni by creating
+
+    val androidMain by getting {
+      dependsOn(jni)
+    }
+
+    val jvmMain by getting {
+      dependsOn(jni)
+    }
+
+    val androidAndroidTest by getting {
+      dependencies {
+        implementation(AndroidX.test.coreKtx)
+        implementation(AndroidX.test.rules)
+        implementation(AndroidX.test.runner)
+        implementation(AndroidX.test.ext.junitKtx)
       }
 
-      val linuxAmd64Test by getting {
-        kotlin.srcDir("src/nativeTest/kotlin")
-      }
-    } else {
-      val jni by creating
-
-      val androidMain by getting {
-        dependsOn(jni)
-      }
-
-      val jvmMain by getting {
-        dependsOn(jni)
-      }
-
-      val androidAndroidTest by getting {
-        dependencies {
-          implementation(AndroidX.test.coreKtx)
-          implementation(AndroidX.test.rules)
-          implementation(AndroidX.test.runner)
-          implementation(AndroidX.test.ext.junitKtx)
-        }
-      }
     }
   }
+
+  /*sourceSets.all {
+    languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+  }*/
+
 }
 
 tasks.withType(KotlinJvmTest::class) {
@@ -266,7 +259,7 @@ tasks.withType(KotlinJvmTest::class) {
 
 tasks.withType(KotlinNativeTest::class) {
   kipfsEnvironment(project).forEach {
-    environment(it.key,it.value)
+    environment(it.key, it.value)
   }
 }
 

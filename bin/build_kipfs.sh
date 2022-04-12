@@ -29,7 +29,7 @@ export CGO_ENABLED=1
 export OPENSSL=$SRCDIR/openssl/libs/$PLATFORM
 export PKG_CONFIG_PATH=$OPENSSL/lib/pkgconfig
 
-export CGO_CFLAGS="$CGO_CFLAGS -fPIC"
+export CGO_CFLAGS="$CGO_CFLAGS -fPIC -I$OPENSSL/include"
 export CGO_LDFLAGS="$CGO_LDFLAGS -L$OPENSSL/lib -fPIC -ldl"
 
 case "$GOOS" in
