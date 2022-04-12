@@ -5,28 +5,6 @@ import kotlin.test.Test
 class NativeTests {
 
 
-/*  @Test
-  fun test1() {
-    memScoped {
-      log.info("test1()")
-      libkipfs.KGetMessage()!!.copyToString().also {
-        log.debug("The message is $it")
-      }
-
-      libkipfs.KCreateShell("/ip4/127.0.0.1/tcp/5001".cstr)
-
-      libkipfs.KCmdID2().also {
-        it.useContents {
-          r1?.copyToString()?.also { err ->
-            throw Exception(err)
-          } ?: r0!!.copyToString()
-        }.also {
-          log.debug("RESULT: $it")
-        }
-      }
-    }
-  }*/
-
   @Test
   fun test2() {
     memScoped {
@@ -94,26 +72,24 @@ class NativeTests {
         }
       }
 
-
       if (refNum == -1) return
 
       log.trace("calling id..")
-      libkipfs.KRequest(refNum, "id".utf8).also { ptr ->
-        ptr.useContents {
-          r2?.copyToString()?.also {
-            throw Exception("Request failed: $it")
-          } ?: run {
-            r0!!.readBytes(r1.toInt()).decodeToString().also {
-              log.info("RESULT: $it")
-            }
+      libkipfs.KRequest(refNum, "id".utf8).useContents {
+        r2?.copyToString()?.also {
+          throw Exception("Request failed: $it")
+        } ?: run {
+          r0!!.readBytes(r1.toInt()).decodeToString().also {
+            log.info("RESULT: $it")
           }
         }
       }
 
+
+
       log.trace("disposing of shell")
       libkipfs.KDestroyRef(refNum)
       log.trace("finished")
-
     }
   }
 }

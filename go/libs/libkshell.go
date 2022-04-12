@@ -5,16 +5,23 @@ package main
 
 /*
 #cgo CFLAGS: -fPIC
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "defs.h"
+
+
+
+
 */
 import "C"
 import (
+	"unsafe"
+
 	"github.com/danbrough/kipfs/cids"
 	"github.com/danbrough/kipfs/misc"
 	"github.com/danbrough/kipfs/shell"
 	_seq "golang.org/x/mobile/bind/seq"
-	"unsafe"
 )
 
 //export KCID

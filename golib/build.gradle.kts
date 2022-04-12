@@ -149,7 +149,8 @@ kotlin {
 
         includeDirs(
           project.buildDir.resolve("native/$platform"),
-          rootProject.file("openssl/libs/$platform/include")
+          rootProject.file("openssl/libs/$platform/include"),
+          rootProject.file("go/libs")
         )
 
         extraOpts(

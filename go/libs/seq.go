@@ -1,7 +1,8 @@
 // Copyright 2016 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
+//go:build shell
+// +build shell
 package main
 
 // Go support functions for generated Go bindings. This file is
@@ -32,6 +33,7 @@ func IncGoRef(refnum C.int32_t) {
 func init() {
     println("seq.go init()")
 	_seq.FinalizeRef = func(ref *_seq.Ref) {
+	    println("finalize ref")
 		refnum := ref.Bind_Num
 		if refnum < 0 {
 			panic(fmt.Sprintf("not a foreign ref: %d", refnum))
@@ -40,6 +42,7 @@ func init() {
 		//C.go_seq_dec_ref(C.int32_t(refnum))
 	}
 	_seq.IncForeignRef = func(refnum int32) {
+	    println("increment ref")
 		if refnum < 0 {
 			panic(fmt.Sprintf("not a foreign ref: %d", refnum))
 		}
@@ -50,4 +53,4 @@ func init() {
 	//signal.Notify(make(chan os.Signal), syscall.SIGPIPE)
 }
 
-func main() {}
+//func main() {}

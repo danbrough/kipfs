@@ -360,3 +360,18 @@ func NewUDSShell(sockpath string) *Shell {
 func NewTCPShell(port string) *Shell {
 	return NewShell("/ip4/127.0.0.1/tcp/" + port)
 }
+
+type DataCallback interface {
+	OnResponse(data []byte, err *string)
+}
+
+type DataCallbackImpl struct {
+}
+
+func (c DataCallbackImpl) OnResponse(data []byte, err *string) {
+	if err != nil {
+		println("Error:", err)
+		return
+	}
+	println("OnResponse() ", string(data))
+}

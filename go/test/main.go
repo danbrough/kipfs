@@ -13,11 +13,10 @@ func main() {
 	ipfsShell := shell.NewShell("/ip4/192.168.1.4/tcp/5001")
 	data, err := ipfsShell.NewRequest("id").Send()
 	if err != nil {
-		println("Failed ", err.Error())
-		return
+		panic(err.Error())
 	}
 	println(string(data))
 
-	println("subscribing to \"test\" ...")
+	println("subscribing to \"test\" ....")
 
 }

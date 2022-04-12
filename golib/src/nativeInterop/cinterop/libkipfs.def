@@ -65,8 +65,11 @@ linkerOpts.mingw_x64 =-lm -l:libssl.a -l:libcrypto.a -l:libgokipfs.a -Lopenssl/l
 
 #include <stdio.h>
 
+
 void print_test(const char *msg){
     printf("The message is %s\n",msg);
+    //doSomething();
+    printf("The other message is %s\n",KGetMessage());
 }
 
 int myFun(int i) {
