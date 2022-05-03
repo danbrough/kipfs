@@ -2,12 +2,13 @@ import kotlinx.cinterop.*
 import platform.linux.free
 import kotlin.test.Test
 
-class NativeTests {
+object NativeTests {
 
 
   @Test
   fun test2() {
     memScoped {
+      log.warn("running test2()..")
       libkipfs.KTest()?.also { cptr ->
         log.warn("got pointer $cptr")
 

@@ -48,6 +48,9 @@ function dir_path() {
   find ${@:2} -type d -name "$1" | tr '\n' ':' | sed -e 's/:$//g'
 }
 
+# overide defaults here
+[ -f "$SRCDIR/local.env" ] && source "$SRCDIR/local.env"
+
 [ -z "$GOROOT" ] && export GOROOT=/opt/go
 
 PATH=$GOROOT/bin:$PATH

@@ -1,10 +1,5 @@
-import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.invoke
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.pointed
-import libkipfs.KCID
-import libkipfs.KGetMessage
-import libkipfs.KGetMessage2
+import kotlinx.cinterop.*
+import libkipfs.*
 
 private fun init() {
   initRuntimeIfNeeded()
@@ -47,4 +42,33 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
       s.getPointer(this)
     )!!
   }
+}
+
+@CName("Java_KIPFSLibJNI_createShellJNI")
+fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): jint {
+  memScoped {
+    init()
+    val e = env.pointed.pointed!!
+    val addrC = e.GetStringUTFChars!!(env, address, null)
+    println("got address")
+    val s = KCreateShell(addrC).getPointer(this).pointed
+    println("got s")
+    e.ReleaseStringUTFChars!!(env,address,addrC)
+    println("release string chars")
+    if (s.r1 != null){
+      println("An error occurred")
+      return -1
+    }
+    return s.r0
+
+    /*return env.pointed.pointed!!.NewStringUTF!!.invoke(
+      env,
+      s.getPointer(this)
+    )!!*/
+  }
+}
+
+@CName("Java_KIPFSLibJNI_disposeGoObject")
+fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass,refnum:jint) {
+  KDestroyRef(refnum)
 }

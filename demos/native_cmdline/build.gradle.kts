@@ -46,7 +46,15 @@ kotlin {
     }
 
     binaries {
-      executable("kipfsDemo", buildTypes = setOf(NativeBuildType.DEBUG))
+      executable("kipfsDemo", buildTypes = setOf(NativeBuildType.DEBUG)) {
+        runTaskProvider?.configure {
+          if (project.hasProperty("args"))
+            project.property("args")?.also {
+              println("ARGS IS $it")
+              args(it.toString())
+            }
+        }
+      }
     }
   }
 }

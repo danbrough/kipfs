@@ -56,6 +56,9 @@ fun kipfsBuild(platform: String) =
   tasks.register<Exec>("kipfsDebug${platform.capitalize()}") {
     environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
     environment("PLATFORM", platform)
+    doLast {
+      println("kipfs build finished for $platform")
+    }
 
     commandLine(rootProject.file("bin/build_kipfs.sh"))
 
@@ -87,6 +90,10 @@ kotlin {
 
   val nativeMain by sourceSets.creating{
     dependsOn(sourceSets.getByName("commonMain"))
+  }
+
+  val nativeTest by sourceSets.creating {
+    dependsOn(sourceSets.getByName("commonTest"))
   }
 
   val linuxMain by sourceSets.creating {
@@ -128,6 +135,10 @@ kotlin {
       }
     }
 
+    compilations["test"].apply {
+      println("CONFIGURING COMPILATION $name")
+    }
+
     compilations["main"].apply {
 
       println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
@@ -146,7 +157,7 @@ kotlin {
             add(jdkIncludes.resolve("win32"))
             add(jdkIncludes.resolve("darwin"))
           })
-          extraOpts("-verbose")
+         // extraOpts("-verbose")
         }
       }
 
@@ -225,6 +236,10 @@ kotlin {
 
     val jvmMain by getting {
       dependsOn(jni)
+    }
+
+    val linuxAmd64Test by getting {
+      dependsOn(nativeTest)
     }
 
     val androidAndroidTest by getting {

@@ -9,7 +9,6 @@ object KIPFSLibNative : KIPFSLib {
   override fun dagCID(json: String): String = libkipfs.KCID(json.cstr)!!.copyToString()
 
   override fun createShell(url: String): KShell {
-    libkipfs.KCreateShell(url.cstr)
     return object : KShell {
       override fun id(): String = "fake_id"
     }
