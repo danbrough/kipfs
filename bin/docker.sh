@@ -4,7 +4,11 @@ cd `dirname $0`
 
 export SRCDIR=$(realpath ..)
 #source env.sh
-[ -z "$PLATFORM" ] && PLATFORM=linux/amd64
+if [ ! -z "$1" ]; then
+  PLATFORM="$1"
+else
+  PLATFORM=linux/amd64
+fi
 
 NAME=kipfs_$(echo $PLATFORM | sed -e 's:\/:_:g')
 USER=bob

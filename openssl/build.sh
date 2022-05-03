@@ -3,7 +3,7 @@
 cd $(dirname $0)
 export SRCDIR=$(realpath ..)
 
-[ ! -z "$1" ] && export PLATFORM="$1"
+[ ! -z "$1" ] && export PLATFORM="$1" && echo set PLATFORM to $PLATFORM from cmd arg
 
 
 source ../env.sh
@@ -44,7 +44,7 @@ function clean_src(){
     git checkout $OPENSSL_TAG
 }
 
-
+echo OPENSSL is $OPENSSL
 CRYPTO_LIB=$OPENSSL/lib/libcrypto.a
 
 if [ -f $CRYPTO_LIB ]; then

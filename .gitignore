@@ -21,3 +21,8 @@
 /lint.xml
 /.ssh
 /.conan
+/kipfs_local.properties
+
+
+/local.properties
+/local.env

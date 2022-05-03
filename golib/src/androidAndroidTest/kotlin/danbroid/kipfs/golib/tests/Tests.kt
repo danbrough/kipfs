@@ -1,9 +1,6 @@
 package danbroid.kipfs.golib.tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dagCID
-import getMessage
-import getMessage2
 import org.junit.Test
 import org.junit.runner.RunWith
 

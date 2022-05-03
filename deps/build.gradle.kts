@@ -1,3 +1,5 @@
+import  org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
   kotlin("multiplatform")
   id("com.android.library")
@@ -14,14 +16,14 @@ kotlin {
 
   val nativeMain by sourceSets.creating
 
-  fun org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget.configure() {
+  fun KotlinNativeTarget.configure() {
     binaries {
       sharedLib {
 
       }
     }
 
-    this.compilations["main"].defaultSourceSet.dependsOn(nativeMain)
+    compilations["main"].defaultSourceSet.dependsOn(nativeMain)
   }
 
   androidNativeX86("android386").configure()
@@ -42,5 +44,10 @@ android {
   defaultConfig {
     minSdk = ProjectVersions.MIN_SDK_VERSION
     targetSdk = ProjectVersions.SDK_VERSION
+  }
+
+  compileOptions {
+    sourceCompatibility = ProjectVersions.JAVA_VERSION
+    targetCompatibility = ProjectVersions.JAVA_VERSION
   }
 }

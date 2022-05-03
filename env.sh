@@ -16,6 +16,21 @@ export PLATFORM_ANDROID_AMD64="androidAmd64"
 export PLATFORM_ANDROID_ARM="androidArm"
 export PLATFORM_ANDROID_ARM64="androidArm64"
 
+if [ -z "$PLATFORM" ]; then
+  ARCH=$(uname -m)
+  if [ "$ARCH" == "x86_64" ]; then
+    ARCH=amd64
+    export PLATFORM=linuxAmd64
+  elif [ "$ARCH" == "aarch64" ]; then
+    export PLATFORM=linuxArm64
+  elif [ "$ARCH" == "armv7l" ]; then
+    export PLATFORM=linuxArm
+  fi
+fi
+
+
+export LD_LIBRARY_PATH="$SRCDIR/golib/build/native/linuxAmd64"
+
 export CGO_ENABLED=1
 export MAKE="make -j5"
 
@@ -33,6 +48,9 @@ function dir_path() {
   find ${@:2} -type d -name "$1" | tr '\n' ':' | sed -e 's/:$//g'
 }
 
+# overide defaults here
+[ -f "$SRCDIR/local.env" ] && source "$SRCDIR/local.env"
+
 [ -z "$GOROOT" ] && export GOROOT=/opt/go
 
 PATH=$GOROOT/bin:$PATH
@@ -49,7 +67,7 @@ export KONAN_DATA_DIR=$CACHEDIR/konan
 PATH=$PATH:$ANDROID_HOME/platform-tools
 
 NDK_VERSION=23.1.7779620
-export ANDROID_NDK_ROOT="$ANDROID_HOME/ndk/$NDK_VERSION"
+[ -z "$ANDROID_NDK_ROOT" ] && export ANDROID_NDK_ROOT="$ANDROID_HOME/ndk/$NDK_VERSION"
 if [ ! -d "$ANDROID_NDK_ROOT" ]; then
   echo ANDROID_NDK_ROOT $ANDROID_NDK_ROOT not found.
   sleep 5
@@ -57,17 +75,7 @@ if [ ! -d "$ANDROID_NDK_ROOT" ]; then
 fi
 export ANDROID_NDK_HOME="$ANDROID_NDK_ROOT"
 
-if [ -z "$PLATFORM" ]; then
-  ARCH=$(uname -m)
-  if [ "$ARCH" == "x86_64" ]; then
-    ARCH=amd64
-    export PLATFORM=linuxAmd64
-  elif [ "$ARCH" == "aarch64" ]; then
-    export PLATFORM=linuxArm64
-  elif [ "$ARCH" == "armv7l" ]; then
-    export PLATFORM=linuxArm
-  fi
-fi
+
 
 export GOARM=7
 export GOOS=linux
@@ -109,11 +117,10 @@ $PLATFORM_LINUX_AMD64)
   export HOST=x86_64-unknown-linux-gnu
   export GOARCH=amd64
   export OPENSSL_PLATFORM=linux-x86_64
-  #export TOOLCHAIN=$KONAN_DATA_DIR/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2
-  export CC=gcc
-  export CXX=g++
-
-  #configure_clang
+  export TOOLCHAIN=$KONAN_DATA_DIR/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2
+  export CC=clang
+  export CXX=clang++
+  configure_clang
   ;;
 
 $PLATFORM_LINUX_386)
@@ -127,15 +134,8 @@ $PLATFORM_LINUX_ARM)
   export GOARM=7
   export OPENSSL_PLATFORM=linux-armv4
   export CFLAGS="$CFLAGS -mfloat-abi=hard -mcpu=cortex-a53"
-  #export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2"
-  #configure_clang
-  export TARGET=arm-linux-gnueabihf
-  export CROSS_PREFIX=$TARGET-
-  export CC=$TARGET-gcc
-  export CXX=$TARGET-g++
-
-
-  #export CC=${CROSS_PREFIX}gcc
+  export TOOLCHAIN="$KONAN_DATA_DIR/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2"
+  configure_clang
   ;;
 
 $PLATFORM_LINUX_ARM64)
@@ -186,7 +186,6 @@ $PLATFORM_ANDROID_ARM64)
   configure_android
   ;;
 
-\
   $PLATFORM_ANDROID_ARM)
   export OPENSSL_PLATFORM=android-arm
   export HOST=armv7a-linux-androideabi
@@ -275,3 +274,7 @@ function git_save() {
     git push
   fi
 }
+
+# override default environmental values in "local.env"
+[ -f "$SRCDIR/localenv.sh" ] && source "$SRCDIR/localenv.sh"
+

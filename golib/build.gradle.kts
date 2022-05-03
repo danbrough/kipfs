@@ -10,9 +10,12 @@ import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeHostTest
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
 plugins {
   kotlin("multiplatform")
+  kotlin("plugin.serialization")
   id("com.android.library")
   `maven-publish`
 }
@@ -23,228 +26,10 @@ version = ProjectVersions.VERSION_NAME
 val jniLibsDir = project.buildDir.resolve("jniLibs")
 
 
-fun kipfsBuild(platform: String) =
-  tasks.register<Exec>("kipfsDebug${platform.capitalize()}") {
-
-    commandLine(rootProject.file("bin/build_kipfs.sh"), platform)
-
-    inputs.files(rootProject.fileTree("go") {
-      include("**/*.go")
-    })
-
-    outputs.files(
-      project.files(
-        "build/native/$platform/libgokipfs.${if (platform.startsWith("android")) "so" else "a"}",
-        "build/native/$platform/libgokipfs.h"
-      )
-    )
-
-    doLast {
-      logger.info("finished building kipfs for $platform")
-    }
-  }
-
-
-kotlin {
-
-  val nativeMain by sourceSets.creating
-
-  val linuxMain by sourceSets.creating {
-    dependsOn(nativeMain)
-  }
-
-  val androidNativeMain by sourceSets.creating {
-    dependsOn(nativeMain)
-  }
-
-
-  fun KotlinNativeTarget.configureLibrary() {
-
-    val platform = name
-    val kipfsBuild = kipfsBuild(platform)
-
-    //println("KONAN TARGET: ${this.konanTarget.name}")
-    val jniDir = when (platform) {
-      "android386" -> "x86"
-      "androidAmd64" -> "x86_64"
-      "androidArm" -> "armeabi-v7a"
-      "androidArm64" -> "arm64-v8a"
-      else -> null
-    }
-
-    binaries {
-      sharedLib {
-        baseName = "kipfs"
-      //  println("Sharedlib: ${this.buildType} class: ${this.buildType.javaClass}")
-
-        if (jniDir != null && buildType == NativeBuildType.DEBUG) {
-          val copyTask = tasks.register<Copy>("copyToJniLibs${platform.capitalize()}") {
-            from(linkTask.outputs)
-            from(kipfsBuild.get().outputs)
-            into(jniLibsDir.resolve(jniDir))
-          }
-          kipfsBuild.get().finalizedBy(copyTask)
-        }
-      }
-    }
-
-
-    compilations["main"].apply {
-
-      //println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
-
-
-      defaultSourceSet {
-        dependsOn(if (jniDir != null) androidNativeMain else linuxMain)
-      }
-
-      if (jniDir == null) {
-        cinterops.create("jni") {
-          packageName("danbroid.kipfs.jni")
-          val jdkIncludes = rootProject.file("jdk").resolve("include")
-
-          includeDirs(mutableListOf<File>().apply {
-            add(jdkIncludes)
-            add(jdkIncludes.resolve("linux"))
-            add(jdkIncludes.resolve("win32"))
-            add(jdkIncludes.resolve("darwin"))
-          })
-          extraOpts("-verbose")
-        }
-      }
-
-      cinterops.create("libkipfs") {
-
-        //defFile(project.file("src/nativeInterop/cinterop/KIpfsGo.def"))
-        tasks.getAt(interopProcessingTaskName).also {
-          it.dependsOn(kipfsBuild)
-        }
-
-        includeDirs(
-          project.buildDir.resolve("native/$platform"),
-          rootProject.file("openssl/libs/$platform/include")
-        )
-/*
-          linkerOpts(
-            "-L${rootProject.file("openssl/libs/$platform/lib").absolutePath}",
-            "-L${project.buildDir.resolve("native/$platform").absolutePath}"
-          )*/
-
-        extraOpts(
-          mutableListOf<String>().apply {
-            add("-verbose")
-            //-Lopenssl/libs/linuxArm64/lib -L./golib/build/native/linuxArm64
-            add("-libraryPath")
-            add("${rootProject.file("openssl/libs/$platform/lib")}")
-            add("-libraryPath")
-            add("${project.buildDir.resolve("native/$platform")}")
-          }
-        )
-      }
-    }
-  }
-
-  android()
-
-  mingwX64("windowsAmd64")
-
-  linuxX64("linuxAmd64")
-
-  linuxArm32Hfp("linuxArm")
-
-  linuxArm64("linuxArm64")
-
-  androidNativeX86("android386")
-
-  androidNativeX64("androidAmd64")
-
-  androidNativeArm64("androidArm64")
-
-  androidNativeArm32("androidArm")
-
-
-  targets.withType(KotlinNativeTarget::class).all {
-    configureLibrary()
-  }
-
-  jvm {
-    compilations["main"].compileKotlinTaskProvider.dependsOn("linkDebugSharedLinuxAmd64")
-  }
-
-  sourceSets {
-
-    commonMain {
-      dependencies {
-        implementation(AndroidUtils.logging)
-      }
-    }
-
-    commonTest {
-      dependencies {
-        implementation(kotlin("test"))
-      }
-    }
-
-    val jni by creating
-
-    val androidMain by getting {
-      dependsOn(jni)
-    }
-
-    val jvmMain by getting {
-      dependsOn(jni)
-    }
-
-    val androidAndroidTest by getting {
-      dependencies {
-        implementation(AndroidX.test.coreKtx)
-        implementation(AndroidX.test.rules)
-        implementation(AndroidX.test.runner)
-        implementation(AndroidX.test.ext.junitKtx)
-      }
-    }
-
-
-  }    /*
-    val android386Main by getting {
-      dependsOn(androidNativeMain)
-    }
-
-
-    val linuxAmd64Main by getting {
-      dependsOn(linuxMain)
-    }
-
-    val linuxArmMain by getting {
-      dependsOn(linuxMain)
-    }
-
-    val android386Main by getting {
-      dependsOn(androidNativeMain)
-    }
-
-    val androidArm64Main by getting {
-      dependsOn(androidNativeMain)
-    }*/
-}
-
-tasks.withType(KotlinJvmTest::class) {
-  val platform = "linuxAmd64"
-  dependsOn("linkDebugShared${platform.capitalize()}")
-  jvmArgs(
-    "-Djava.library.path=${
-      File(
-        project.buildDir,
-        "bin/$platform/debugShared/"
-      ).absolutePath
-    }"
-  )
-}
-
-
 android {
   compileSdk = ProjectVersions.SDK_VERSION
-  namespace = "com.github.danbrough.kipfs"
+  namespace = ProjectVersions.GROUP_ID
+
 
   defaultConfig {
     minSdk = ProjectVersions.MIN_SDK_VERSION
@@ -267,16 +52,248 @@ android {
 }
 
 
+fun kipfsBuild(platform: String) =
+  tasks.register<Exec>("kipfsDebug${platform.capitalize()}") {
+    environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
+    environment("PLATFORM", platform)
+    doLast {
+      println("kipfs build finished for $platform")
+    }
+
+    commandLine(rootProject.file("bin/build_kipfs.sh"))
+
+    inputs.files(rootProject.fileTree("go") {
+      include("**/*.go")
+      include("**/*.c")
+      include("**/*.h")
+    } + rootProject.file("bin/build_kipfs.sh"))
+
+    //project.buildDir.resolve("native/$platform")
+    /* outputs.files(project.fileTree(project.buildDir.resolve("native/$platform")) {
+       include("libgokipfs.so")
+       include("libgokipfs.h")
+     })*/
+    outputs.files(
+      project.buildDir.resolve("native/$platform/libgokipfs.so"),
+      project.buildDir.resolve("native/$platform/libgokipfs.h")
+    )
+
+    doLast {
+      logger.info("finished building kipfs for $platform")
+    }
+
+  }
+
+
+
+kotlin {
+
+  val nativeMain by sourceSets.creating{
+    dependsOn(sourceSets.getByName("commonMain"))
+  }
+
+  val nativeTest by sourceSets.creating {
+    dependsOn(sourceSets.getByName("commonTest"))
+  }
+
+  val linuxMain by sourceSets.creating {
+    dependsOn(nativeMain)
+  }
+
+  val androidNativeMain by sourceSets.creating {
+    dependsOn(nativeMain)
+  }
+
+
+  fun KotlinNativeTarget.configureSharedLib() {
+    val platform = name
+    val kipfsBuild = kipfsBuild(platform)
+
+    val jniDir = when (platform) {
+      "android386" -> "x86"
+      "androidAmd64" -> "x86_64"
+      "androidArm" -> "armeabi-v7a"
+      "androidArm64" -> "arm64-v8a"
+      else -> null
+    }
+
+    binaries {
+      sharedLib {
+        baseName = "kipfs"
+
+        if (jniDir != null && buildType == NativeBuildType.DEBUG) {
+          //copy android libs to jniLibs directory
+          tasks.register<Copy>("copyToJniLibs${platform.capitalize()}") {
+            from(linkTask.outputs)
+            from(kipfsBuild.get().outputs)
+            into(jniLibsDir.resolve(jniDir))
+          }.also {
+            linkTask.finalizedBy(it)
+          }
+          //created a jar of the shared library for use in android/jvm jni applications
+        }
+      }
+    }
+
+    compilations["test"].apply {
+      println("CONFIGURING COMPILATION $name")
+    }
+
+    compilations["main"].apply {
+
+      println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
+      defaultSourceSet {
+        dependsOn(if (jniDir != null) androidNativeMain else linuxMain)
+      }
+
+      if (jniDir == null) {
+        cinterops.create("jni") {
+          packageName("danbroid.kipfs.jni")
+          val jdkIncludes = rootProject.file("jdk").resolve("include")
+
+          includeDirs(mutableListOf<File>().apply {
+            add(jdkIncludes)
+            add(jdkIncludes.resolve("linux"))
+            add(jdkIncludes.resolve("win32"))
+            add(jdkIncludes.resolve("darwin"))
+          })
+         // extraOpts("-verbose")
+        }
+      }
+
+      cinterops.create("libkipfs") {
+
+        //defFile(project.file("src/nativeInterop/cinterop/KIpfsGo.def"))
+        tasks.getAt(interopProcessingTaskName).also {
+
+          it.inputs.files(kipfsBuild.get().outputs)
+          it.dependsOn(kipfsBuild.name)
+        }
+
+        includeDirs(
+          project.buildDir.resolve("native/$platform"),
+          rootProject.file("openssl/libs/$platform/include"),
+          rootProject.file("go/libs")
+        )
+
+        extraOpts(
+          mutableListOf<String>().apply {
+            //add("-verbose")
+            //-Lopenssl/libs/linuxArm64/lib -L./golib/build/native/linuxArm64
+            add("-libraryPath")
+            add("${rootProject.file("openssl/libs/$platform/lib")}")
+            add("-libraryPath")
+            add("${project.buildDir.resolve("native/$platform")}")
+          }
+        )
+      }
+    }
+  }
+
+  android()
+
+
+  //ide mode is linuxX64 target only. Turned off by ./gradlew -Pkipfs.ideMode=false  see ./scripts/publishAll.sh
+
+  jvm {
+    compilations["main"].compileKotlinTaskProvider.dependsOn("linkDebugSharedLinuxAmd64")
+  }
+
+  linuxX64("linuxAmd64")
+  mingwX64("windowsAmd64")
+  linuxArm32Hfp("linuxArm")
+
+  linuxArm64("linuxArm64")
+  androidNativeX86("android386")
+  androidNativeX64("androidAmd64")
+  androidNativeArm64("androidArm64")
+  androidNativeArm32("androidArm")
+
+  targets.withType(KotlinNativeTarget::class).all {
+    configureSharedLib()
+  }
+
+
+  sourceSets {
+    commonMain {
+      dependencies {
+        implementation(AndroidUtils.logging)
+      }
+    }
+
+    val commonTest by getting {
+      dependencies {
+        implementation(kotlin("test"))
+      }
+    }
+
+
+    val jni by creating
+
+    val androidMain by getting {
+      dependsOn(jni)
+    }
+
+    val jvmMain by getting {
+      dependsOn(jni)
+    }
+
+    val linuxAmd64Test by getting {
+      dependsOn(nativeTest)
+    }
+
+    val androidAndroidTest by getting {
+      dependencies {
+        implementation(AndroidX.test.coreKtx)
+        implementation(AndroidX.test.rules)
+        implementation(AndroidX.test.runner)
+        implementation(AndroidX.test.ext.junitKtx)
+      }
+
+    }
+  }
+
+  /*sourceSets.all {
+    languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+  }*/
+
+}
+
+tasks.withType(KotlinJvmTest::class) {
+  val platform = "linuxAmd64"
+  dependsOn("linkDebugShared${platform.capitalize()}")
+  jvmArgs(
+    "-Djava.library.path=${
+      File(
+        project.buildDir,
+        "bin/$platform/debugShared/"
+      ).absolutePath
+    }"
+  )
+}
+
+tasks.withType(KotlinNativeTest::class) {
+  kipfsEnvironment(project).forEach {
+    environment(it.key, it.value)
+  }
+}
+
+
 publishing {
 
   publications {
 
     kotlin.targets.withType(KotlinNativeTarget::class) {
+
+
+/*      compilations["test"].apply {
+        println("NATIVE TARGET TEST COMPILATIOn: $this  type: ${this::javaClass}")
+      }*/
+
       binaries.matching {
         it is SharedLibrary && !it.linkTask.target.startsWith("android") &&
             it.buildType == NativeBuildType.RELEASE
       }.all {
-
 
         val publicationName = "jni-${target.name}"
 
@@ -286,11 +303,6 @@ publishing {
               "mergeDebugJniLibFolders" else "mergeReleaseJniLibFolders"
           ).dependsOn(linkTaskProvider)
         }
-
- /*       val stripTask = tasks.create("strip${publicationName.capitalize()}",Exec::class){
-
-        }*/
-
 
         val jarTask = tasks.create("${publicationName}Jar", Jar::class) {
           from(linkTask)
@@ -310,7 +322,13 @@ publishing {
   }
 }
 
+tasks.withType(KotlinNativeHostTest::class).all {
+  //println("NativeHostTest: ${this.name} ${this.targetName}")
+  environment("LD_LIBRARY_PATH", project.buildDir.resolve("native/$targetName").absolutePath)
+}
+
 afterEvaluate {
+  //make connectedDebugAndroidTest tasks dependent on the jni shared library
   kotlin.targets.withType(KotlinNativeTarget::class).asMap.values.flatMap { it.binaries.toList() }
     .filterIsInstance<SharedLibrary>()
     .filter {
@@ -318,7 +336,6 @@ afterEvaluate {
           it.linkTask.target.startsWith("android")
     }
     .forEach {
-      //  println("ANDROIDTEST depends on ${it.linkTask.target}")
       tasks.named("connectedDebugAndroidTest").dependsOn(it.linkTaskProvider)
     }
 }

@@ -1,25 +1,28 @@
 headers = libgokipfs.h
-staticLibraries.mingw  = libgokipfs.a libssl.a libcrypto.a
-staticLibraries.linux  = libgokipfs.a
+#staticLibraries.mingw  = libgokipfs.a libssl.a libcrypto.a
+#staticLibraries.linux  = libgokipfs.a
 
+compilerOpts.linux = -fPIC
+compilerOpts.android = -fPIC
+#compilerOpts.linux=-fPIC -Wl,-Bsymbolic
+#compilerOpts.android=-fPIC -Wl,-Bsymbolic
+#linkerOpts.mingw_w64=-fPIC
 
-compilerOpts.linux=-fPIC -Wl,-Bsymbolic
-compilerOpts.android=-fPIC -Wl,-Bsymbolic
-linkerOpts.mingw_w64=-fPIC
-
-linkerOpts.linux =  -Bsymbolic -ldl -lssl -lcrypto -l:libgokipfs.a
+#linkerOpts.linux =  -Bsymbolic -ldl -lssl -lcrypto -l:libgokipfs.a
+linkerOpts.linux =  -Bsymbolic -lc -lm -ldl -lssl -lcrypto -lgokipfs
 linkerOpts.android =  -Bsymbolic -lc -lm -ldl -lssl -lcrypto -lgokipfs
 linkerOpts.android_x86 = -Lopenssl/libs/android386/lib -L./golib/build/native/android386
 linkerOpts.android_arm32 = -Lopenssl/libs/androidArm/lib -L./golib/build/native/androidArm
 
 linkerOpts.android_arm64 = -Lopenssl/libs/androidArm64/lib -L./golib/build/native/androidArm64
 linkerOpts.android_x64 = -Lopenssl/libs/androidAmd64/lib -L./golib/build/native/androidAmd64
+linkerOpts.android_x86 = -Lopenssl/libs/android386/lib -L./golib/build/native/android386
 
-linkerOpts.linux_x64 = -Lopenssl/libs/linuxAmd64/lib -L./golib/build/native/linuxAmd64
+linkerOpts.linux_x64 =  -L./openssl/libs/linuxAmd64/lib -L./golib/build/native/linuxAmd64
 linkerOpts.linux_arm32_hfp = -Lopenssl/libs/linuxArm/lib -L./golib/build/native/linuxArm
 linkerOpts.linux_arm64 = -Lopenssl/libs/linuxArm64/lib -L./golib/build/native/linuxArm64
 
-linkerOpts.mingw_w64 =-lm -l:libssl.a -l:libcrypto.a -l:libgokipfs.a -Lopenssl/libs/windowsAmd64/lib -L./golib/build/native/windowsAmd64
+linkerOpts.mingw_x64 =-lm -l:libssl.a -l:libcrypto.a -l:libgokipfs.a -Lopenssl/libs/windowsAmd64/lib -L./golib/build/native/windowsAmd64
 
 
 
@@ -58,3 +61,27 @@ linkerOpts.mingw_w64 =-lm -l:libssl.a -l:libcrypto.a -l:libgokipfs.a -Lopenssl/l
 #-I../go/libs -I./build/native/linuxAmd64/
 #linkerOpts.linux =-lpthread -ldl
 
+---
+
+#include <stdio.h>
+
+
+void print_test(const char *msg){
+    printf("The message is %s\n",msg);
+    //doSomething();
+    printf("The other message is %s\n",KGetMessage());
+}
+
+int myFun(int i) {
+  return i+1;
+}
+
+typedef int  (*MyFun)(int);
+
+void accept_fun(MyFun f) {
+  f(42);
+}
+
+MyFun supply_fun() {
+  return myFun;
+}

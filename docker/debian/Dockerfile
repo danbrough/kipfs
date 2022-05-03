@@ -25,10 +25,8 @@ RUN apt install -y autoconf make pkg-config cmake libtool
 RUN useradd -s /bin/bash bob -d /src -G sudo,users
 RUN echo 'PS1="\[\033[01;31m\]\u@\h\[\033[01;32m\] \w \$\[\033[00m\] "' >> /root/.bashrc
 
-COPY root /
-RUN apt-get  -y update
-RUN /setup.sh 2
-RUN apt install -y yarn libncurses-dev bison libssl-dev libcurl4-openssl-dev net-tools iproute2 iputils-ping netcat upx
+
+RUN apt install -y libncurses-dev bison libssl-dev libcurl4-openssl-dev net-tools iproute2 iputils-ping netcat upx
 #RUN apt install -y curl libcurl4-openssl-dev
 
 

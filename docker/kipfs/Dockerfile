@@ -16,3 +16,4 @@ COPY root /
 RUN /setup.sh
 
 
+RUN apt install -y yarn

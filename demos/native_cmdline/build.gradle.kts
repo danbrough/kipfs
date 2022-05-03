@@ -11,37 +11,52 @@ version = ProjectVersions.VERSION_NAME
 
 kotlin {
 
-  /*val nativeMain by sourceSets.creating {
-    dependencies {
-      implementation("com.github.danbrough.kipfs:golib:_")
-    }
-  }*/
-
-
   linuxX64("linuxAmd64")
-  linuxArm32Hfp("linuxArm")
-  androidNativeArm64("androidArm64")
-  mingwX64("windowsAmd64")
+
+  if (!ProjectVersions.IDE_MODE) {
+    linuxArm32Hfp("linuxArm")
+    androidNativeArm64("androidArm64")
+    mingwX64("windowsAmd64")
+  }
+
 
   targets.withType(KotlinNativeTarget::class).all {
     compilations["main"].apply {
       //defaultSourceSet.dependsOn(nativeMain)
       defaultSourceSet {
-        kotlin.srcDir("src/nativeMain/kotlin")
+        if (ProjectVersions.IDE_MODE) {
+          kotlin.srcDir("src/nativeMain/kotlin")
+          dependencies {
+            implementation(project(":golib"))
+          }
+        } else {
+          sourceSets.maybeCreate("nativeMain").apply {
+            dependencies {
+              implementation(KotlinX.coroutines.core)
+            }
+          }
 
-        dependencies {
-          implementation("com.github.danbrough.kipfs:golib:_")
+          dependsOn(sourceSets.getByName("nativeMain"))
+
+          dependencies {
+            implementation("com.github.danbrough.kipfs:golib:_")
+          }
         }
-
       }
     }
 
     binaries {
-      executable("kipfsDemo", buildTypes = setOf(NativeBuildType.DEBUG))
+      executable("kipfsDemo", buildTypes = setOf(NativeBuildType.DEBUG)) {
+        runTaskProvider?.configure {
+          if (project.hasProperty("args"))
+            project.property("args")?.also {
+              println("ARGS IS $it")
+              args(it.toString())
+            }
+        }
+      }
     }
   }
-
-
 }
 
 

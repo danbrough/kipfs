@@ -1,27 +1,30 @@
 import kotlin.test.Test
 
+val log = danbroid.logging.configure("TEST", coloured = true)
+
 class Test {
 
   companion object {
-    val log = danbroid.logging.configure("TEST", coloured = true)
-
-    init {
-      initLib()
-    }
+    val kipfs = initKIPFSLib()
   }
 
 
   @Test
   fun test() {
-    log.info("test1()!")
+    log.info("test1() ..")
+
+    log.debug(kipfs.getMessage())
+    log.debug(kipfs.getMessage2())
+
+    log.trace("DAG ${kipfs.dagCID("\"Hello World\"")}")
+
+    val shell = kipfs.createShell("/ip4/192.168.1.4/tcp/5001")
+    log.trace("created shell")
+    shell.id().also {
+      log.warn("ID: $it")
+    }
 
 
-    log.debug(getMessage())
-    log.debug(getMessage2())
-    log.trace("DAG ${dagCID("\"Hello World\"")}")
-/*    log.debug("message is: ${KIgetMessage()}")
-    log.warn("message2 is: ${getMessage2()}")
-    log.trace("DAG ${dagCID("\"Hello World\"")}")*/
   }
 
 

@@ -1,17 +1,24 @@
-package core
+package shell
 
 import (
 	"bytes"
 	"context"
+
+	"github.com/danbrough/kipfs/misc"
 	ipfsapi "github.com/ipfs/go-ipfs-api"
 	files "github.com/ipfs/go-ipfs-files"
 	log "github.com/sirupsen/logrus"
+
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+func init() {
+	println("shell.init()")
+}
 
 type Shell struct {
 	ishell *ipfsapi.Shell
@@ -164,7 +171,7 @@ func (req *RequestBuilder) BodyBytes(body []byte) {
 	req.rb.BodyBytes(body)
 }
 
-func (req *RequestBuilder) PostData(data []byte, callback Callback) {
+func (req *RequestBuilder) PostData(data []byte, callback misc.Callback) {
 	req.post("", files.NewReaderFile(bytes.NewReader(data)), callback)
 }
 
@@ -176,7 +183,7 @@ func (req *RequestBuilder) PostData3(data []byte) (*Response, error) {
 	return req.post3("", files.NewReaderFile(bytes.NewReader(data)))
 }
 
-func (req *RequestBuilder) PostString(data string, callback Callback) {
+func (req *RequestBuilder) PostString(data string, callback misc.Callback) {
 	req.post("", files.NewReaderFile(strings.NewReader(data)), callback)
 }
 
@@ -188,11 +195,11 @@ func (req *RequestBuilder) PostString3(data string) (*Response, error) {
 	return req.post3("", files.NewReaderFile(strings.NewReader(data)))
 }
 
-func (req *RequestBuilder) PostReader(name string, data KReader, callback Callback) {
+func (req *RequestBuilder) PostReader(name string, data misc.KReader, callback misc.Callback) {
 	req.post(name, files.NewReaderFile(data), callback)
 }
 
-func (req *RequestBuilder) PostDirectory(dir string, callback Callback) {
+func (req *RequestBuilder) PostDirectory(dir string, callback misc.Callback) {
 	stat, err := os.Lstat(dir)
 	if err != nil {
 		callback.OnError(err.Error())
@@ -208,7 +215,7 @@ func (req *RequestBuilder) PostDirectory(dir string, callback Callback) {
 	req.post(filepath.Base(dir), sf, callback)
 }
 
-func (req *RequestBuilder) post(name string, file files.Node, callback Callback) {
+func (req *RequestBuilder) post(name string, file files.Node, callback misc.Callback) {
 	/*
 	   var r io.Reader
 	   switch data := data.(type) {
@@ -311,7 +318,7 @@ func (req *RequestBuilder) post3(name string, file files.Node) (*Response, error
 	//testing.TestLog.Debug("queued response")
 }
 
-func (req *RequestBuilder) Post4(body KReader) (*Response, error) {
+func (req *RequestBuilder) Post4(body misc.KReader) (*Response, error) {
 	/*
 	   var r io.Reader
 	   switch data := data.(type) {
@@ -352,4 +359,19 @@ func NewUDSShell(sockpath string) *Shell {
 
 func NewTCPShell(port string) *Shell {
 	return NewShell("/ip4/127.0.0.1/tcp/" + port)
+}
+
+type DataCallback interface {
+	OnResponse(data []byte, err *string)
+}
+
+type DataCallbackImpl struct {
+}
+
+func (c DataCallbackImpl) OnResponse(data []byte, err *string) {
+	if err != nil {
+		println("Error:", err)
+		return
+	}
+	println("OnResponse() ", string(data))
 }
