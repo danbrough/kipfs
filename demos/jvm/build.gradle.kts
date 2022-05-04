@@ -16,7 +16,6 @@ tasks.register("demo1", JavaExec::class) {
 
 
 dependencies {
-  implementation("danbroid.mpp:jni:_")
-  implementation("danbroid.mpp:nativeLinuxx64Debug:_")
+  implementation("com.github.danbrough.kipfs:jniLinuxAmd64:_")
   implementation(AndroidUtils.logging)
 }

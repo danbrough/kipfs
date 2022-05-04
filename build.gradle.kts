@@ -59,4 +59,3 @@ allprojects {
 
 }
 
-println("IDE MODE: ${ProjectVersions.IDE_MODE}")

@@ -1,5 +1,4 @@
 import kotlinx.cinterop.*
-import platform.linux.free
 import kotlin.test.Test
 
 object NativeTests {

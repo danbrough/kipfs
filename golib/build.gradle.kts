@@ -1,15 +1,8 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
-import com.android.build.gradle.tasks.MergeSourceSetFolders
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
-import org.jetbrains.kotlin.gradle.plugin.mpp.SharedLibrary
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeCompile
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
-import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
-import org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
-import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.gradle.plugin.mpp.SharedLibrary
+import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeHostTest
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
@@ -68,11 +61,6 @@ fun kipfsBuild(platform: String) =
       include("**/*.h")
     } + rootProject.file("bin/build_kipfs.sh"))
 
-    //project.buildDir.resolve("native/$platform")
-    /* outputs.files(project.fileTree(project.buildDir.resolve("native/$platform")) {
-       include("libgokipfs.so")
-       include("libgokipfs.h")
-     })*/
     outputs.files(
       project.buildDir.resolve("native/$platform/libgokipfs.so"),
       project.buildDir.resolve("native/$platform/libgokipfs.h")
@@ -148,7 +136,7 @@ kotlin {
 
       if (jniDir == null) {
         cinterops.create("jni") {
-          packageName("danbroid.kipfs.jni")
+          packageName("jni")
           val jdkIncludes = rootProject.file("jdk").resolve("include")
 
           includeDirs(mutableListOf<File>().apply {
@@ -165,7 +153,6 @@ kotlin {
 
         //defFile(project.file("src/nativeInterop/cinterop/KIpfsGo.def"))
         tasks.getAt(interopProcessingTaskName).also {
-
           it.inputs.files(kipfsBuild.get().outputs)
           it.dependsOn(kipfsBuild.name)
         }
@@ -200,19 +187,18 @@ kotlin {
   }
 
   linuxX64("linuxAmd64")
-  mingwX64("windowsAmd64")
   linuxArm32Hfp("linuxArm")
-
   linuxArm64("linuxArm64")
+
   androidNativeX86("android386")
   androidNativeX64("androidAmd64")
   androidNativeArm64("androidArm64")
   androidNativeArm32("androidArm")
+  mingwX64("windowsAmd64")
 
   targets.withType(KotlinNativeTarget::class).all {
     configureSharedLib()
   }
-
 
   sourceSets {
     commonMain {
@@ -295,7 +281,7 @@ publishing {
             it.buildType == NativeBuildType.RELEASE
       }.all {
 
-        val publicationName = "jni-${target.name}"
+        val publicationName = "jni${target.name.capitalize()}"
 
         afterEvaluate {
           tasks.named(

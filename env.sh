@@ -38,7 +38,8 @@ export CURL_VERSION=curl-7_82_0
 export CURL_LIBS=$SRCDIR/curl/libs/$PLATFORM
 
 export OPENSSL=$SRCDIR/openssl/libs/$PLATFORM
-export OPENSSL_TAG=kipfs_1_1_1n #OpenSSL_1_1_1n
+#export OPENSSL_TAG=kipfs_1_1_1n #OpenSSL_1_1_1n
+export OPENSSL_TAG=OpenSSL_1_1_1o
 
 
 export PKG_CONFIG_PATH=$OPENSSL/lib/pkgconfig
