@@ -1,10 +1,6 @@
 package danbroid.jvmdemo
 
 
-import danbroid.mpp.HelloJNI
-import danbroid.mpp.NativeLoader
-
-
 class Demo1 {
   companion object {
     @JvmStatic
@@ -12,10 +8,10 @@ class Demo1 {
       val log = danbroid.logging.configure("TEST", coloured = true)
 
       log.info("test1() here!")
-      NativeLoader.loadLibrary(Demo1::class.java.classLoader!!, "jnidemo")
+     /* NativeLoader.loadLibrary(Demo1::class.java.classLoader!!, "jnidemo")
       log.debug("HEllo: ${HelloJNI.stringFromJNI()}")
       log.warn("getMessage() = ${HelloJNI.getMessage()}")
-      log.info("load finished!")
+      log.info("load finished!")*/
 
     }
   }

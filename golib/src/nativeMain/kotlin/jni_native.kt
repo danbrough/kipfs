@@ -1,3 +1,7 @@
+import jni.JNIEnvVar
+import jni.jclass
+import jni.jint
+import jni.jstring
 import kotlinx.cinterop.*
 import libkipfs.*
 
@@ -5,6 +9,7 @@ private fun init() {
   initRuntimeIfNeeded()
   Platform.isMemoryLeakCheckerActive = true
 }
+
 
 @CName("Java_KIPFSLibJNI_getMessage")
 fun getMessage(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
@@ -20,7 +25,7 @@ fun getMessage(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
 }
 
 @CName("Java_KIPFSLibJNI_getMessage2")
-fun getMessage2(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
+fun getMessage2(env: CPointer<jni.JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     init()
     return env.pointed.pointed!!.NewStringUTF!!.invoke(

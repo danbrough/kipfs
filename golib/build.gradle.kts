@@ -76,7 +76,7 @@ fun kipfsBuild(platform: String) =
 
 kotlin {
 
-  val nativeMain by sourceSets.creating{
+  val nativeMain by sourceSets.creating {
     dependsOn(sourceSets.getByName("commonMain"))
   }
 
@@ -123,31 +123,27 @@ kotlin {
       }
     }
 
-    compilations["test"].apply {
+    /*compilations["test"].apply {
       println("CONFIGURING COMPILATION $name")
     }
-
+*/
     compilations["main"].apply {
 
       println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
-      defaultSourceSet {
-        dependsOn(if (jniDir != null) androidNativeMain else linuxMain)
+
+      cinterops.create("jni") {
+        packageName("jni")
+        val jdkIncludes = rootProject.file("jdk").resolve("include")
+
+        includeDirs(mutableListOf<File>().apply {
+          add(jdkIncludes)
+          add(jdkIncludes.resolve("linux"))
+          add(jdkIncludes.resolve("win32"))
+          add(jdkIncludes.resolve("darwin"))
+        })
+        // extraOpts("-verbose")
       }
 
-      if (jniDir == null) {
-        cinterops.create("jni") {
-          packageName("jni")
-          val jdkIncludes = rootProject.file("jdk").resolve("include")
-
-          includeDirs(mutableListOf<File>().apply {
-            add(jdkIncludes)
-            add(jdkIncludes.resolve("linux"))
-            add(jdkIncludes.resolve("win32"))
-            add(jdkIncludes.resolve("darwin"))
-          })
-         // extraOpts("-verbose")
-        }
-      }
 
       cinterops.create("libkipfs") {
 
@@ -201,6 +197,7 @@ kotlin {
   }
 
   sourceSets {
+
     commonMain {
       dependencies {
         implementation(AndroidUtils.logging)
@@ -213,8 +210,9 @@ kotlin {
       }
     }
 
-
-    val jni by creating
+    val jni by creating {
+      dependsOn(nativeMain)
+    }
 
     val androidMain by getting {
       dependsOn(jni)
@@ -235,7 +233,26 @@ kotlin {
         implementation(AndroidX.test.runner)
         implementation(AndroidX.test.ext.junitKtx)
       }
+    }
 
+    val linuxAmd64Main by getting {
+      dependsOn(nativeMain)
+    }
+
+    val linuxArmMain by getting {
+      dependsOn(nativeMain)
+    }
+
+    val linuxArm64Main by getting {
+      dependsOn(nativeMain)
+    }
+
+    val windowsAmd64Main by getting {
+      dependsOn(nativeMain)
+    }
+
+    val android386Main by getting {
+      dependsOn(nativeMain)
     }
   }
 

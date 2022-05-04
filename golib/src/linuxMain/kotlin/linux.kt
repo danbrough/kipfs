@@ -1,7 +1,7 @@
 
-typealias  jstring = danbroid.kipfs.jni.jstring
-typealias  jclass = danbroid.kipfs.jni.jclass
-typealias  JNIEnvVar = danbroid.kipfs.jni.JNIEnvVar
+typealias  jstring = jni.jstring
+typealias  jclass = jni.jclass
+typealias  JNIEnvVar = jni.JNIEnvVar
 
-typealias  jobject = danbroid.kipfs.jni.jobject
-typealias  jint = danbroid.kipfs.jni.jint
+typealias  jobject = jni.jobject
+typealias  jint = jni.jint
