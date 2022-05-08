@@ -18,7 +18,6 @@ class Tests {
     log.trace("creating shell from JNI..")
     val refnum = KIPFSLibJNI.createShellJNI("/ip4/192.168.1.4/tcp/5001")
     log.trace("created shell")
-
     KIPFSLibJNI.disposeGoObject(refnum)
   }
 
