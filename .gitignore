@@ -25,4 +25,4 @@
 
 
 /local.properties
-/local.env
+/local_*.env

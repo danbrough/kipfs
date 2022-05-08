@@ -2,6 +2,7 @@ object KIPFSLibJNI : KIPFSLib {
   private val log = danbroid.logging.getLog("TEST")
 
   init {
+    log.error("INIT KIPFSLibJNI")
     runCatching {
       log.warn("loading gokipfs ..")
       System.loadLibrary("gokipfs")
@@ -28,7 +29,6 @@ object KIPFSLibJNI : KIPFSLib {
 }
 
 
-actual fun initKIPFSLib(): KIPFSLib = KIPFSLibJNI
 
 
 
