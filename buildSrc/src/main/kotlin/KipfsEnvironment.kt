@@ -19,7 +19,7 @@ private fun MutableMap<String, String>.loadProps(file: File) {
 }
 
 
-fun kipfsEnvironment(project: Project): Map<String, String> =
+fun kipfsProperties(project: Project): Map<String, String> =
   mutableMapOf<String, String>().apply {
     project.properties.filter { it.key.startsWith("KIPFS_") }.forEach {
       set(it.key,it.value?.toString() ?: "")

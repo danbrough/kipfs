@@ -10,7 +10,7 @@ plugins {
   id("de.fayard.refreshVersions") version "0.40.1"
 }
 
-rootProject.name = "kipfs"
+rootProject.name = "KIPFS"
 include(":api")
 include(":golib")
 //include(":deps")

@@ -3,7 +3,7 @@ export SRCDIR=$(dirname $(realpath $BASH_SOURCE))
 #[ -z "$SRCDIR" ] && echo SRCDIR NOT SET. Set SRCDIR to the root of the kipfs source tree && sleep 5 && exit 1 #set it to the root of the source folder
 PS1="\[\033[01;34m\]\u@\h\[\033[01;33m\] \w \$\[\033[00m\] "
 
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:~/bin
 [ -d /src/.local ] && PATH=/src/.local/bin:$PATH
 export PLATFORM_LINUX_AMD64="linuxAmd64"
 export PLATFORM_LINUX_386="linux386"
