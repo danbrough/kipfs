@@ -1,7 +1,7 @@
-import platform.android.JNIEnvVar
-import platform.android.jclass
-import platform.android.jint
-import platform.android.jstring
+import jni.JNIEnvVar
+import jni.jclass
+import jni.jint
+import jni.jstring
 import kotlinx.cinterop.*
 import libkipfs.*
 

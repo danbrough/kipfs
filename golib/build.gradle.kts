@@ -22,7 +22,7 @@ val jniLibsDir = project.buildDir.resolve("jniLibs")
 android {
   compileSdk = ProjectVersions.SDK_VERSION
   namespace = ProjectVersions.GROUP_ID
-
+  ndkVersion = ProjectVersions.NDK_VERSION
 
   defaultConfig {
     minSdk = ProjectVersions.MIN_SDK_VERSION
@@ -111,21 +111,26 @@ kotlin {
 
       //println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
 
-      if (androidJniLibDir == null) {
-        //not on android so we need to interop jni.h to produce the platform.android jni dependency.
-        cinterops.create("jni") {
-          packageName("platform.android")
-          val jdkIncludes = rootProject.file("jdk").resolve("include")
 
-          includeDirs(mutableListOf<File>().apply {
+      //not on android so we need to interop jni.h to produce the platform.android jni dependency.
+      cinterops.create("jni") {
+        packageName("jni")
+        println("JNI INTEROP: ${konanTarget.name}")
+        val jdkIncludes = rootProject.file("jdk").resolve("include")
+
+        includeDirs(mutableListOf<File>().apply {
+          if (androidJniLibDir == null) {
             add(jdkIncludes)
             add(jdkIncludes.resolve("linux"))
             add(jdkIncludes.resolve("win32"))
             add(jdkIncludes.resolve("darwin"))
-          })
-          // extraOpts("-verbose")
-        }
+          } else {
+            add(file("/mnt/files2/cache/konan/dependencies/target-toolchain-2-linux-android_ndk/sysroot/usr/include/"))
+          }
+        })
+        extraOpts("-verbose")
       }
+
 
 
       cinterops.create("libkipfs") {

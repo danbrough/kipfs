@@ -16,7 +16,7 @@ object ProjectVersions {
   lateinit var KEYSTORE_PASSWORD: String
   val COMPOSE_VERSION = "1.1.1"
   val JITPACK_BUILD = System.getenv().containsKey("JITPACK")
-  val NDK_VERSION = if (JITPACK_BUILD) "21.1.6352462" else "23.1.7779620"
+  val NDK_VERSION = "23.1.7779620"
   var BUILD_VERSION = 1
   var VERSION_OFFSET = 1
   lateinit var MAVEN_REPO: URI
