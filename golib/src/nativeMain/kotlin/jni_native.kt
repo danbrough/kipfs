@@ -1,9 +1,6 @@
-import jni.JNIEnvVar
-import jni.jclass
-import jni.jint
-import jni.jstring
 import kotlinx.cinterop.*
 import libkipfs.*
+import platform.android.*
 
 private fun init() {
   initRuntimeIfNeeded()
@@ -58,9 +55,9 @@ fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): ji
     println("got address")
     val s = KCreateShell(addrC).getPointer(this).pointed
     println("got s")
-    e.ReleaseStringUTFChars!!(env,address,addrC)
+    e.ReleaseStringUTFChars!!(env, address, addrC)
     println("release string chars")
-    if (s.r1 != null){
+    if (s.r1 != null) {
       println("An error occurred")
       return -1
     }
@@ -74,6 +71,6 @@ fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): ji
 }
 
 @CName("Java_KIPFSLibJNI_disposeGoObject")
-fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass,refnum:jint) {
+fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
   KDestroyRef(refnum)
 }

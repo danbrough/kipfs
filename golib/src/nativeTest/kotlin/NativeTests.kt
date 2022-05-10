@@ -1,7 +1,33 @@
 import kotlinx.cinterop.*
+import kotlin.test.AfterClass
+import kotlin.test.BeforeClass
 import kotlin.test.Test
 
-object NativeTests {
+@ThreadLocal
+var shellID:Int = 0
+
+class NativeTests {
+
+  companion object {
+
+
+    @BeforeClass
+    fun setupTests() {
+      log.warn("setupTests()!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    }
+
+    @AfterClass
+    fun tearDownTests(){
+      log.warn("TEAR DOWN TESTS!!!!!!!!! shellID: $shellID")
+
+      if (shellID != 0) {
+        log.trace("disposing of shell")
+        libkipfs.KDestroyRef(shellID)
+        shellID = 0
+      }
+    }
+  }
+
 
 
   @Test
@@ -61,7 +87,7 @@ object NativeTests {
 
       log.trace("creating shell to ${ipfsAddr.getPointer(this).toKString()}")
 
-      val refNum = libkipfs.KCreateShell(ipfsAddr).useContents {
+      shellID = libkipfs.KCreateShell(ipfsAddr).useContents {
 
         r1?.copyToString()?.let {
           log.error("An error occurred: $it")
@@ -72,10 +98,10 @@ object NativeTests {
         }
       }
 
-      if (refNum == -1) return
+      if (shellID == -1) return
 
       log.trace("calling id..")
-      libkipfs.KRequest(refNum, "id".utf8).useContents {
+      libkipfs.KRequest(shellID, "id".utf8).useContents {
         r2?.copyToString()?.also {
           throw Exception("Request failed: $it")
         } ?: run {
@@ -87,8 +113,7 @@ object NativeTests {
 
 
 
-      log.trace("disposing of shell")
-      libkipfs.KDestroyRef(refNum)
+
       log.trace("finished")
     }
   }

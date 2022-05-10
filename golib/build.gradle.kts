@@ -109,44 +109,49 @@ kotlin {
 */
     compilations["main"].apply {
 
-      //println("NATIVECOMPILATION: ${this.name} ${this.konanTarget.name}")
+      println("NATIVE COMPILATION: ${this.name} ${this.konanTarget.name}")
 
 
       //not on android so we need to interop jni.h to produce the platform.android jni dependency.
-      cinterops.create("jni") {
-        packageName("jni")
-        println("JNI INTEROP: ${konanTarget.name}")
-        val jdkIncludes = rootProject.file("jdk").resolve("include")
 
-        includeDirs(mutableListOf<File>().apply {
-          if (androidJniLibDir == null) {
+      if (androidJniLibDir == null)
+        cinterops.create("jni") {
+          //use same package name as the android code
+          packageName("platform.android")
+          println("JNI INTEROP: ${konanTarget.name}")
+          val jdkIncludes = rootProject.file("jdk").resolve("include")
+
+          includeDirs(mutableListOf<File>().apply {
             add(jdkIncludes)
             add(jdkIncludes.resolve("linux"))
             add(jdkIncludes.resolve("win32"))
             add(jdkIncludes.resolve("darwin"))
-          } else {
-            add(file("/mnt/files2/cache/konan/dependencies/target-toolchain-2-linux-android_ndk/sysroot/usr/include/"))
-          }
-        })
-        extraOpts("-verbose")
-      }
+          })
+          extraOpts("-verbose")
+        }
+
 
 
 
       cinterops.create("libkipfs") {
 
         //defFile(project.file("src/nativeInterop/cinterop/KIpfsGo.def"))
-        tasks.getAt(interopProcessingTaskName).also {
-          it.inputs.files(kipfsBuild.get().outputs)
-          it.dependsOn(kipfsBuild.name)
+        tasks.getAt(interopProcessingTaskName).apply {
+          inputs.files(kipfsBuild.get().outputs)
+          dependsOn(kipfsBuild.name)
         }
 
+        includeDirs(mutableListOf<File>().apply {
+          add(rootProject.file("openssl/libs/$platform/include"))
+          add(rootProject.file("go/libs"))
+
+        })
         includeDirs(project.buildDir.resolve("native/$platform"),
           rootProject.file("openssl/libs/$platform/include"),
           rootProject.file("go/libs"))
 
         extraOpts(mutableListOf<String>().apply {
-          //add("-verbose")
+          add("-verbose")
           //-Lopenssl/libs/linuxArm64/lib -L./golib/build/native/linuxArm64
           add("-libraryPath")
           add("${rootProject.file("openssl/libs/$platform/lib")}")
@@ -159,15 +164,13 @@ kotlin {
 
   android()
 
-
-  //ide mode is linuxX64 target only. Turned off by ./gradlew -Pkipfs.ideMode=false  see ./scripts/publishAll.sh
-
   jvm {
     compilations["main"].compileKotlinTaskProvider.dependsOn("linkDebugSharedLinuxAmd64")
   }
 
   linuxX64("linuxAmd64")
   androidNativeX86("android386")
+
 /*
 linuxArm32Hfp("linuxArm")
   linuxArm64("linuxArm64")
@@ -186,24 +189,16 @@ linuxArm32Hfp("linuxArm")
 
   sourceSets {
 
-    val commonMain by getting {
+    commonMain {
       dependencies {
         implementation(AndroidUtils.logging)
       }
     }
 
-    val commonTest by getting {
+    commonTest {
       dependencies {
         implementation(kotlin("test"))
       }
-    }
-
-    val nativeMain by creating {
-      dependsOn(commonMain)
-    }
-
-    val nativeTest by creating {
-      dependsOn(commonTest)
     }
 
 
@@ -218,7 +213,7 @@ linuxArm32Hfp("linuxArm")
     }
 
     val linuxAmd64Test by getting {
-      dependsOn(nativeTest)
+      kotlin.srcDir("src/nativeTest/kotlin")
     }
 
     val androidAndroidTest by getting {
@@ -231,12 +226,14 @@ linuxArm32Hfp("linuxArm")
     }
 
     val linuxAmd64Main by getting {
-      dependsOn(nativeMain)
+      kotlin.srcDir("src/nativeMain/kotlin")
     }
 
     val android386Main by getting {
-      dependsOn(nativeMain)
+      kotlin.srcDir("src/nativeMain/kotlin")
     }
+
+/*   */
 
 /*
     val linuxArmMain by getting {
@@ -265,9 +262,14 @@ linuxArm32Hfp("linuxArm")
 tasks.withType(KotlinJvmTest::class) {
   val platform = "linuxAmd64"
   dependsOn("linkDebugShared${platform.capitalize()}")
-  jvmArgs("-Djava.library.path=${
-    File(project.buildDir, "bin/$platform/debugShared/").absolutePath
-  }")
+
+  val libPath =
+    File(project.buildDir, "bin/$platform/debugShared").absolutePath + File.pathSeparator +
+        File(project.buildDir, "native/$platform/").absolutePath
+
+  println("LIBPATH: $libPath")
+  environment("LD_LIBRARY_PATH", libPath)
+  //jvmArgs("-Djava.library.path=$libPath")
 }
 
 tasks.withType(KotlinNativeTest::class) {
@@ -276,45 +278,46 @@ tasks.withType(KotlinNativeTest::class) {
   }
 }
 
+afterEvaluate {
 
+  publishing {
 
-publishing {
+    publications {
 
-  publications {
-
-    kotlin.targets.withType(KotlinNativeTarget::class) {
+      kotlin.targets.withType(KotlinNativeTarget::class) {
 
 
 /*      compilations["test"].apply {
-        println("NATIVE TARGET TEST COMPILATIOn: $this  type: ${this::javaClass}")
+        println("NATIVE TARGET TEST compilation: $this  type: ${this::javaClass}")
       }*/
 
-      binaries.matching {
-        it is SharedLibrary && !it.linkTask.target.startsWith("android") && it.buildType == NativeBuildType.RELEASE
-      }.all {
+        binaries.matching {
+          it is SharedLibrary && !it.linkTask.target.startsWith("android") && it.buildType == NativeBuildType.RELEASE
+        }.all {
 
-        val publicationName = "jni${target.name.capitalize()}"
+          val publicationName = "jni${target.name.capitalize()}"
 
-        afterEvaluate {
-          tasks.named(if (buildType == NativeBuildType.DEBUG) "mergeDebugJniLibFolders" else "mergeReleaseJniLibFolders")
-            .dependsOn(linkTaskProvider)
-        }
+          afterEvaluate {
+            tasks.named(if (buildType == NativeBuildType.DEBUG) "mergeDebugJniLibFolders" else "mergeReleaseJniLibFolders")
+              .dependsOn(linkTaskProvider)
+          }
 
-        val jarTask = tasks.create("${publicationName}Jar", Jar::class) {
-          from(linkTask)
-          dependsOn(linkTask)
-        }
+          val jarTask = tasks.create("${publicationName}Jar", Jar::class) {
+            from(linkTask)
+            dependsOn(linkTask)
+          }
 
-        create<MavenPublication>(publicationName) {
-          artifactId = publicationName
-          artifact(jarTask)
+          create<MavenPublication>(publicationName) {
+            artifactId = publicationName
+            artifact(jarTask)
+          }
         }
       }
     }
-  }
 
-  repositories {
-    maven(ProjectVersions.MAVEN_REPO)
+    repositories {
+      maven(ProjectVersions.MAVEN_REPO)
+    }
   }
 }
 
