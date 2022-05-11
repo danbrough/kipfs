@@ -5,20 +5,11 @@ package main
 
 /*
 #cgo CFLAGS: -fPIC
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include "defs.h"
-
-
-
-typedef int (*CallbackFunc) (int length,const char *data);
-
 */
 import "C"
 import (
 	"unsafe"
-
 	"github.com/danbrough/kipfs/cids"
 	"github.com/danbrough/kipfs/misc"
 	"github.com/danbrough/kipfs/shell"

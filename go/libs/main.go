@@ -1,11 +1,8 @@
 package main
 
 /*
-#include <stdio.h>
-#include <stdlib.h>
+
 #include "defs.h"
-
-
 
 */
 import "C"
@@ -14,7 +11,7 @@ import "unsafe"
 
 func main() {
 
-	data := []byte("Hello World")
+ 	data := []byte("Hello World!")
 	callback := C.DataCallbackFunc(C.testCallback)
 	cdata := C.CBytes(data)
 	C.bridgeDataCallback(callback, cdata, C.int(len(data)), nil)
