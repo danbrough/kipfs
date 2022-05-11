@@ -9,3 +9,32 @@ void testCallback(void *data,int len,const char* err){
  void bridgeDataCallback(DataCallbackFunc callback,void *data,int len,const char* err){
 	callback(data,len,err);
 }
+
+
+
+void pass_string(char* str) {
+    printf("pass_string received: %s\n",str);
+}
+
+char* return_string() {
+  return "C string";
+}
+
+int copy_string(char* str, int size) {
+
+
+  *str++ = 'H';
+  *str++ = 'e';
+  *str++ = 'l';
+  *str++ = 'l';
+  *str++ = 'o';
+  *str++ = ' ';
+  *str++ = 'W';
+  *str++ = 'o';
+  *str++ = 'r';
+  *str++ = 'l';
+  *str++ = 'd';
+  *str++ = '!';
+  *str++ = 0;
+  return 0;
+}

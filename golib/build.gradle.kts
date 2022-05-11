@@ -208,9 +208,7 @@ linuxArm32Hfp("linuxArm")
       dependsOn(jni)
     }
 
-    val linuxAmd64Test by getting {
-      kotlin.srcDir("src/nativeTest/kotlin")
-    }
+
 
     val androidAndroidTest by getting {
       dependencies {
@@ -223,6 +221,11 @@ linuxArm32Hfp("linuxArm")
 
     val linuxAmd64Main by getting {
       kotlin.srcDir("src/nativeMain/kotlin")
+    }
+
+    val linuxAmd64Test by getting {
+      dependsOn(linuxAmd64Main)
+      kotlin.srcDir("src/nativeTest/kotlin")
     }
 
     val android386Main by getting {

@@ -74,3 +74,5 @@ fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): ji
 fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
   KDestroyRef(refnum)
 }
+
+

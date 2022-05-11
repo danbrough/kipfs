@@ -1,10 +1,11 @@
 import kotlinx.cinterop.*
+import platform.linux.free
 import kotlin.test.AfterClass
 import kotlin.test.BeforeClass
 import kotlin.test.Test
 
 @ThreadLocal
-var shellID:Int = 0
+var shellID: Int = 0
 
 class NativeTests {
 
@@ -17,7 +18,7 @@ class NativeTests {
     }
 
     @AfterClass
-    fun tearDownTests(){
+    fun tearDownTests() {
       log.warn("TEAR DOWN TESTS!!!!!!!!! shellID: $shellID")
 
       if (shellID != 0) {
@@ -27,7 +28,6 @@ class NativeTests {
       }
     }
   }
-
 
 
   @Test
@@ -116,5 +116,30 @@ class NativeTests {
 
       log.trace("finished")
     }
+  }
+
+  @Test
+  fun stringTests() {
+
+    memScoped {
+      log.debug("calling pass_string..")
+      libkipfs.pass_string("Here is a string".cstr)
+      log.debug("calling return_string..")
+      val s = libkipfs.return_string()!!.toKString()
+      log.info("received: $s")
+
+      log.debug("calling copy_string...")
+      val buf = ByteArray(255)
+      buf.usePinned { pinned ->
+        if (libkipfs.copy_string(pinned.addressOf(0), buf.size - 1) != 0) {
+          throw Error("Failed to read string from C")
+        }
+      }
+
+      val copiedStringFromC = buf.toKString()
+      println("Message from C: -$copiedStringFromC-")
+    }
+
+
   }
 }

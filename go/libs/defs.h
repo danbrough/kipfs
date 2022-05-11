@@ -7,7 +7,12 @@
 
 typedef void (*DataCallbackFunc)(void* data,int len,const char* err);
 
-extern void testCallback(void *data,int len,const char* err);
+void testCallback(void *data,int len,const char* err);
 
-extern void bridgeDataCallback(DataCallbackFunc callback,void *data,int len,const char* err);
+void bridgeDataCallback(DataCallbackFunc callback,void *data,int len,const char* err);
+
+void pass_string(char* str);
+char* return_string();
+int copy_string(char* str, int size);
+
 #endif 

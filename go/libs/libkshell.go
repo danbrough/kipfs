@@ -16,6 +16,11 @@ import (
 	_seq "golang.org/x/mobile/bind/seq"
 )
 
+//export KCallbackTest
+func KCallbackTest(callback C.DataCallbackFunc){
+    println("GOT CALLBACK",callback)
+}
+
 //export KCID
 func KCID(json *C.char) *C.char {
 	return C.CString(cids.DagCid(C.GoString(json)))

@@ -4,9 +4,7 @@ import platform.posix.free
 
 object KIPFSLibNative : KIPFSLib {
 
-  init {
-    libkipfs.accept_fun()
-  }
+
   override fun getMessage(): String = libkipfs.KGetMessage()!!.copyToString()
   override fun getMessage2(): String = libkipfs.KGetMessage2()!!.copyToString()
   override fun dagCID(json: String): String = libkipfs.KCID(json.cstr)!!.copyToString()
@@ -19,7 +17,6 @@ object KIPFSLibNative : KIPFSLib {
 }
 
 actual fun initKIPFSLib(): KIPFSLib = KIPFSLibNative
-
 
 
 fun CPointer<ByteVar>.copyToString(): String = this.toKString().also {
