@@ -12,6 +12,7 @@ package main
 
 
 
+typedef int (*CallbackFunc) (int length,const char *data);
 
 */
 import "C"

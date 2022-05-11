@@ -60,8 +60,10 @@ fun kipfsBuild(platform: String) = tasks.register<Exec>("kipfsDebug${platform.ca
     include("**/*.h")
   } + rootProject.file("bin/build_kipfs.sh"))
 
-  outputs.files(project.buildDir.resolve("native/$platform/libgokipfs.so"),
-    project.buildDir.resolve("native/$platform/libgokipfs.h"))
+  outputs.files(
+    project.buildDir.resolve("native/$platform/libgokipfs.so"),
+    project.buildDir.resolve("native/$platform/libgokipfs.h"),
+  )
 
   doLast {
     logger.info("finished building kipfs for $platform")
@@ -109,16 +111,14 @@ kotlin {
 */
     compilations["main"].apply {
 
-      println("NATIVE COMPILATION: ${this.name} ${this.konanTarget.name}")
+      println("NATIVE COMPILATION: $name ${konanTarget.name}")
 
 
-      //not on android so we need to interop jni.h to produce the platform.android jni dependency.
-
+      //android targets already have jni cinterop.
       if (androidJniLibDir == null)
         cinterops.create("jni") {
           //use same package name as the android code
           packageName("platform.android")
-          println("JNI INTEROP: ${konanTarget.name}")
           val jdkIncludes = rootProject.file("jdk").resolve("include")
 
           includeDirs(mutableListOf<File>().apply {
@@ -129,8 +129,6 @@ kotlin {
           })
           extraOpts("-verbose")
         }
-
-
 
 
       cinterops.create("libkipfs") {
@@ -144,14 +142,14 @@ kotlin {
         includeDirs(mutableListOf<File>().apply {
           add(rootProject.file("openssl/libs/$platform/include"))
           add(rootProject.file("go/libs"))
-
         })
+
         includeDirs(project.buildDir.resolve("native/$platform"),
           rootProject.file("openssl/libs/$platform/include"),
           rootProject.file("go/libs"))
 
         extraOpts(mutableListOf<String>().apply {
-          add("-verbose")
+          //add("-verbose")
           //-Lopenssl/libs/linuxArm64/lib -L./golib/build/native/linuxArm64
           add("-libraryPath")
           add("${rootProject.file("openssl/libs/$platform/lib")}")
@@ -165,7 +163,7 @@ kotlin {
   android()
 
   jvm {
-    compilations["main"].compileKotlinTaskProvider.dependsOn("linkDebugSharedLinuxAmd64")
+    //compilations["main"].compileKotlinTaskProvider.dependsOn("linkDebugSharedLinuxAmd64")
   }
 
   linuxX64("linuxAmd64")
@@ -186,9 +184,7 @@ linuxArm32Hfp("linuxArm")
     configureSharedLib()
   }
 
-
   sourceSets {
-
     commonMain {
       dependencies {
         implementation(AndroidUtils.logging)

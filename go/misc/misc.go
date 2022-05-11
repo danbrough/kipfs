@@ -1,10 +1,11 @@
 package misc
 
 import "C"
-import "time"
+
 import (
-"io"
-"os"
+	"io"
+	"os"
+	"time"
 )
 
 type Reader = io.Reader
@@ -28,8 +29,6 @@ type Callback interface {
 type KReader interface {
 	io.Reader
 }
-
-
 
 type Printer interface {
 	Print(msg string)
