@@ -114,6 +114,12 @@ kotlin {
       println("CONFIGURING COMPILATION $name")
     }
 */
+    compilations["test"].apply {
+      defaultSourceSet {
+        kotlin.srcDir("src/nativeTest/kotlin")
+      }
+    }
+
     compilations["main"].apply {
 
       logger.info("NATIVE COMPILATION: $name ${konanTarget.name}")
@@ -127,14 +133,14 @@ kotlin {
         cinterops.create("jni") {
           //use same package name as the android code
           packageName("platform.android")
-   /*       val jdkIncludes = rootProject.file("jdk").resolve("include")
+          /*       val jdkIncludes = rootProject.file("jdk").resolve("include")
 
-          includeDirs(mutableListOf<File>().apply {
-            add(jdkIncludes)
-            add(jdkIncludes.resolve("linux"))
-            add(jdkIncludes.resolve("win32"))
-            add(jdkIncludes.resolve("darwin"))
-          })*/
+                 includeDirs(mutableListOf<File>().apply {
+                   add(jdkIncludes)
+                   add(jdkIncludes.resolve("linux"))
+                   add(jdkIncludes.resolve("win32"))
+                   add(jdkIncludes.resolve("darwin"))
+                 })*/
           extraOpts("-verbose")
         }
 
@@ -229,13 +235,6 @@ linuxArm32Hfp("linuxArm")
       dependsOn(jni)
     }
 
-    val linuxAmd64Main by getting
-
-
-    val linuxAmd64Test by getting {
-      dependsOn(linuxAmd64Main)
-      kotlin.srcDir("src/nativeTest/kotlin")
-    }
 
 
   }
@@ -263,6 +262,7 @@ tasks.withType(KotlinNativeTest::class) {
   ProjectVersions.properties.forEach {
     environment(it.key, it.value.toString())
   }
+
 }
 
 afterEvaluate {

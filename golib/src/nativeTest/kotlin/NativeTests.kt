@@ -128,5 +128,13 @@ class NativeTests {
     }
   }
 
+  @Test
+  fun callbackTest() {
+    log.info("callbackTest()")
+    libkipfs.KCallbackTest(staticCFunction { data, len, err ->
+      println("CALLBACK RECEIVED: $data len:$len err:$err")
+    })
+  }
+
 
 }
