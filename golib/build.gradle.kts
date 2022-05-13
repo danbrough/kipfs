@@ -52,7 +52,7 @@ fun kipfsBuild(platform: String) = tasks.register<Exec>("kipfsDebug${platform.ca
   environment("ANDROID_NDK_ROOT", android.ndkDirectory.absolutePath)
   environment("PLATFORM", platform)
   doLast {
-    println("kipfs build finished for $platform")
+    logger.warn("kipfs build finished for $platform")
   }
 
   commandLine(rootProject.file("bin/build_kipfs.sh"))
@@ -116,7 +116,7 @@ kotlin {
 */
     compilations["main"].apply {
 
-      println("NATIVE COMPILATION: $name ${konanTarget.name}")
+      logger.info("NATIVE COMPILATION: $name ${konanTarget.name}")
 
       defaultSourceSet {
         kotlin.srcDir("src/nativeMain/kotlin")
@@ -254,7 +254,7 @@ tasks.withType(KotlinJvmTest::class) {
     File(project.buildDir, "bin/$platform/debugShared").absolutePath + File.pathSeparator +
         File(project.buildDir, "native/$platform/").absolutePath
 
-  println("LIBPATH: $libPath")
+  logger.warn("LIBPATH: $libPath")
   environment("LD_LIBRARY_PATH", libPath)
   //jvmArgs("-Djava.library.path=$libPath")
 }

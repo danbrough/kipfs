@@ -1,3 +1,5 @@
 headers = jni.h
 
 
+compilerOpts.linux = -I../jdk/include -I../jdk/include/linux
+compilerOpts.mingw_x64 = -I../jdk/include -I../jdk/include/win32

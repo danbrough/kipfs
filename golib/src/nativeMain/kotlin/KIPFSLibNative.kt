@@ -4,6 +4,7 @@ import platform.posix.free
 
 object KIPFSLibNative : KIPFSLib {
 
+  val log = danbroid.logging.getLog(KIPFSLibNative::class)
 
   override fun getMessage(): String = libkipfs.KGetMessage()!!.copyToString()
   override fun getMessage2(): String = libkipfs.KGetMessage2()!!.copyToString()
@@ -12,11 +13,11 @@ object KIPFSLibNative : KIPFSLib {
   override fun createShell(url: String): KShell {
     return object : KShell {
       override fun connect() {
-        TODO("Not yet implemented")
+        log.warn("connect() NOT IMPLEMENTED")
       }
 
       override fun dispose() {
-        TODO("Not yet implemented")
+        log.warn("dispose() NOT IMPLEMENTED")
       }
 
       override fun id(): String = "fake_id"

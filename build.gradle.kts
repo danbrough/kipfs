@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import  org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-ProjectVersions.init(project)
+
 
 plugins {
   kotlin("multiplatform") apply false
@@ -19,6 +19,9 @@ buildscript {
     mavenCentral()
   }
 }
+
+
+apply("project.gradle.kts")
 
 allprojects {
 

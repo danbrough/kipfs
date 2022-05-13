@@ -66,6 +66,18 @@ object ProjectVersions {
         ?: project.rootProject.buildDir.resolve(".m2").absolutePath
     )
 
+
+    project.tasks.create("versionName"){
+      doLast {
+        println(VERSION_NAME)
+      }
+    }
+
+    project.tasks.create("incrementedVersionName"){
+      doLast {
+        println(getIncrementedVersionName())
+      }
+    }
   }
 
   fun getIncrementedVersionName() = getVersionName(BUILD_VERSION + 1)

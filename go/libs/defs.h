@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 typedef void (*DataCallbackFunc)(void* data,int len,const char* err);
 

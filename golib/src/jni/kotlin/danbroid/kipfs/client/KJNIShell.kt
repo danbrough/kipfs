@@ -29,7 +29,8 @@ class KJNIShell(private val ipfsAddress: String) : KShell {
 
   override fun id(): String {
     connect()
-    TODO()
+    log.info("need to implement id()")
+    return "id() not implemented"
   }
 
   override fun toString(): String = "KShell[$ipfsAddress]"
