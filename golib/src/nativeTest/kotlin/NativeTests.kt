@@ -4,8 +4,15 @@ import kotlin.test.AfterClass
 import kotlin.test.BeforeClass
 import kotlin.test.Test
 
-@ThreadLocal
-var shellID: Int = 0
+fun CPointer<ByteVar>.convertToString(): String = this.toKString().also {
+  platform.posix.free(this)
+}
+
+val ipfsAddress =
+  platform.posix.getenv(ENV_KIPFS_ADDRESS)?.toKString() ?: DEFAULT_KIPFS_ADDRESS.also {
+    log.warn("environment ENV_KIPFS_ADDRESS not set. Using default ipfs address $it")
+  }
+
 
 class NativeTests {
 
@@ -14,18 +21,15 @@ class NativeTests {
 
     @BeforeClass
     fun setupTests() {
-      log.warn("setupTests()!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+      log.info("setupTests()")
+
+
     }
 
     @AfterClass
     fun tearDownTests() {
-      log.warn("TEAR DOWN TESTS!!!!!!!!! shellID: $shellID")
+      // log.warn("TEAR DOWN TESTS!!!!!!!!! shellID: $shellID")
 
-      if (shellID != 0) {
-        log.trace("disposing of shell")
-        libkipfs.KDestroyRef(shellID)
-        shellID = 0
-      }
     }
   }
 
@@ -79,30 +83,16 @@ class NativeTests {
   @Test
   fun shellTest() {
     memScoped {
-      log.trace("getting ipfs address from environment: $ENV_KIPFS_ADDRESS")
-      val ipfsAddr = platform.posix.getenv(ENV_KIPFS_ADDRESS) ?: DEFAULT_KIPFS_ADDRESS.let {
-        log.trace("Not found. Using default ipfs address $it")
-        it.cstr
-      }
-
-      log.trace("creating shell to ${ipfsAddr.getPointer(this).toKString()}")
-
-      shellID = libkipfs.KCreateShell(ipfsAddr).useContents {
-
-        r1?.copyToString()?.let {
-          log.error("An error occurred: $it")
-          -1
-        } ?: let {
-          log.trace("ref is $r0")
-          r0
-        }
-      }
-
-      if (shellID == -1) return
-
       log.trace("calling id..")
+      val shellID = libkipfs.KCreateShell(ipfsAddress.cstr).useContents {
+        r1?.convertToString()?.also {
+          throw Exception(it)
+        }
+        r0
+      }
+
       libkipfs.KRequest(shellID, "id".utf8).useContents {
-        r2?.copyToString()?.also {
+        r2?.convertToString()?.also {
           throw Exception("Request failed: $it")
         } ?: run {
           r0!!.readBytes(r1.toInt()).decodeToString().also {
@@ -110,11 +100,8 @@ class NativeTests {
           }
         }
       }
-
-
-
-
-      log.trace("finished")
+      log.trace("finished .. disposing of shell")
+      libkipfs.KDestroyRef(shellID)
     }
   }
 
@@ -139,7 +126,7 @@ class NativeTests {
       val copiedStringFromC = buf.toKString()
       println("Message from C: -$copiedStringFromC-")
     }
-
-
   }
+
+
 }

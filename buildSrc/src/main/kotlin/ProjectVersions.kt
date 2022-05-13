@@ -1,6 +1,7 @@
 import java.util.*
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import java.io.FileInputStream
 import java.net.URI
 
 object ProjectVersions {
@@ -26,24 +27,51 @@ object ProjectVersions {
   val VERSION_NAME: String
     get() = getVersionName()
 
-  fun init(project: Project, props: Properties) {
-    IDE_MODE = project.findProperty("kipfs.ideMode")?.toString()?.trim()?.toBoolean() ?: true
-    BUILD_VERSION = props.getProperty("buildVersion", "1").toInt()
-    VERSION_OFFSET = props.getProperty("versionOffset", "1").toInt()
-    VERSION_FORMAT = props.getProperty("versionFormat", "0.0.%d").trim()
-    KEYSTORE_PASSWORD = project.properties.get("KEYSTORE_PASSWORD")?.toString() ?: ""
+
+  val properties = mutableMapOf<String, Any?>()
+
+  private fun getProperty(name: String, default: String?): String? = if (properties.containsKey(name))
+    properties[name]?.toString()?.trim() else default
+
+  fun init(_project: Project) {
+    val project = _project.rootProject
+    properties.putAll(project.properties)
+
+    listOf("local.properties")
+      .map { project.file(it) }
+      .forEach { propFile ->
+        if (propFile.exists()) {
+          val props = Properties()
+          FileInputStream(propFile).use {
+            props.load(it)
+          }
+          props.forEach { key, value ->
+            properties[key.toString()] = value
+          }
+        }
+      }
+
+    System.getProperties().forEach { key, value ->
+      properties[key!!.toString()] = value
+    }
+
+
+    IDE_MODE = getProperty("ideMode", "true")!!.toBoolean()
+    BUILD_VERSION = getProperty("buildVersion", "1")!!.toInt()
+    VERSION_OFFSET = getProperty("versionOffset", "1")!!.toInt()
+    VERSION_FORMAT = getProperty("versionFormat", "0.0.%d")!!.trim()
+    KEYSTORE_PASSWORD = getProperty("KEYSTORE_PASSWORD", "")!!
     MAVEN_REPO = URI.create(
       project.findProperty("LOCAL_MAVEN_REPO")?.toString()?.trim()
         ?: project.rootProject.buildDir.resolve(".m2").absolutePath
     )
+
   }
 
   fun getIncrementedVersionName() = getVersionName(BUILD_VERSION + 1)
 
-
   fun getVersionName(version: Int = BUILD_VERSION) =
     VERSION_FORMAT.format(version - VERSION_OFFSET)
-
 
 }
 

@@ -14,6 +14,8 @@ kotlin {
 //  android()
 
   linuxX64("linuxAmd64")
+  linuxArm32Hfp("linuxArm")
+  linuxArm64("linuxArm64")
 
   sourceSets {
     commonMain {
@@ -30,41 +32,24 @@ kotlin {
         implementation(kotlin("test"))
       }
     }
+
+
+  }
+  val nativeMain by sourceSets.creating {
+    dependencies {
+      //implementation(KotlinX.serialization.json)
+      implementation("com.github.danbrough.kipfs:golib:_")
+    }
   }
 
-  if (ProjectVersions.IDE_MODE) {
-    sourceSets {
-      val linuxAmd64Main by getting {
-        kotlin.srcDirs("src/nativeMain/kotlin")
-        dependencies {
-          //implementation(KotlinX.serialization.json)
-          //implementation(project(":golib"))
-        }
-      }
-    }
-
-  } else {
-
-    linuxArm32Hfp("linuxArm")
-    linuxArm64("linuxArm64")
-
-    sourceSets {
-      val nativeMain by creating {
-        dependencies {
-          //implementation(KotlinX.serialization.json)
-          implementation("com.github.danbrough.kipfs:golib:_")
-        }
-      }
-    }
-
-    val nativeMain by sourceSets.creating
-
+  afterEvaluate {
     targets.withType(KotlinNativeTarget::class).configureEach {
       compilations["main"].apply {
         defaultSourceSet.dependsOn(nativeMain)
       }
     }
   }
+
 
   targets.all {
     compilations.all {
@@ -83,8 +68,6 @@ kotlin {
     }
   }
 }
-
-
 
 
 /*

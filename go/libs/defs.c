@@ -10,8 +10,6 @@ void testCallback(void *data,int len,const char* err){
 	callback(data,len,err);
 }
 
-
-
 void pass_string(char* str) {
     printf("pass_string received: %s\n",str);
 }

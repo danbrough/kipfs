@@ -11,6 +11,14 @@ object KIPFSLibNative : KIPFSLib {
 
   override fun createShell(url: String): KShell {
     return object : KShell {
+      override fun connect() {
+        TODO("Not yet implemented")
+      }
+
+      override fun dispose() {
+        TODO("Not yet implemented")
+      }
+
       override fun id(): String = "fake_id"
     }
   }

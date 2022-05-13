@@ -19,6 +19,7 @@ version = ProjectVersions.VERSION_NAME
 val jniLibsDir = project.buildDir.resolve("jniLibs")
 
 
+
 android {
   compileSdk = ProjectVersions.SDK_VERSION
   namespace = ProjectVersions.GROUP_ID
@@ -43,6 +44,8 @@ android {
     }
   }
 }
+
+
 
 
 fun kipfsBuild(platform: String) = tasks.register<Exec>("kipfsDebug${platform.capitalize()}") {
@@ -88,6 +91,8 @@ kotlin {
       else -> null
     }
 
+
+
     binaries {
       sharedLib {
         baseName = "kipfs"
@@ -113,20 +118,23 @@ kotlin {
 
       println("NATIVE COMPILATION: $name ${konanTarget.name}")
 
+      defaultSourceSet {
+        kotlin.srcDir("src/nativeMain/kotlin")
+      }
 
       //android targets already have jni cinterop.
       if (androidJniLibDir == null)
         cinterops.create("jni") {
           //use same package name as the android code
           packageName("platform.android")
-          val jdkIncludes = rootProject.file("jdk").resolve("include")
+   /*       val jdkIncludes = rootProject.file("jdk").resolve("include")
 
           includeDirs(mutableListOf<File>().apply {
             add(jdkIncludes)
             add(jdkIncludes.resolve("linux"))
             add(jdkIncludes.resolve("win32"))
             add(jdkIncludes.resolve("darwin"))
-          })
+          })*/
           extraOpts("-verbose")
         }
 
@@ -167,17 +175,22 @@ kotlin {
   }
 
   linuxX64("linuxAmd64")
-  androidNativeX86("android386")
+
+  if (!ProjectVersions.IDE_MODE) {
+    androidNativeX86("android386")
+    androidNativeX64("androidAmd64")
+    androidNativeArm64("androidArm64")
+    androidNativeArm32("androidArm")
+    mingwX64("windowsAmd64")
+    linuxArm32Hfp("linuxArm")
+    linuxArm64("linuxArm64")
+  }
 
 /*
 linuxArm32Hfp("linuxArm")
   linuxArm64("linuxArm64")
 
 
-  androidNativeX64("androidAmd64")
-  androidNativeArm64("androidArm64")
-  androidNativeArm32("androidArm")
-  mingwX64("windowsAmd64")
   */
 
   targets.withType(KotlinNativeTarget::class).all {
@@ -197,18 +210,11 @@ linuxArm32Hfp("linuxArm")
       }
     }
 
-
     val jni by creating
 
     val androidMain by getting {
       dependsOn(jni)
     }
-
-    val jvmMain by getting {
-      dependsOn(jni)
-    }
-
-
 
     val androidAndroidTest by getting {
       dependencies {
@@ -219,37 +225,19 @@ linuxArm32Hfp("linuxArm")
       }
     }
 
-    val linuxAmd64Main by getting {
-      kotlin.srcDir("src/nativeMain/kotlin")
+    val jvmMain by getting {
+      dependsOn(jni)
     }
+
+    val linuxAmd64Main by getting
+
 
     val linuxAmd64Test by getting {
       dependsOn(linuxAmd64Main)
       kotlin.srcDir("src/nativeTest/kotlin")
     }
 
-    val android386Main by getting {
-      kotlin.srcDir("src/nativeMain/kotlin")
-    }
 
-/*   */
-
-/*
-    val linuxArmMain by getting {
-      dependsOn(nativeMain)
-    }
-
-    val linuxArm64Main by getting {
-      dependsOn(nativeMain)
-    }
-
-    val windowsAmd64Main by getting {
-      dependsOn(nativeMain)
-    }
-
-    val android386Main by getting {
-      dependsOn(nativeMain)
-    }*/
   }
 
   /*sourceSets.all {
@@ -272,8 +260,8 @@ tasks.withType(KotlinJvmTest::class) {
 }
 
 tasks.withType(KotlinNativeTest::class) {
-  kipfsProperties(project).forEach {
-    environment(it.key, it.value)
+  ProjectVersions.properties.forEach {
+    environment(it.key, it.value.toString())
   }
 }
 

@@ -1,4 +1,3 @@
-
 pluginManagement {
   repositories {
     gradlePluginPortal()
@@ -13,12 +12,12 @@ plugins {
   id("de.fayard.refreshVersions") version "0.40.1"
 }
 
+
 rootProject.name = "KIPFS"
-include(":api")
+//include(":api")
 include(":golib")
 //include(":deps")
 include(":demos:native_cmdline")
 include(":demos:jvm")
 //include(":demo")
-
 
