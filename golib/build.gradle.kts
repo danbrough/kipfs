@@ -255,6 +255,9 @@ tasks.withType(KotlinJvmTest::class) {
 
   logger.warn("LIBPATH: $libPath")
   environment("LD_LIBRARY_PATH", libPath)
+  ProjectVersions.properties.forEach {
+    environment(it.key, it.value.toString())
+  }
   //jvmArgs("-Djava.library.path=$libPath")
 }
 

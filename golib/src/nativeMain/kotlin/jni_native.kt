@@ -7,6 +7,11 @@ private fun init() {
   Platform.isMemoryLeakCheckerActive = true
 }
 
+private val log = danbroid.logging.configure("TEST", coloured = true)
+
+fun CPointer<ByteVar>.convertToString(): String = this.toKString().also {
+  platform.posix.free(this)
+}
 
 @CName("Java_KIPFSLibJNI_getMessage")
 fun getMessage(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
@@ -52,13 +57,10 @@ fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): ji
     init()
     val e = env.pointed.pointed!!
     val addrC = e.GetStringUTFChars!!(env, address, null)
-    println("got address")
     val s = KCreateShell(addrC).getPointer(this).pointed
-    println("got s")
     e.ReleaseStringUTFChars!!(env, address, addrC)
-    println("release string chars")
     if (s.r1 != null) {
-      println("An error occurred")
+      log.error("An error occurred")
       return -1
     }
     return s.r0
@@ -67,6 +69,35 @@ fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): ji
       env,
       s.getPointer(this)
     )!!*/
+  }
+}
+
+@CName("Java_KIPFSLibJNI_request")
+fun Java_KIPFSLibJNI_request(
+  env: CPointer<JNIEnvVar>,
+  thiz: jclass,
+  shellRefID: jint,
+  cmd: jstring,
+  arg: jstring
+): jbyteArray? {
+  memScoped {
+    init()
+
+    log.debug("Java_KIPFSLibJNI_request()")
+    val e = env.pointed.pointed!!
+    val cmdC = e.GetStringUTFChars!!(env, cmd, null)
+    KRequest(shellRefID, cmdC).useContents {
+      e.ReleaseStringUTFChars!!(env, cmd, cmdC)
+      r2?.convertToString()?.also {
+        throw Exception("Request failed: $it")
+      }
+
+      r0!!.readBytes(r1.toInt()).also {
+        log.warn("RESULT: ${it.decodeToString()}")
+
+      }
+    }
+    return null;
   }
 }
 

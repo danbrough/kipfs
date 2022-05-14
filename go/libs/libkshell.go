@@ -18,7 +18,8 @@ import (
 
 //export KCallbackTest
 func KCallbackTest(callback C.DataCallbackFunc) {
-	println("GOT CALLBACK", callback)
+	println("KCallbackTest()")
+	C.bridgeDataCallback(callback, unsafe.Pointer(C.CString("Hello from here")), 1234, nil)
 }
 
 //export KCID

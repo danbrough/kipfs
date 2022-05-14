@@ -4,14 +4,14 @@ object KIPFSLibJNI : KIPFSLib {
   private val log = danbroid.logging.getLog("TEST")
 
   init {
-    log.error("INIT KIPFSLibJNI")
+    log.info("INIT KIPFSLibJNI")
     runCatching {
-      log.warn("loading gokipfs ..")
+      log.debug("loading gokipfs ..")
       System.loadLibrary("gokipfs")
     }
-    log.warn("loading kipfs ..")
+    log.debug("loading kipfs ..")
     System.loadLibrary("kipfs")
-    log.warn("done")
+    log.debug("finished loading native libraries")
   }
 
 
@@ -20,8 +20,9 @@ object KIPFSLibJNI : KIPFSLib {
   external override fun dagCID(json: String): String
   external fun createShellJNI(address: String): Int
   external fun disposeGoObject(ref: Int)
+  external fun request(shellRefID: Int, cmd: String, arg: String? = null): ByteArray?
 
-  override fun createShell(url: String):KShell = KJNIShell(url)
+  override fun createShell(url: String): KShell = KJNIShell(url)
 
 
 }

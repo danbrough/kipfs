@@ -131,8 +131,14 @@ class NativeTests {
   @Test
   fun callbackTest() {
     log.info("callbackTest()")
-    libkipfs.KCallbackTest(staticCFunction { data, len, err ->
-      println("CALLBACK RECEIVED: $data len:$len err:$err")
+
+    libkipfs.KCallbackTest(staticCFunction { bytes, len, err ->
+      err?.convertToString()?.also {
+        log.error(it)
+        return@staticCFunction
+      }
+      val data = bytes?.reinterpret<ByteVar>()?.convertToString()
+      log.info("CALLBACK RECEIVED: $data len:$len")
     })
   }
 
