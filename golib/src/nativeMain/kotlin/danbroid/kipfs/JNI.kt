@@ -1,3 +1,5 @@
+package danbroid.kipfs
+
 import kotlinx.cinterop.*
 import libkipfs.*
 import platform.android.*
@@ -72,34 +74,37 @@ fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): ji
   }
 }
 
-@CName("Java_KIPFSLibJNI_request")
-fun Java_KIPFSLibJNI_request(
-  env: CPointer<JNIEnvVar>,
-  thiz: jclass,
-  shellRefID: jint,
-  cmd: jstring,
-  arg: jstring
-): jbyteArray? {
-  memScoped {
-    init()
 
-    log.debug("Java_KIPFSLibJNI_request()")
-    val e = env.pointed.pointed!!
-    val cmdC = e.GetStringUTFChars!!(env, cmd, null)
-    KRequest(shellRefID, cmdC).useContents {
-      e.ReleaseStringUTFChars!!(env, cmd, cmdC)
-      r2?.convertToString()?.also {
-        throw Exception("Request failed: $it")
+  @CName("Java_KIPFSLibJNI_request")
+  fun Java_KIPFSLibJNI_request(
+    env: CPointer<JNIEnvVar>,
+    thiz: jclass,
+    shellRefID: jint,
+    cmd: jstring,
+    arg: jstring
+  ): jbyteArray? {
+    memScoped {
+      init()
+
+      log.debug("Java_KIPFSLibJNI_request()")
+      val e = env.pointed.pointed!!
+      val cmdC = e.GetStringUTFChars!!(env, cmd, null)
+      KRequest(shellRefID, cmdC).useContents {
+        e.ReleaseStringUTFChars!!(env, cmd, cmdC)
+
+        r2?.convertToString()?.also {
+          throw Exception("Request failed: $it")
+        }
+
+        r0!!.readBytes(r1.toInt()).also {
+          log.warn("RESULT: ${it.decodeToString()}")
+
+        }
       }
-
-      r0!!.readBytes(r1.toInt()).also {
-        log.warn("RESULT: ${it.decodeToString()}")
-
-      }
+      return null;
     }
-    return null;
   }
-}
+
 
 @CName("Java_KIPFSLibJNI_disposeGoObject")
 fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
