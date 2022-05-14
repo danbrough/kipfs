@@ -158,9 +158,11 @@ kotlin {
           add(rootProject.file("go/libs"))
         })
 
-        includeDirs(project.buildDir.resolve("native/$platform"),
+        includeDirs(
+          project.buildDir.resolve("native/$platform"),
           rootProject.file("openssl/libs/$platform/include"),
-          rootProject.file("go/libs"))
+          rootProject.file("go/libs")
+        )
 
         extraOpts(mutableListOf<String>().apply {
           //add("-verbose")
@@ -234,9 +236,6 @@ linuxArm32Hfp("linuxArm")
     val jvmMain by getting {
       dependsOn(jni)
     }
-
-
-
   }
 
   /*sourceSets.all {

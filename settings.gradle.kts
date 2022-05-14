@@ -14,7 +14,7 @@ plugins {
 
 
 rootProject.name = "KIPFS"
-//include(":api")
+include(":api")
 include(":golib")
 //include(":deps")
 include(":demos:native_cmdline")

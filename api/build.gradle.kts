@@ -14,8 +14,11 @@ kotlin {
 //  android()
 
   linuxX64("linuxAmd64")
-  linuxArm32Hfp("linuxArm")
-  linuxArm64("linuxArm64")
+
+  if (!ProjectVersions.IDE_MODE) {
+    linuxArm32Hfp("linuxArm")
+    linuxArm64("linuxArm64")
+  }
 
   sourceSets {
     commonMain {

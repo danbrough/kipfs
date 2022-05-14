@@ -4,11 +4,11 @@ import kotlin.test.AfterClass
 import kotlin.test.BeforeClass
 import kotlin.test.Test
 
-fun CPointer<ByteVar>.convertToString(): String = this.toKString().also {
+private fun CPointer<ByteVar>.convertToString(): String = this.toKString().also {
   platform.posix.free(this)
 }
 
-val ipfsAddress =
+private val ipfsAddress =
   platform.posix.getenv(ENV_KIPFS_ADDRESS)?.toKString() ?: DEFAULT_KIPFS_ADDRESS.also {
     log.warn("environment ENV_KIPFS_ADDRESS not set. Using default ipfs address $it")
   }
