@@ -9,4 +9,8 @@ VERSION=$(./gradlew -q versionName)
 
 echo commiting version $VERSION
 
+git add .
+git commit -am "release: $VERSION"
+git tag $VERSION || exit 1
+
 
