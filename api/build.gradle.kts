@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetPreset
 
 plugins {
   kotlin("multiplatform")
   kotlin("plugin.serialization")
-//  id("com.android.library")
+  id("com.android.library")
+  `maven-publish`
 }
 
 group = ProjectVersions.GROUP_ID
@@ -12,12 +12,16 @@ version = ProjectVersions.VERSION_NAME
 
 kotlin {
 
-//  android()
-
-
+  android()
   linuxX64("linuxAmd64")
+  jvm()
 
   if (!ProjectVersions.IDE_MODE) {
+    androidNativeX86("android386")
+    androidNativeX64("androidAmd64")
+    androidNativeArm64("androidArm64")
+    androidNativeArm32("androidArm")
+    mingwX64("windowsAmd64")
     linuxArm32Hfp("linuxArm")
     linuxArm64("linuxArm64")
   }
@@ -51,32 +55,36 @@ kotlin {
     }
   }
 
-  val nativeMain by sourceSets.creating {
-    dependencies {
-      //implementation(KotlinX.serialization.json)
-      implementation("com.github.danbrough.kipfs:golib:_")
-    }
-  }
-
   afterEvaluate {
     targets.withType(KotlinNativeTarget::class).configureEach {
       compilations["main"].apply {
-        defaultSourceSet.dependsOn(nativeMain)
+        dependencies {
+          implementation("com.github.danbrough.kipfs:golib:_")
+        }
+        //this.defaultSourceSet.kotlin.srcDir("src/main/nativeMain")
       }
     }
   }
 }
 
 
-/*
+
 
 android {
   compileSdk = ProjectVersions.SDK_VERSION
-  sourceSets["main"].manifest.srcFile("src/AndroidManifest.xml")
+  sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+
+  namespace = "danbroid.kipfs.api"
 
   defaultConfig {
     minSdk = ProjectVersions.MIN_SDK_VERSION
     targetSdk = ProjectVersions.SDK_VERSION
   }
+
+  compileOptions {
+    sourceCompatibility = ProjectVersions.JAVA_VERSION
+    targetCompatibility = ProjectVersions.JAVA_VERSION
+  }
+
 }
-*/
+
