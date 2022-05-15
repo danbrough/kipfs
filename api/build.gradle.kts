@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetPreset
 
 plugins {
   kotlin("multiplatform")
@@ -13,6 +14,7 @@ kotlin {
 
 //  android()
 
+
   linuxX64("linuxAmd64")
 
   if (!ProjectVersions.IDE_MODE) {
@@ -21,12 +23,24 @@ kotlin {
   }
 
   sourceSets {
+
+    all {
+      listOf(
+        "kotlin.RequiresOptIn",
+        "kotlinx.serialization.ExperimentalSerializationApi",
+        "kotlin.ExperimentalMultiplatform",
+        // "kotlinx.coroutines.ExperimentalCoroutinesApi",
+        // "kotlin.time.ExperimentalTime",
+      ).forEach {
+        languageSettings.optIn(it)
+      }
+    }
+
     commonMain {
       dependencies {
         implementation(AndroidUtils.logging)
         implementation(KotlinX.serialization.json)
         implementation(KotlinX.serialization.cbor)
-        implementation(project(":golib"))
       }
     }
 
@@ -35,9 +49,8 @@ kotlin {
         implementation(kotlin("test"))
       }
     }
-
-
   }
+
   val nativeMain by sourceSets.creating {
     dependencies {
       //implementation(KotlinX.serialization.json)
@@ -49,24 +62,6 @@ kotlin {
     targets.withType(KotlinNativeTarget::class).configureEach {
       compilations["main"].apply {
         defaultSourceSet.dependsOn(nativeMain)
-      }
-    }
-  }
-
-
-  targets.all {
-    compilations.all {
-      kotlinOptions {
-        listOf(
-          "kotlin.RequiresOptIn",
-          //  "kotlinx.serialization.InternalSerializationApi",
-          "kotlinx.serialization.ExperimentalSerializationApi",
-          // "kotlinx.coroutines.ExperimentalCoroutinesApi",
-          // "kotlin.time.ExperimentalTime",
-        ).map { "-Xopt-in=$it" }.also {
-
-          freeCompilerArgs = freeCompilerArgs + it
-        }
       }
     }
   }

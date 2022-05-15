@@ -27,10 +27,14 @@ class JvmTests {
   @Test
   fun requestID() {
     log.info("requestID()")
-    val shell = KIPFSLibJNI.createShell(ipfsAddress)
-    shell.id().also {
-      log.trace(it)
+    val refnum = KIPFSLibJNI.createShellJNI(ipfsAddress)
+    KIPFSLibJNI.request(refnum, "id")!!.also {
+      val data = it.decodeToString()
+      log.warn("response: $data")
+
+
     }
+    KIPFSLibJNI.disposeGoObject(refnum)
   }
 
 

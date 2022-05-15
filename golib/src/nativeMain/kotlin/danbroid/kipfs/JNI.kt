@@ -75,35 +75,41 @@ fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): ji
 }
 
 
-  @CName("Java_KIPFSLibJNI_request")
-  fun Java_KIPFSLibJNI_request(
-    env: CPointer<JNIEnvVar>,
-    thiz: jclass,
-    shellRefID: jint,
-    cmd: jstring,
-    arg: jstring
-  ): jbyteArray? {
-    memScoped {
-      init()
+@CName("Java_KIPFSLibJNI_request")
+fun request(
+  env: CPointer<JNIEnvVar>,
+  thiz: jclass,
+  shellRefID: jint,
+  cmd: jstring,
+  arg: jstring
+): jbyteArray? {
+  memScoped {
+    init()
 
-      log.debug("Java_KIPFSLibJNI_request()")
-      val e = env.pointed.pointed!!
-      val cmdC = e.GetStringUTFChars!!(env, cmd, null)
-      KRequest(shellRefID, cmdC).useContents {
-        e.ReleaseStringUTFChars!!(env, cmd, cmdC)
+    log.debug("Java_KIPFSLibJNI_request()")
+    val e = env.pointed.pointed!!
+    val cmdC = e.GetStringUTFChars!!(env, cmd, null)
+    KRequest(shellRefID, cmdC).useContents {
+      e.ReleaseStringUTFChars!!(env, cmd, cmdC)
 
-        r2?.convertToString()?.also {
-          throw Exception("Request failed: $it")
-        }
-
-        r0!!.readBytes(r1.toInt()).also {
-          log.warn("RESULT: ${it.decodeToString()}")
-
-        }
+      r2?.convertToString()?.also {
+        throw Exception("Request failed: $it")
       }
-      return null;
+
+      r0!!.readBytes(r1.toInt()).also { bytes ->
+        //  log.warn("RESULT: ${bytes.decodeToString()}")
+        val jbytes = e.NewByteArray!!(env, r1.toInt())!!
+
+        bytes.usePinned {
+          e.SetByteArrayRegion!!(env, jbytes, 0, r1.toInt(), it.addressOf(0))
+        }
+
+        return jbytes
+      }
     }
+    return null;
   }
+}
 
 
 @CName("Java_KIPFSLibJNI_disposeGoObject")

@@ -27,11 +27,59 @@ object ProjectVersions {
   val VERSION_NAME: String
     get() = getVersionName()
 
+  /*
+PRESET: android
+PRESET: androidNativeArm32
+PRESET: androidNativeArm64
+PRESET: androidNativeX64
+PRESET: androidNativeX86
+PRESET: iosArm32
+PRESET: iosArm64
+PRESET: iosSimulatorArm64
+PRESET: iosX64
+PRESET: js
+PRESET: jsBoth
+PRESET: jsIr
+PRESET: jvm
+PRESET: jvmWithJava
+PRESET: linuxArm32Hfp
+PRESET: linuxArm64
+PRESET: linuxMips32
+PRESET: linuxMipsel32
+PRESET: linuxX64
+PRESET: macosArm64
+PRESET: macosX64
+PRESET: mingwX64
+PRESET: mingwX86
+PRESET: tvosArm64
+PRESET: tvosSimulatorArm64
+PRESET: tvosX64
+PRESET: wasm
+PRESET: wasm32
+PRESET: watchosArm32
+PRESET: watchosArm64
+PRESET: watchosSimulatorArm64
+PRESET: watchosX64
+PRESET: watchosX86
+ */
+
+  const val TARGET_HOST = "linuxAmd64"
+  val TARGETS_OTHER = mapOf(
+    "androidNativeArm32" to "androidArm",
+    "androidNativeArm64" to "androidArm64",
+    "androidNativeX64" to "androidAmd64",
+    "androidNativeX86" to "android386",
+    "linuxArm64" to "linuxArm64",
+    "linuxArm32Hfp" to "linuxArm",
+    "mingwX64" to "windowsAmd64",
+  )
+
 
   val properties = mutableMapOf<String, Any?>()
 
-  private fun getProperty(name: String, default: String?): String? = if (properties.containsKey(name))
-    properties[name]?.toString()?.trim() else default
+  private fun getProperty(name: String, default: String?): String? =
+    if (properties.containsKey(name))
+      properties[name]?.toString()?.trim() else default
 
   fun init(_project: Project) {
     val project = _project.rootProject
@@ -67,13 +115,13 @@ object ProjectVersions {
     )
 
 
-    project.tasks.create("versionName"){
+    project.tasks.create("versionName") {
       doLast {
         println(VERSION_NAME)
       }
     }
 
-    project.tasks.create("incrementedVersionName"){
+    project.tasks.create("incrementedVersionName") {
       doLast {
         println(getIncrementedVersionName())
       }
@@ -85,7 +133,9 @@ object ProjectVersions {
   fun getVersionName(version: Int = BUILD_VERSION) =
     VERSION_FORMAT.format(version - VERSION_OFFSET)
 
+
 }
+
 
 object AndroidUtils {
   private const val version = "_"

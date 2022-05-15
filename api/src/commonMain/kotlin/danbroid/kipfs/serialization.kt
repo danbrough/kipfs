@@ -1,11 +1,13 @@
 package danbroid.kipfs
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.cbor.Cbor
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import kotlin.jvm.JvmName
 
+@OptIn(ExperimentalSerializationApi::class)
 private val cbor = Cbor {
   encodeDefaults = true
 }

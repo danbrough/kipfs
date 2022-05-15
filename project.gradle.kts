@@ -42,11 +42,8 @@ class ProjectPlugin @javax.inject.Inject constructor() : Plugin<Project> {
   }
 }
 
-// Apply the plugin
 apply<ProjectPlugin>()
 
 configure<ProjectInitExtension> {
-
   ProjectVersions.init(project)
-
 }

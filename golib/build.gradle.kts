@@ -133,15 +133,7 @@ kotlin {
         cinterops.create("jni") {
           //use same package name as the android code
           packageName("platform.android")
-          /*       val jdkIncludes = rootProject.file("jdk").resolve("include")
-
-                 includeDirs(mutableListOf<File>().apply {
-                   add(jdkIncludes)
-                   add(jdkIncludes.resolve("linux"))
-                   add(jdkIncludes.resolve("win32"))
-                   add(jdkIncludes.resolve("darwin"))
-                 })*/
-          extraOpts("-verbose")
+       //   extraOpts("-verbose")
         }
 
 
@@ -236,6 +228,16 @@ linuxArm32Hfp("linuxArm")
     val jvmMain by getting {
       dependsOn(jni)
     }
+
+/*
+    val jvmTest by getting {
+      dependencies {
+        project(":api")
+      }
+    }
+*/
+
+
   }
 
   /*sourceSets.all {
