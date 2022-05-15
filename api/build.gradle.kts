@@ -36,7 +36,7 @@ kotlin {
       }
     }
 
-    commonMain {
+    val commonMain by getting {
       dependencies {
         implementation(AndroidUtils.logging)
         implementation(KotlinX.serialization.json)
@@ -44,7 +44,7 @@ kotlin {
       }
     }
 
-    commonTest {
+    val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
       }

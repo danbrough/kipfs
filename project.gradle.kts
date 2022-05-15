@@ -11,19 +11,19 @@ class ProjectPlugin @javax.inject.Inject constructor() : Plugin<Project> {
     project.extensions.create<ProjectInitExtension>("init")
     //initProps()
 
-    project.task("projectVersionName") {
+    project.task("versionName") {
       doLast {
         println(ProjectVersions.getVersionName())
       }
     }
 
-    project.task("projectNextVersionName") {
+    project.task("versionNameNext") {
       doLast {
         println(ProjectVersions.getIncrementedVersionName())
       }
     }
 
-    project.task("projectIncrementVersion") {
+    project.task("versionIncrement") {
       doLast {
         val propsFile = project.file("gradle.properties")
         val fis = FileInputStream(propsFile)
