@@ -59,13 +59,9 @@ allprojects {
   val libPath =
     golibBuildDir.resolve("bin/$hostPlatform/debugShared").absolutePath + File.pathSeparator +
         golibBuildDir.resolve("native/$hostPlatform").absolutePath
-  logger.warn("LIB PATH: $libPath")
-
-
 
   tasks.withType<Test>().all {
     dependsOn(":golib:linkDebugShared${hostPlatform.capitalize()}")
-
     environment("LD_LIBRARY_PATH", libPath)
     ProjectVersions.properties.forEach {
       environment(it.key, it.value.toString())

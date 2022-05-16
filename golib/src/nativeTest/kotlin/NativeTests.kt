@@ -1,4 +1,3 @@
-import KIPFSLibNative.log
 import danbroid.kipfs.ResponseID
 import danbroid.kipfs.decodeJson
 import kotlinx.cinterop.*
@@ -11,11 +10,15 @@ private fun CPointer<ByteVar>.convertToString(): String = this.toKString().also 
   platform.posix.free(this)
 }
 
+
+
+
 private val ipfsAddress =
   platform.posix.getenv(ENV_KIPFS_ADDRESS)?.toKString() ?: DEFAULT_KIPFS_ADDRESS.also {
     log.warn("environment ENV_KIPFS_ADDRESS not set. Using default ipfs address $it")
   }
 
+private val log = danbroid.logging.getLog(NativeTests::class)
 
 class NativeTests {
 

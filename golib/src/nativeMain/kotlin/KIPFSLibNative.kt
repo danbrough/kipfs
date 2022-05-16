@@ -4,7 +4,7 @@ import platform.posix.free
 
 object KIPFSLibNative : KIPFSLib {
 
-  val log = danbroid.logging.configure("TEST", coloured = true)
+  val log = danbroid.logging.getLog(KIPFSLibNative::class)
 
   override fun getMessage(): String = libkipfs.KGetMessage()!!.copyToString()
   override fun getMessage2(): String = libkipfs.KGetMessage2()!!.copyToString()
