@@ -22,8 +22,6 @@ object KIPFSLibNative : KIPFSLib {
         log.warn("dispose() NOT IMPLEMENTED")
       }
 
-      override fun id(): String = "fake_id"
-
       override fun request(command: String, arg: String?): ByteArray {
         TODO()
       }
@@ -33,7 +31,10 @@ object KIPFSLibNative : KIPFSLib {
   override fun environment(key: String): String? = platform.posix.getenv(key)?.copyToString()
 }
 
-actual fun initKIPFSLib(): KIPFSLib = KIPFSLibNative
+actual fun initKIPFSLib(): KIPFSLib {
+  danbroid.logging.configure("TEST", coloured = true).info("configured log")
+  return KIPFSLibNative
+}
 
 
 fun CPointer<ByteVar>.copyToString(): String = this.toKString().also {

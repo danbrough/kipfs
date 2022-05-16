@@ -6,7 +6,6 @@ const val DEFAULT_KIPFS_ADDRESS = "/ip4/127.0.0.1/tcp/5001"
 interface KShell {
   fun connect()
   fun dispose()
-  fun id(): String
   fun request(command: String, arg: String? = null): ByteArray
 
 }

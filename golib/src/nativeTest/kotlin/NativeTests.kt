@@ -1,7 +1,4 @@
-import danbroid.kipfs.DEFAULT_KIPFS_ADDRESS
-import danbroid.kipfs.ENV_KIPFS_ADDRESS
-import danbroid.kipfs.ResponseID
-import danbroid.kipfs.decodeJson
+import danbroid.kipfs.*
 import kotlinx.cinterop.*
 import kotlin.test.AfterClass
 import kotlin.test.BeforeClass
@@ -14,19 +11,24 @@ private fun CPointer<ByteVar>.convertToString(): String = this.toKString().also 
 
 private val ipfsAddress =
   platform.posix.getenv(ENV_KIPFS_ADDRESS)?.toKString() ?: DEFAULT_KIPFS_ADDRESS.also {
-    log.warn("environment ENV_KIPFS_ADDRESS not set. Using default ipfs address $it")
+    NativeTests.log.warn("environment ENV_KIPFS_ADDRESS not set. Using default ipfs address $it")
   }
 
-private val log = danbroid.logging.getLog(NativeTests::class)
 
 class NativeTests {
 
   companion object {
 
+    init {
+      initKIPFSLib()
+    }
+
+    val log = danbroid.logging.getLog(NativeTests::class)
 
     @BeforeClass
     fun setupTests() {
       log.info("setupTests()")
+
 
 
     }
@@ -87,6 +89,7 @@ class NativeTests {
 
   @Test
   fun shellTest() {
+    log.warn("shellTest()")
     memScoped {
       log.trace("calling id at $ipfsAddress")
       val shellID = libkipfs.KCreateShell(ipfsAddress.cstr).useContents {
@@ -95,21 +98,41 @@ class NativeTests {
         }
         r0
       }
+      log.debug("shellID: $shellID")
 
-      libkipfs.KRequest(shellID, "id".utf8, null).useContents {
+      val idTest = {
+        log.warn("idTEST()")
+        libkipfs.KRequest(shellID, "id".utf8, null).useContents {
+          r2?.convertToString()?.also {
+            throw Exception("Request failed: $it")
+          } ?: run {
+            r0!!.readBytes(r1.toInt()).decodeToString().also {
+              log.info("RESULT: $it")
+              it.decodeJson<ResponseID>().also {
+                log.trace("RESPONSE: $it")
+              }
+            }
+          }
+        }
+      }
+
+      idTest()
+      idTest()
+
+
+/*      libkipfs.KRequest(shellID, "cat".utf8, Testing.CID_HELLO_WORLD.cstr).useContents {
         r2?.convertToString()?.also {
           throw Exception("Request failed: $it")
         } ?: run {
           r0!!.readBytes(r1.toInt()).decodeToString().also {
             log.info("RESULT: $it")
-            it.decodeJson<ResponseID>().also {
-              log.trace("RESPONSE: $it")
-            }
           }
+
         }
-      }
-      log.info("finished .. disposing of shell")
-      libkipfs.KDestroyRef(shellID)
+      }*/
+
+     log.info("finished .. disposing of shell")
+     libkipfs.KDestroyRef(shellID)
     }
   }
 

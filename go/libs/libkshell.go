@@ -44,6 +44,8 @@ func KCreateShell(cUrl *C.char) (C.int32_t, *C.char) {
 
 	if kShell != nil {
 		refnum := _seq.ToRefNum(kShell)
+
+		_seq.Inc(refnum)
 		_seq.Inc(refnum)
 		ptr = C.int32_t(refnum)
 		//println("returning refnum", ptr)

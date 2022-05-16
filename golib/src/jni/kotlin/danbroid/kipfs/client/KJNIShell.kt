@@ -28,15 +28,6 @@ class KJNIShell(private val ipfsAddress: String) : KShell {
     ref = 0
   }
 
-  override fun id(): String {
-    connect()
-    KIPFSLibJNI.request(ref, "id").also {
-      log.debug("request id returned ${it.size}")
-      log.trace(it.decodeToString())
-    }
-    return ""
-  }
-
   override fun request(command: String, arg: String?): ByteArray {
     connect()
     return KIPFSLibJNI.request(ref, command, arg)

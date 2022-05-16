@@ -61,15 +61,29 @@ allprojects {
         golibBuildDir.resolve("native/$hostPlatform").absolutePath
 
   tasks.withType<Test>().all {
-    dependsOn(":golib:linkDebugShared${hostPlatform.capitalize()}")
+   dependsOn(":golib:linkDebugShared${hostPlatform.capitalize()}")
     environment("LD_LIBRARY_PATH", libPath)
     ProjectVersions.properties.forEach {
       environment(it.key, it.value.toString())
     }
   }
 
+/*  tasks.withType<KotlinJvmTest>().all {
+    dependsOn(":golib:linkDebugShared${hostPlatform.capitalize()}")
+    environment("LD_LIBRARY_PATH", libPath)
+    ProjectVersions.properties.forEach {
+      environment(it.key, it.value.toString())
+    }
+  }*/
+  /*tasks.withType<KotlinNativeTest>().all {
+  //  dependsOn(":golib:linkDebugShared${hostPlatform.capitalize()}")
+    environment("LD_LIBRARY_PATH", libPath)
+    ProjectVersions.properties.forEach {
+      environment(it.key, it.value.toString())
+    }
+  }*/
 
-  tasks.withType<KotlinJvmCompile>().all {
+  tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().all {
     kotlinOptions {
       jvmTarget = ProjectVersions.KOTLIN_JVM_VERSION
     }

@@ -78,7 +78,6 @@ fun kipfsBuild(platform: String) = tasks.register<Exec>("kipfsDebug${platform.ca
 
 kotlin {
 
-
   fun KotlinNativeTarget.configureSharedLib() {
     val platform = name
     val kipfsBuild = kipfsBuild(platform)
@@ -90,8 +89,6 @@ kotlin {
       "androidArm64" -> "arm64-v8a"
       else -> null
     }
-
-
 
     binaries {
       sharedLib {

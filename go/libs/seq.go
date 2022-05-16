@@ -33,7 +33,7 @@ func IncGoRef(refnum C.int32_t) {
 func init() {
     println("seq.go init()")
 	_seq.FinalizeRef = func(ref *_seq.Ref) {
-	    println("finalize ref")
+	    println("finalize ref!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		refnum := ref.Bind_Num
 		if refnum < 0 {
 			panic(fmt.Sprintf("not a foreign ref: %d", refnum))
