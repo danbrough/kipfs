@@ -1,3 +1,6 @@
+import KIPFSLibNative.log
+import danbroid.kipfs.ResponseID
+import danbroid.kipfs.decodeJson
 import kotlinx.cinterop.*
 import platform.linux.free
 import kotlin.test.AfterClass
@@ -83,7 +86,7 @@ class NativeTests {
   @Test
   fun shellTest() {
     memScoped {
-      log.trace("calling id..")
+      log.trace("calling id at $ipfsAddress")
       val shellID = libkipfs.KCreateShell(ipfsAddress.cstr).useContents {
         r1?.convertToString()?.also {
           throw Exception(it)
@@ -91,16 +94,19 @@ class NativeTests {
         r0
       }
 
-      libkipfs.KRequest(shellID, "id".utf8).useContents {
+      libkipfs.KRequest(shellID, "id".utf8,null).useContents {
         r2?.convertToString()?.also {
           throw Exception("Request failed: $it")
         } ?: run {
           r0!!.readBytes(r1.toInt()).decodeToString().also {
             log.info("RESULT: $it")
+            it.decodeJson<ResponseID>().also {
+              log.trace("RESPONSE: $it")
+            }
           }
         }
       }
-      log.trace("finished .. disposing of shell")
+      log.info("finished .. disposing of shell")
       libkipfs.KDestroyRef(shellID)
     }
   }

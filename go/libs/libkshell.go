@@ -35,18 +35,18 @@ func KDestroyRef(refnum C.int32_t) {
 //export KCreateShell
 func KCreateShell(cUrl *C.char) (C.int32_t, *C.char) {
 	var url = C.GoString(cUrl)
-	println("KCreateShell():", url)
+	//println("KCreateShell():", url)
 	var ptr C.int32_t = _seq.NullRefNum
-	println("_seq.NullRefNum is", ptr)
+	//println("_seq.NullRefNum is", ptr)
 
-	println("creating shell....")
+	//println("creating shell....")
 	kShell := shell.NewShell(url)
 
 	if kShell != nil {
 		refnum := _seq.ToRefNum(kShell)
 		_seq.Inc(refnum)
 		ptr = C.int32_t(refnum)
-		println("returning refnum", ptr)
+		//println("returning refnum", ptr)
 	} else {
 		return ptr, C.CString("Failed to created shell")
 	}
@@ -75,14 +75,18 @@ func KTest() unsafe.Pointer {
 }
 
 //export KRequest
-func KRequest(refnum C.int32_t, name *C.char) (unsafe.Pointer, int, *C.char) {
+func KRequest(refnum C.int32_t, command *C.char, arg *C.char) (unsafe.Pointer, int, *C.char) {
 	ref := _seq.FromRefNum(int32(refnum))
 	kShell := ref.Get().(*shell.Shell)
 
-	s, err := kShell.NewRequest(C.GoString(name)).Send()
+	rb := kShell.NewRequest(C.GoString(command))
+	if arg != nil {
+		rb.Argument(C.GoString(arg))
+	}
+	data, err := rb.Send()
 	if err != nil {
 		return nil, -1, C.CString(err.Error())
 	}
 
-	return C.CBytes(s), len(s), nil
+	return C.CBytes(data), len(data), nil
 }

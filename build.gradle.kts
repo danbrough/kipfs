@@ -1,9 +1,14 @@
+import com.android.build.api.variant.AndroidTest
+import com.android.build.gradle.internal.tasks.AndroidTestTask
+import com.android.build.gradle.tasks.factory.AndroidUnitTest
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 import  org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetPreset
+import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
 
 plugins {
@@ -46,6 +51,24 @@ allprojects {
     }
     outputs.upToDateWhen {
       false
+    }
+  }
+
+  val hostPlatform = ProjectVersions.TARGET_HOST
+  val golibBuildDir = rootDir.resolve("golib/build")
+  val libPath =
+    golibBuildDir.resolve("bin/$hostPlatform/debugShared").absolutePath + File.pathSeparator +
+        golibBuildDir.resolve("native/$hostPlatform").absolutePath
+  logger.warn("LIB PATH: $libPath")
+
+
+
+  tasks.withType<Test>().all {
+    dependsOn(":golib:linkDebugShared${hostPlatform.capitalize()}")
+
+    environment("LD_LIBRARY_PATH", libPath)
+    ProjectVersions.properties.forEach {
+      environment(it.key, it.value.toString())
     }
   }
 

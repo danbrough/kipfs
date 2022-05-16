@@ -1,4 +1,7 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetPreset
+import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
+import java.io.File
 
 plugins {
   kotlin("multiplatform")
@@ -40,7 +43,7 @@ kotlin {
       }
     }
 
-    val commonMain by getting {
+    commonMain {
       dependencies {
         implementation(AndroidUtils.logging)
         implementation(KotlinX.serialization.json)
@@ -48,26 +51,14 @@ kotlin {
       }
     }
 
-    val commonTest by getting {
+    commonTest {
       dependencies {
         implementation(kotlin("test"))
-      }
-    }
-  }
-
-  afterEvaluate {
-    targets.withType(KotlinNativeTarget::class).configureEach {
-      compilations["main"].apply {
-        dependencies {
-          implementation("com.github.danbrough.kipfs:golib:_")
-        }
-        //this.defaultSourceSet.kotlin.srcDir("src/main/nativeMain")
+        implementation(project(":golib"))
       }
     }
   }
 }
-
-
 
 
 android {

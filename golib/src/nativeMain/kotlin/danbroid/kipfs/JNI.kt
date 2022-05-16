@@ -1,5 +1,6 @@
 package danbroid.kipfs
 
+import KIPFSLibNative.log
 import kotlinx.cinterop.*
 import libkipfs.*
 import platform.android.*
@@ -9,7 +10,6 @@ private fun init() {
   Platform.isMemoryLeakCheckerActive = true
 }
 
-private val log = danbroid.logging.configure("TEST", coloured = true)
 
 fun CPointer<ByteVar>.convertToString(): String = this.toKString().also {
   platform.posix.free(this)
@@ -89,8 +89,11 @@ fun request(
     log.debug("Java_KIPFSLibJNI_request()")
     val e = env.pointed.pointed!!
     val cmdC = e.GetStringUTFChars!!(env, cmd, null)
-    KRequest(shellRefID, cmdC).useContents {
+
+
+    KRequest(shellRefID, cmdC, null).useContents {
       e.ReleaseStringUTFChars!!(env, cmd, cmdC)
+
 
       r2?.convertToString()?.also {
         throw Exception("Request failed: $it")

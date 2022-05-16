@@ -6,6 +6,7 @@ interface KShell {
   fun connect()
   fun dispose()
   fun id(): String
+  fun request(command:String,arg:String?=null): ByteArray
 }
 
 interface KIPFSLib {
@@ -13,6 +14,7 @@ interface KIPFSLib {
   fun getMessage2(): String
   fun dagCID(json: String): String
   fun createShell(url: String): KShell
+  fun environment(key:String):String?
 }
 
 

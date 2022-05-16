@@ -133,7 +133,7 @@ kotlin {
         cinterops.create("jni") {
           //use same package name as the android code
           packageName("platform.android")
-       //   extraOpts("-verbose")
+          //   extraOpts("-verbose")
         }
 
 
@@ -186,18 +186,17 @@ kotlin {
     linuxArm64("linuxArm64")
   }
 
-/*
-linuxArm32Hfp("linuxArm")
-  linuxArm64("linuxArm64")
-
-
-  */
-
   targets.withType(KotlinNativeTarget::class).all {
     configureSharedLib()
   }
 
   sourceSets {
+
+    all {
+      languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+    }
+
+
     commonMain {
       dependencies {
         implementation(AndroidUtils.logging)
@@ -207,6 +206,7 @@ linuxArm32Hfp("linuxArm")
     commonTest {
       dependencies {
         implementation(kotlin("test"))
+        implementation(project(":api"))
       }
     }
 
@@ -229,50 +229,21 @@ linuxArm32Hfp("linuxArm")
       dependsOn(jni)
     }
 
-/*
-    val jvmTest by getting {
-      dependencies {
-        project(":api")
-      }
+  }
+
+
+//make connectedDebugAndroidTest tasks dependent on the jni shared library
+  targets.withType(KotlinNativeTarget::class).asMap.values.flatMap { it.binaries.toList() }
+    .filterIsInstance<SharedLibrary>().filter {
+      it.buildType == NativeBuildType.DEBUG && it.linkTask.target.startsWith("android")
+    }.forEach {
+      tasks.named("connectedDebugAndroidTest").dependsOn(it.linkTaskProvider)
     }
-*/
-
-
-  }
-
-  /*sourceSets.all {
-    languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
-  }*/
-
 }
 
-tasks.withType(KotlinJvmTest::class) {
-  val platform = "linuxAmd64"
-  dependsOn("linkDebugShared${platform.capitalize()}")
-
-  val libPath =
-    File(project.buildDir, "bin/$platform/debugShared").absolutePath + File.pathSeparator +
-        File(project.buildDir, "native/$platform/").absolutePath
-
-  logger.warn("LIBPATH: $libPath")
-  environment("LD_LIBRARY_PATH", libPath)
-  ProjectVersions.properties.forEach {
-    environment(it.key, it.value.toString())
-  }
-  //jvmArgs("-Djava.library.path=$libPath")
-}
-
-tasks.withType(KotlinNativeTest::class) {
-  ProjectVersions.properties.forEach {
-    environment(it.key, it.value.toString())
-  }
-
-}
 
 afterEvaluate {
-
   publishing {
-
     publications {
 
       kotlin.targets.withType(KotlinNativeTarget::class) {
@@ -310,19 +281,7 @@ afterEvaluate {
       maven(ProjectVersions.MAVEN_REPO)
     }
   }
+
+
 }
 
-tasks.withType(KotlinNativeHostTest::class).all {
-//println("NativeHostTest: ${this.name} ${this.targetName}")
-  environment("LD_LIBRARY_PATH", project.buildDir.resolve("native/$targetName").absolutePath)
-}
-
-afterEvaluate {
-//make connectedDebugAndroidTest tasks dependent on the jni shared library
-  kotlin.targets.withType(KotlinNativeTarget::class).asMap.values.flatMap { it.binaries.toList() }
-    .filterIsInstance<SharedLibrary>().filter {
-      it.buildType == NativeBuildType.DEBUG && it.linkTask.target.startsWith("android")
-    }.forEach {
-      tasks.named("connectedDebugAndroidTest").dependsOn(it.linkTaskProvider)
-    }
-}
