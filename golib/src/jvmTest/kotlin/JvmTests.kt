@@ -11,8 +11,8 @@ class JvmTests {
   fun jvmTest() {
     log.info("jvmTest()")
 
-    log.debug("connecting to ${Tests.ipfsAddress}")
-    val refnum = KIPFSLibJNI.createShellJNI(Tests.ipfsAddress)
+    log.debug("connecting to ${Testing.ipfsAddress}")
+    val refnum = KIPFSLibJNI.createShellJNI(Testing.ipfsAddress)
 
     KIPFSLibJNI.disposeGoObject(refnum)
   }
@@ -20,7 +20,7 @@ class JvmTests {
   @Test
   fun requestID() {
     log.info("requestID()")
-    val refnum = KIPFSLibJNI.createShellJNI(Tests.ipfsAddress)
+    val refnum = KIPFSLibJNI.createShellJNI(Testing.ipfsAddress)
     KIPFSLibJNI.request(refnum, "id").also {
       log.info("received byte array of length: ${it.size}")
       val data = it.decodeToString()

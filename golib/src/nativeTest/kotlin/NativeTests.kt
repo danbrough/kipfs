@@ -1,7 +1,8 @@
+import danbroid.kipfs.DEFAULT_KIPFS_ADDRESS
+import danbroid.kipfs.ENV_KIPFS_ADDRESS
 import danbroid.kipfs.ResponseID
 import danbroid.kipfs.decodeJson
 import kotlinx.cinterop.*
-import platform.linux.free
 import kotlin.test.AfterClass
 import kotlin.test.BeforeClass
 import kotlin.test.Test
@@ -9,8 +10,6 @@ import kotlin.test.Test
 private fun CPointer<ByteVar>.convertToString(): String = this.toKString().also {
   platform.posix.free(this)
 }
-
-
 
 
 private val ipfsAddress =
@@ -97,7 +96,7 @@ class NativeTests {
         r0
       }
 
-      libkipfs.KRequest(shellID, "id".utf8,null).useContents {
+      libkipfs.KRequest(shellID, "id".utf8, null).useContents {
         r2?.convertToString()?.also {
           throw Exception("Request failed: $it")
         } ?: run {

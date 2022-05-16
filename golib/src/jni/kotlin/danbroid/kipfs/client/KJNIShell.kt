@@ -1,7 +1,8 @@
 package danbroid.kipfs.client
 
-import KIPFSLibJNI
-import KShell
+import danbroid.kipfs.KIPFSLibJNI
+import danbroid.kipfs.KShell
+
 
 class KJNIShell(private val ipfsAddress: String) : KShell {
 

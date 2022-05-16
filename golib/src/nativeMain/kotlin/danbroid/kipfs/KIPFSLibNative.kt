@@ -1,3 +1,5 @@
+package danbroid.kipfs
+
 import kotlinx.cinterop.*
 import platform.posix.free
 

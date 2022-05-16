@@ -1,3 +1,5 @@
+package danbroid.kipfs
+
 import danbroid.kipfs.client.KJNIShell
 import danbroid.logging.DBLog
 import danbroid.logging.StdOutLog

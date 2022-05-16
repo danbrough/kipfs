@@ -1,6 +1,6 @@
 package danbroid.kipfs
 
-import KIPFSLibNative.log
+import danbroid.kipfs.KIPFSLibNative.log
 import kotlinx.cinterop.*
 import libkipfs.*
 import platform.android.*
@@ -15,7 +15,7 @@ fun CPointer<ByteVar>.convertToString(): String = this.toKString().also {
   platform.posix.free(this)
 }
 
-@CName("Java_KIPFSLibJNI_getMessage")
+@CName("Java_danbroid_kipfs_KIPFSLibJNI_getMessage")
 fun getMessage(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     init()
@@ -28,7 +28,7 @@ fun getMessage(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   }
 }
 
-@CName("Java_KIPFSLibJNI_getMessage2")
+@CName("Java_danbroid_kipfs_KIPFSLibJNI_getMessage2")
 fun getMessage2(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     init()
@@ -40,7 +40,7 @@ fun getMessage2(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   }
 }
 
-@CName("Java_KIPFSLibJNI_dagCID")
+@CName("Java_danbroid_kipfs_KIPFSLibJNI_dagCID")
 fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   memScoped {
     init()
@@ -53,7 +53,7 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   }
 }
 
-@CName("Java_KIPFSLibJNI_createShellJNI")
+@CName("Java_danbroid_kipfs_KIPFSLibJNI_createShellJNI")
 fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): jint {
   memScoped {
     init()
@@ -75,7 +75,7 @@ fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): ji
 }
 
 
-@CName("Java_KIPFSLibJNI_request")
+@CName("Java_danbroid_kipfs_KIPFSLibJNI_request")
 fun request(
   env: CPointer<JNIEnvVar>,
   thiz: jclass,
@@ -86,7 +86,7 @@ fun request(
   memScoped {
     init()
 
-    log.debug("Java_KIPFSLibJNI_request()")
+    log.debug("Java_danbroid_kipfs_KIPFSLibJNI_request()")
     val e = env.pointed.pointed!!
     val cmdC = e.GetStringUTFChars!!(env, cmd, null)
 
@@ -115,7 +115,7 @@ fun request(
 }
 
 
-@CName("Java_KIPFSLibJNI_disposeGoObject")
+@CName("Java_danbroid_kipfs_KIPFSLibJNI_disposeGoObject")
 fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
   KDestroyRef(refnum)
 }
