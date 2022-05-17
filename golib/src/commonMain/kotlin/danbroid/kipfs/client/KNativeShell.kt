@@ -1,13 +1,13 @@
 package danbroid.kipfs.client
 
-import danbroid.kipfs.KIPFSLibJNI
+import danbroid.kipfs.KIPFSNativeLib
 import danbroid.kipfs.KShell
 
 
-class KJNIShell(private val ipfsAddress: String) : KShell {
+class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: String) : KShell {
 
   companion object {
-    private val log = danbroid.logging.getLog(KJNIShell::class)
+    private val log = danbroid.logging.getLog(KNativeShell::class)
   }
 
   private var ref = 0
@@ -20,19 +20,21 @@ class KJNIShell(private val ipfsAddress: String) : KShell {
   override fun connect() {
     if (ref != 0) return
     log.info("connect() $ipfsAddress")
-    ref = KIPFSLibJNI.createShellJNI(ipfsAddress)
+    ref = kipfs.createNativeShell(ipfsAddress)
   }
 
   override fun dispose() {
     log.info("dispose() $ref")
-    ref = 0
+    if (ref != 0) {
+      kipfs.disposeGoObject(ref)
+      ref = 0
+    }
   }
 
   override fun request(command: String, arg: String?): ByteArray {
     connect()
-    return KIPFSLibJNI.request(ref, command, arg)
+    return kipfs.request(ref, command, arg)
   }
-
 
   override fun toString(): String = "KShell[$ipfsAddress]"
 }

@@ -118,6 +118,7 @@ class NativeTests {
 
       idTest()
       idTest()
+      idTest()
 
 
 /*      libkipfs.KRequest(shellID, "cat".utf8, Testing.CID_HELLO_WORLD.cstr).useContents {
@@ -132,7 +133,7 @@ class NativeTests {
       }*/
 
      log.info("finished .. disposing of shell")
-     libkipfs.KDestroyRef(shellID)
+     libkipfs.KDecRef(shellID)
     }
   }
 

@@ -1,15 +1,12 @@
 package danbroid.kipfs
 
-import danbroid.kipfs.client.KJNIShell
+import danbroid.kipfs.client.KNativeShell
 import danbroid.logging.DBLog
 import danbroid.logging.StdOutLog
 
-object KIPFSLibJNI : KIPFSLib {
-  private val log: DBLog = let {
-    runCatching { danbroid.logging.configure("TEST", coloured = true) }.recoverCatching {
-      danbroid.logging.configure("TEST", defaultLog = StdOutLog, coloured = true)
-    }.getOrNull()!!
-  }
+
+object KIPFSLibJNI : KIPFSNativeLib {
+  private val log= danbroid.logging.configure("TEST", coloured = true)
 
   init {
     log.info("INIT KIPFSLibJNI")
@@ -26,11 +23,11 @@ object KIPFSLibJNI : KIPFSLib {
   external override fun getMessage(): String
   external override fun getMessage2(): String
   external override fun dagCID(json: String): String
-  external fun createShellJNI(address: String): Int
-  external fun disposeGoObject(ref: Int)
-  external fun request(shellRefID: Int, cmd: String, arg: String? = null): ByteArray
+  external override fun createNativeShell(address: String): Int
+  external override fun disposeGoObject(ref: Int)
+  external override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray
 
-  override fun createShell(url: String): KShell = KJNIShell(url)
+  override fun createShell(url: String): KShell = KNativeShell(this, url)
   override fun environment(key: String): String? = System.getenv(key)
 
 }

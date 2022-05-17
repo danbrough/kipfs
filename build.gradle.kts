@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetPreset
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
+import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 
 
 plugins {
@@ -61,7 +62,7 @@ allprojects {
         golibBuildDir.resolve("native/$hostPlatform").absolutePath
 
   tasks.withType<Test>().all {
-   dependsOn(":golib:linkDebugShared${hostPlatform.capitalize()}")
+    dependsOn(":golib:linkDebugShared${hostPlatform.capitalize()}")
     environment("LD_LIBRARY_PATH", libPath)
     ProjectVersions.properties.forEach {
       environment(it.key, it.value.toString())
@@ -75,13 +76,13 @@ allprojects {
       environment(it.key, it.value.toString())
     }
   }*/
-  /*tasks.withType<KotlinNativeTest>().all {
-  //  dependsOn(":golib:linkDebugShared${hostPlatform.capitalize()}")
+  tasks.withType<KotlinNativeTest>().all {
+    //  dependsOn(":golib:linkDebugShared${hostPlatform.capitalize()}")
     environment("LD_LIBRARY_PATH", libPath)
     ProjectVersions.properties.forEach {
       environment(it.key, it.value.toString())
     }
-  }*/
+  }
 
   tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().all {
     kotlinOptions {

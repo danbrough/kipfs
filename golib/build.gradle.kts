@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
 plugins {
   kotlin("multiplatform")
-  kotlin("plugin.serialization")
+  //kotlin("plugin.serialization")
   id("com.android.library")
   `maven-publish`
 }
@@ -194,26 +194,37 @@ kotlin {
     }
 
 
-    commonMain {
+    val commonMain by getting {
       dependencies {
         implementation(AndroidUtils.logging)
       }
     }
 
-    commonTest {
+    val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
         implementation(project(":api"))
       }
     }
 
-    val jni by creating
+    val jni by creating {
+      dependsOn(commonMain)
+    }
 
     val androidMain by getting {
       dependsOn(jni)
     }
 
+    val androidTest by getting {
+      dependsOn(androidMain)
+    }
+
+    val jvmMain by getting {
+      dependsOn(jni)
+    }
+
     val androidAndroidTest by getting {
+      dependsOn(androidMain)
       dependencies {
         implementation(AndroidX.test.coreKtx)
         implementation(AndroidX.test.rules)
@@ -222,9 +233,6 @@ kotlin {
       }
     }
 
-    val jvmMain by getting {
-      dependsOn(jni)
-    }
 
   }
 

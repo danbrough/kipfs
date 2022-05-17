@@ -7,7 +7,6 @@ interface KShell {
   fun connect()
   fun dispose()
   fun request(command: String, arg: String? = null): ByteArray
-
 }
 
 interface KIPFSLib {
@@ -18,6 +17,11 @@ interface KIPFSLib {
   fun environment(key: String): String?
 }
 
+interface KIPFSNativeLib : KIPFSLib {
+  fun createNativeShell(address: String): Int
+  fun disposeGoObject(ref: Int)
+  fun request(shellRefID: Int, cmd: String, arg: String? = null): ByteArray
+}
 
 expect fun initKIPFSLib(): KIPFSLib
 

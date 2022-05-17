@@ -1,15 +1,17 @@
 package danbroid.kipfs
 
-import danbroid.kipfs.KIPFSLibNative.log
 import kotlinx.cinterop.*
 import libkipfs.*
 import platform.android.*
+import platform.linux.printf_function
 
 private fun init() {
   initRuntimeIfNeeded()
   Platform.isMemoryLeakCheckerActive = true
 }
 
+
+private val log = danbroid.logging.configure("KIPFS_JNI", coloured = true)
 
 fun CPointer<ByteVar>.convertToString(): String = this.toKString().also {
   platform.posix.free(this)
@@ -53,8 +55,8 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   }
 }
 
-@CName("Java_danbroid_kipfs_KIPFSLibJNI_createShellJNI")
-fun createShellJNI(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): jint {
+@CName("Java_danbroid_kipfs_KIPFSLibJNI_createNativeShell")
+fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): jint {
   memScoped {
     init()
     val e = env.pointed.pointed!!
@@ -81,7 +83,7 @@ fun request(
   thiz: jclass,
   shellRefID: jint,
   cmd: jstring,
-  arg: jstring
+  arg: jstring?
 ): jbyteArray? {
   memScoped {
     init()
@@ -90,13 +92,21 @@ fun request(
     val e = env.pointed.pointed!!
     val cmdC = e.GetStringUTFChars!!(env, cmd, null)
 
+    val argC = arg?.let {
+      e.GetStringUTFChars!!(env, arg, null)
+    }
 
-    KRequest(shellRefID, cmdC, null).useContents {
+    KRequest(shellRefID, cmdC, argC).useContents {
       e.ReleaseStringUTFChars!!(env, cmd, cmdC)
+
+      if (argC != null) e.ReleaseStringUTFChars!!(env, arg, argC)
 
 
       r2?.convertToString()?.also {
-        throw Exception("Request failed: $it")
+        init()
+        val err = Exception("Request failed: $it")
+        log.error(err.message, err)
+        throw err
       }
 
       r0!!.readBytes(r1.toInt()).also { bytes ->
@@ -117,7 +127,7 @@ fun request(
 
 @CName("Java_danbroid_kipfs_KIPFSLibJNI_disposeGoObject")
 fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
-  KDestroyRef(refnum)
+  KDecRef(refnum)
 }
 
 

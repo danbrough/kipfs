@@ -27,9 +27,14 @@ func KCID(json *C.char) *C.char {
 	return C.CString(cids.DagCid(C.GoString(json)))
 }
 
-//export KDestroyRef
-func KDestroyRef(refnum C.int32_t) {
+//export KDecRef
+func KDecRef(refnum C.int32_t) {
 	_seq.Delete(int32(refnum))
+}
+
+//export KIncGoRef
+func KIncGoRef(refnum C.int32_t) {
+	_seq.Inc(int32(refnum))
 }
 
 //export KCreateShell
@@ -44,8 +49,6 @@ func KCreateShell(cUrl *C.char) (C.int32_t, *C.char) {
 
 	if kShell != nil {
 		refnum := _seq.ToRefNum(kShell)
-
-		_seq.Inc(refnum)
 		_seq.Inc(refnum)
 		ptr = C.int32_t(refnum)
 		//println("returning refnum", ptr)
@@ -78,17 +81,24 @@ func KTest() unsafe.Pointer {
 
 //export KRequest
 func KRequest(refnum C.int32_t, command *C.char, arg *C.char) (unsafe.Pointer, int, *C.char) {
+	_seq.Inc(int32(refnum))
 	ref := _seq.FromRefNum(int32(refnum))
 	kShell := ref.Get().(*shell.Shell)
 
+	println("creating request")
 	rb := kShell.NewRequest(C.GoString(command))
 	if arg != nil {
-		rb.Argument(C.GoString(arg))
+		goArg := C.GoString(arg)
+		println("Adding Argument:", goArg)
+		rb.Argument(goArg)
 	}
+
+	println("Sending request ..")
 	data, err := rb.Send()
 	if err != nil {
 		return nil, -1, C.CString(err.Error())
 	}
+	println("returning data")
 
 	return C.CBytes(data), len(data), nil
 }

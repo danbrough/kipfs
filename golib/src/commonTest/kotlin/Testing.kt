@@ -1,7 +1,4 @@
-import danbroid.kipfs.DEFAULT_KIPFS_ADDRESS
-import danbroid.kipfs.ENV_KIPFS_ADDRESS
-import danbroid.kipfs.KIPFSLib
-import danbroid.kipfs.initKIPFSLib
+import danbroid.kipfs.*
 import kotlin.test.Test
 
 
@@ -38,7 +35,34 @@ class Testing {
   @Test
   fun cidAccess() {
     log.info("cidAccess()")
+    val shell = kipfs.createShell(ipfsAddress)
+    shell.request("cat", CID_HELLO_WORLD).also {
+      log.debug("received: ${it.size} bytes: ${it.decodeToString()}")
+    }
   }
 
+  private fun runTest(){
+    val shell = kipfs.createShell(ipfsAddress)
+    log.debug("created shell")
+
+    val idRequest = {
+      shell.request("id").also {
+        log.debug("received: size:${it.size} ${it.decodeToString()}")
+      }
+    }
+    idRequest()
+    idRequest()
+    idRequest()
+    idRequest()
+    idRequest()
+    idRequest()
+  }
+
+  @Test
+  fun cmdID() {
+    log.info("cmdID()")
+    log.debug("ipfsAddress: $ipfsAddress")
+    runTest()
+  }
 
 }
