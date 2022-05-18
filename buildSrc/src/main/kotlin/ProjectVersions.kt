@@ -63,6 +63,10 @@ PRESET: watchosX64
 PRESET: watchosX86
  */
 
+  const val PLATFORM_LINUX_AMD64 = "linuxAmd64"
+  const val PLATFORM_LINUX_ARM64 = "linuxArm64"
+
+
   const val TARGET_HOST = "linuxAmd64"
   val TARGETS_OTHER = mapOf(
     "androidNativeArm32" to "androidArm",
