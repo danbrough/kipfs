@@ -8,17 +8,21 @@ repositories {
   mavenCentral()
 }
 
-
-val javaVersion = JavaVersion.VERSION_11
-
-java {
-  sourceCompatibility = javaVersion
-  targetCompatibility = javaVersion
-}
-
 kotlinDslPluginOptions {
   jvmTarget.set(provider { java.targetCompatibility.toString() })
 }
+
+dependencies {
+  compileOnly(kotlin("gradle-plugin"))
+}
+
+kotlin {
+  jvmToolchain {
+    check(this is JavaToolchainSpec)
+    languageVersion.set(JavaLanguageVersion.of(11))
+  }
+}
+
 
 /*
 tasks.withType(KotlinCompile::class) {

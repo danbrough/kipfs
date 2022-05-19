@@ -65,6 +65,7 @@ PRESET: watchosX86
 
   const val PLATFORM_LINUX_AMD64 = "linuxAmd64"
   const val PLATFORM_LINUX_ARM64 = "linuxArm64"
+  const val PLATFORM_LINUX_ARM32 = "linuxArm"
 
 
   const val TARGET_HOST = "linuxAmd64"

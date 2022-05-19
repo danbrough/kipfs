@@ -15,9 +15,11 @@ version = ProjectVersions.VERSION_NAME
 
 kotlin {
 
+
   // android()
   linuxX64(ProjectVersions.PLATFORM_LINUX_AMD64)
   linuxArm64(ProjectVersions.PLATFORM_LINUX_ARM64)
+  linuxArm32Hfp(ProjectVersions.PLATFORM_LINUX_ARM32)
 
   jvm()
 
@@ -36,7 +38,7 @@ kotlin {
       }
     }
 
-    commonMain {
+    val commonMain by getting {
       dependencies {
         implementation(AndroidUtils.logging)
         implementation(KotlinX.serialization.json)
@@ -47,11 +49,12 @@ kotlin {
     commonTest {
       dependencies {
         implementation(kotlin("test"))
-        implementation(project(":golib"))
+        //implementation(project(":golib"))
       }
     }
 
     val nativeMain by creating {
+      dependsOn(commonMain)
       dependencies {
         implementation(Ktor.client.core)
         implementation(Ktor.client.curl)
@@ -74,6 +77,10 @@ kotlin {
     val linuxAmd64Test by getting {
       dependsOn(nativeTest)
       //kotlin.srcDir("src/nativeTest/kotlin")
+    }
+
+    val linuxArmMain by getting {
+      dependsOn(nativeMain)
     }
 
   }
