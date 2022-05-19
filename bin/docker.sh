@@ -3,13 +3,12 @@
 cd `dirname $0`
 
 export SRCDIR=$(realpath ..)
-if [ ! -z "$1" ]; then
-  PLATFORM="$1"
-else
-  PLATFORM=linux/amd64
+if [  -z "$PLATFORM" ]; then
+	echo PLATFORM not set
+	using default PLATFORM=linux/amd64
+	PLATFORM=linux/amd64
 fi
-
-
+echo PLATFORM=$PLATFORM
 NAME=kipfs_$(echo $PLATFORM | sed -e 's:\/:_:g')
 USER=bob
 TMPDIR=/tmp/$NAME
@@ -38,7 +37,7 @@ CMD="docker run -it  --tmpfs /tmp \
 
 
 echo running $CMD
-#$CMD
+$CMD
 #--rm -u $USER -w /home/$NAME \
 #	--mount type=tmpfs,destination=/tmp \
 

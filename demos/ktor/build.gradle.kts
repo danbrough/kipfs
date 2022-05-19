@@ -17,6 +17,7 @@ kotlin {
 
   // android()
   linuxX64(ProjectVersions.PLATFORM_LINUX_AMD64)
+  linuxArm64(ProjectVersions.PLATFORM_LINUX_ARM64)
 
   jvm()
 
@@ -50,18 +51,42 @@ kotlin {
       }
     }
 
-
-    val linuxAmd64Main by getting {
+    val nativeMain by creating {
       dependencies {
         implementation(Ktor.client.core)
         implementation(Ktor.client.curl)
       }
-      kotlin.srcDir("src/nativeMain/kotlin")
+    }
+    val nativeTest by creating
+
+    val linuxAmd64Main by getting {
+      dependsOn(nativeMain)
+
+      //kotlin.srcDir("src/nativeMain/kotlin")
+    }
+
+    val linuxArm64Main by getting {
+      dependsOn(nativeMain)
+
+      //kotlin.srcDir("src/nativeMain/kotlin")
     }
 
     val linuxAmd64Test by getting {
-      kotlin.srcDir("src/nativeTest/kotlin")
+      dependsOn(nativeTest)
+      //kotlin.srcDir("src/nativeTest/kotlin")
     }
+
+  }
+}
+
+kotlin.targets.withType<KotlinNativeTarget>().all {
+  binaries.executable("ktorDemo") {
+
+    entryPoint("danbroid.demo.main")
+  }
+
+  compilations["main"].apply {
+
   }
 }
 

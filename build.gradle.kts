@@ -84,7 +84,7 @@ allprojects {
     }
   }
 
-  tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().all {
+  tasks.withType<KotlinJvmCompile>().all {
     kotlinOptions {
       jvmTarget = ProjectVersions.KOTLIN_JVM_VERSION
     }

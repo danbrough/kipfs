@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.curl.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.runBlocking
 
 
