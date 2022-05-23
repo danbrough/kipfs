@@ -33,6 +33,9 @@ inline fun <reified T> String.decodeJson(): T = decodeJson(this, serializer())
 @JvmName("decodeJsonWithSerializer")
 fun <T> String.decodeJson(serializer: KSerializer<T>): T = decodeJson(this, serializer)
 
+@JvmName("decodeJsonWithSerializer")
+inline fun <reified T> ByteArray.decodeJson(serializer: KSerializer<T> = serializer()): T =
+  decodeJson(decodeToString(), serializer)
 
 /*
 fun <T> decodeCbor(

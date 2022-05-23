@@ -2,9 +2,6 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.plugin.mpp.SharedLibrary
-import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
-import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeHostTest
-import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
 plugins {
   kotlin("multiplatform")
@@ -200,7 +197,7 @@ kotlin {
       }
     }
 
-    val commonTest by getting {
+    commonTest {
       dependencies {
         implementation(kotlin("test"))
         implementation(project(":api"))
@@ -237,17 +234,18 @@ kotlin {
   }
 
 
-//make connectedDebugAndroidTest tasks dependent on the jni shared library
-  targets.withType(KotlinNativeTarget::class).asMap.values.flatMap { it.binaries.toList() }
+}
+
+
+afterEvaluate {
+  //make connectedDebugAndroidTest tasks dependent on the jni shared library
+  kotlin.targets.withType(KotlinNativeTarget::class).asMap.values.flatMap { it.binaries.toList() }
     .filterIsInstance<SharedLibrary>().filter {
       it.buildType == NativeBuildType.DEBUG && it.linkTask.target.startsWith("android")
     }.forEach {
       tasks.named("connectedDebugAndroidTest").dependsOn(it.linkTaskProvider)
     }
-}
 
-
-afterEvaluate {
   publishing {
     publications {
 

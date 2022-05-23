@@ -48,13 +48,15 @@ kotlin {
         implementation(AndroidUtils.logging)
         implementation(KotlinX.serialization.json)
         implementation(KotlinX.serialization.cbor)
+        implementation(KotlinX.coroutines.core)
+        implementation(project(":golib"))
+
       }
     }
 
     commonTest {
       dependencies {
         implementation(kotlin("test"))
-        implementation(project(":golib"))
       }
     }
   }

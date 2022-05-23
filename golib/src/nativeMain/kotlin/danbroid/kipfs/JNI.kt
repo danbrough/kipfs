@@ -3,7 +3,6 @@ package danbroid.kipfs
 import kotlinx.cinterop.*
 import libkipfs.*
 import platform.android.*
-import platform.linux.printf_function
 
 private fun init() {
   initRuntimeIfNeeded()
