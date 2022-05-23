@@ -1,24 +1,24 @@
-
 import io.ktor.client.*
-import io.ktor.client.engine.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
-import io.ktor.network.selector.*
-import io.ktor.network.sockets.*
-import kotlinx.coroutines.Dispatchers
 
-val log = danbroid.logging.configure("KTORDEMO", coloured = true)
 
-expect fun httpClient(): HttpClient
+interface DemoLib {
+  fun createHttpClient(): HttpClient
+}
+
+expect fun initDemoLib(): DemoLib
 
 fun main(args: Array<String>) {
+  val demoLib = initDemoLib()
+  val log = danbroid.logging.getLog(DemoLib::class)
+
   runBlocking {
     log.warn("running demo ..")
 
-    val client = httpClient()
+
+    val client = demoLib.createHttpClient()
     log.debug("created client: $client")
 
 
@@ -28,8 +28,6 @@ fun main(args: Array<String>) {
     response.bodyAsText().also {
       log.info(it)
     }
-
-
 
 
     //val selectorManager = ActorSelectorManager(Dispatchers.IO)

@@ -1,7 +1,4 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetPreset
-import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
-import java.io.File
 
 plugins {
   kotlin("multiplatform")
@@ -20,7 +17,7 @@ kotlin {
   // android()
   linuxX64(ProjectVersions.PLATFORM_LINUX_AMD64)
   linuxArm64(ProjectVersions.PLATFORM_LINUX_ARM64)
- // linuxArm32Hfp(ProjectVersions.PLATFORM_LINUX_ARM32)
+  // linuxArm32Hfp(ProjectVersions.PLATFORM_LINUX_ARM32)
 
   jvm()
 
@@ -51,7 +48,7 @@ kotlin {
       }
     }
 
-   val commonTest by getting {
+    val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
         //implementation(project(":golib"))
@@ -61,23 +58,15 @@ kotlin {
     val nativeMain by creating {
       dependsOn(commonMain)
       dependencies {
-//        implementation(Ktor.client.curl)
-        implementation(Ktor.client.cio)
-
+        implementation(Ktor.client.curl)
       }
     }
-    val nativeTest by creating{
+    val nativeTest by creating {
       dependsOn(nativeMain)
     }
 
     val linuxAmd64Main by getting {
       dependsOn(nativeMain)
-      dependencies {
-        //implementation(Ktor.client.curl)
-        implementation(Ktor.client.cio)
-
-
-      }
       //kotlin.srcDir("src/nativeMain/kotlin")
     }
 
@@ -107,8 +96,7 @@ kotlin {
 
 kotlin.targets.withType<KotlinNativeTarget>().all {
   binaries.executable("ktorDemo") {
-
-    entryPoint("danbroid.demo.main")
+    //entryPoint("danbroid.demo.main")
   }
 
   compilations["main"].apply {
