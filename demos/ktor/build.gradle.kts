@@ -13,13 +13,14 @@ plugins {
 group = ProjectVersions.GROUP_ID
 version = ProjectVersions.VERSION_NAME
 
+
 kotlin {
 
 
   // android()
   linuxX64(ProjectVersions.PLATFORM_LINUX_AMD64)
   linuxArm64(ProjectVersions.PLATFORM_LINUX_ARM64)
-  linuxArm32Hfp(ProjectVersions.PLATFORM_LINUX_ARM32)
+ // linuxArm32Hfp(ProjectVersions.PLATFORM_LINUX_ARM32)
 
   jvm()
 
@@ -43,10 +44,14 @@ kotlin {
         implementation(AndroidUtils.logging)
         implementation(KotlinX.serialization.json)
         implementation(KotlinX.serialization.cbor)
+        implementation(KotlinX.coroutines.core)
+        implementation(Ktor.client.core)
+        implementation(Ktor.network.network)
+
       }
     }
 
-    commonTest {
+   val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
         //implementation(project(":golib"))
@@ -56,18 +61,32 @@ kotlin {
     val nativeMain by creating {
       dependsOn(commonMain)
       dependencies {
-        implementation(Ktor.client.core)
-        implementation(Ktor.client.curl)
+//        implementation(Ktor.client.curl)
+        implementation(Ktor.client.cio)
+
       }
     }
-    val nativeTest by creating
+    val nativeTest by creating{
+      dependsOn(nativeMain)
+    }
 
     val linuxAmd64Main by getting {
       dependsOn(nativeMain)
+      dependencies {
+        //implementation(Ktor.client.curl)
+        implementation(Ktor.client.cio)
 
+
+      }
       //kotlin.srcDir("src/nativeMain/kotlin")
     }
 
+    val jvmMain by getting {
+      dependsOn(commonMain)
+      dependencies {
+        implementation(Ktor.client.cio)
+      }
+    }
     val linuxArm64Main by getting {
       dependsOn(nativeMain)
 
@@ -79,9 +98,9 @@ kotlin {
       //kotlin.srcDir("src/nativeTest/kotlin")
     }
 
-    val linuxArmMain by getting {
+/*    val linuxArmMain by getting {
       dependsOn(nativeMain)
-    }
+    }*/
 
   }
 }
