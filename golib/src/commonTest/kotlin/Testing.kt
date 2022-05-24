@@ -1,4 +1,5 @@
 import danbroid.kipfs.*
+import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 
 
@@ -50,7 +51,7 @@ class Testing {
       val shell = kipfs.createShell(ipfsAddress)
       log.debug("created shell")
 
-      val idRequest = {
+      val idRequest = suspend {
         shell.request("id").also {
           log.debug("received: size:${it.size} ${it.decodeToString()}")
         }

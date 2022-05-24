@@ -21,12 +21,12 @@ kotlin {
   jvm()
 
   if (!ProjectVersions.IDE_MODE) {
-    /*
+
     androidNativeX86("android386")
     androidNativeX64("androidAmd64")
     androidNativeArm64("androidArm64")
     androidNativeArm32("androidArm")
-     */
+
 
     mingwX64("windowsAmd64")
     linuxArm32Hfp("linuxArm")

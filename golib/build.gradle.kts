@@ -166,6 +166,9 @@ kotlin {
   android()
   linuxX64(ProjectVersions.PLATFORM_LINUX_AMD64)
   jvm()
+
+
+
   if (!ProjectVersions.IDE_MODE) {
 /*    androidNativeX86("android386")
     androidNativeX64("androidAmd64")
@@ -285,3 +288,40 @@ afterEvaluate {
 
 }
 
+/*
+PRESET: android
+PRESET: androidNativeArm32
+PRESET: androidNativeArm64
+PRESET: androidNativeX64
+PRESET: androidNativeX86
+PRESET: iosArm32
+PRESET: iosArm64
+PRESET: iosSimulatorArm64
+PRESET: iosX64
+PRESET: js
+PRESET: jsBoth
+PRESET: jsIr
+PRESET: jvm
+PRESET: jvmWithJava
+PRESET: linuxArm32Hfp
+PRESET: linuxArm64
+PRESET: linuxMips32
+PRESET: linuxMipsel32
+PRESET: linuxX64
+PRESET: macosArm64
+PRESET: macosX64
+PRESET: mingwX64
+PRESET: mingwX86
+PRESET: tvosArm64
+PRESET: tvosSimulatorArm64
+PRESET: tvosX64
+PRESET: wasm
+PRESET: wasm32
+PRESET: watchosArm32
+PRESET: watchosArm64
+PRESET: watchosSimulatorArm64
+PRESET: watchosX64
+PRESET: watchosX86
+
+
+ */
