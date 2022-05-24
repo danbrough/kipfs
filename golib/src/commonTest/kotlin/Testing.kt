@@ -1,5 +1,7 @@
 import danbroid.kipfs.*
 import kotlinx.coroutines.runBlocking
+import kotlin.jvm.JvmStatic
+import kotlin.test.AfterTest
 import kotlin.test.Test
 
 
@@ -20,7 +22,7 @@ class Testing {
       }
     }
   }
-
+  
 
   @Test
   fun test() {
@@ -45,8 +47,6 @@ class Testing {
   }
 
   private fun runTest(){
-
-
     runBlocking {
       val shell = kipfs.createShell(ipfsAddress)
       log.debug("created shell")
