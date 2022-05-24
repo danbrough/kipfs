@@ -167,10 +167,10 @@ kotlin {
   linuxX64(ProjectVersions.PLATFORM_LINUX_AMD64)
   jvm()
   if (!ProjectVersions.IDE_MODE) {
-    androidNativeX86("android386")
+/*    androidNativeX86("android386")
     androidNativeX64("androidAmd64")
     androidNativeArm64("androidArm64")
-    androidNativeArm32("androidArm")
+    androidNativeArm32("androidArm")*/
     mingwX64("windowsAmd64")
     linuxArm32Hfp("linuxArm")
     linuxArm64("linuxArm64")
