@@ -1,8 +1,6 @@
 package danbroid.kipfs
 
 import danbroid.kipfs.client.KNativeShell
-import danbroid.logging.DBLog
-import danbroid.logging.StdOutLog
 
 
 object KIPFSLibJNI : KIPFSNativeLib {
@@ -27,7 +25,7 @@ object KIPFSLibJNI : KIPFSNativeLib {
   external override fun disposeGoObject(ref: Int)
   external override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray
 
-  override fun createShell(url: String): KShell = KNativeShell(this, url)
+  override fun createShell(url: String): Shell = KNativeShell(this, url)
   override fun environment(key: String): String? = System.getenv(key)
 
 }

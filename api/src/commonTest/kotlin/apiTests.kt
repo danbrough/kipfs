@@ -1,16 +1,16 @@
 import danbroid.kipfs.DEFAULT_KIPFS_ADDRESS
 import danbroid.kipfs.ENV_KIPFS_ADDRESS
 import danbroid.kipfs.api.basic.id
-import danbroid.kipfs.impl.KIPFSLibImpl
 import danbroid.kipfs.initKIPFSLib
 import kotlinx.coroutines.runBlocking
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class ApiTests {
 
   companion object {
     private val log = danbroid.logging.configure("TEST", coloured = true)
-    val kipfs = KIPFSLibImpl(initKIPFSLib())
+    val kipfs = initKIPFSLib()
 
     val ipfsAddress: String by lazy {
       kipfs.environment(ENV_KIPFS_ADDRESS)?.also {
@@ -19,6 +19,9 @@ class ApiTests {
         log.warn("using $ENV_KIPFS_ADDRESS not set. Using default address: $it")
       }
     }
+
+    val shell by lazy { kipfs.createShell(ipfsAddress) }
+
   }
 
   @Test
@@ -26,7 +29,7 @@ class ApiTests {
     log.warn("running test()")
 
     runBlocking {
-      val shell = kipfs.createShell(ipfsAddress)
+
       shell.id().also {
         log.info("got response: $it")
       }

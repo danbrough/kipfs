@@ -1,10 +1,10 @@
 package danbroid.kipfs.client
 
 import danbroid.kipfs.KIPFSNativeLib
-import danbroid.kipfs.KShell
+import danbroid.kipfs.Shell
 
 
-class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: String) : KShell {
+class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: String) : Shell {
 
   companion object {
     private val log = danbroid.logging.getLog(KNativeShell::class)
@@ -13,8 +13,8 @@ class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: S
   private var ref = 0
 
   protected fun finalize() {
-    log.warn("finalize() $ref")
-    dispose()
+    //log.warn("finalize() $ref")
+    close()
   }
 
   override fun connect() {
@@ -23,15 +23,15 @@ class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: S
     ref = kipfs.createNativeShell(ipfsAddress)
   }
 
-  override fun dispose() {
-    log.info("dispose() $ref")
+  override fun close() {
+    log.info("close() $ref")
     if (ref != 0) {
       kipfs.disposeGoObject(ref)
       ref = 0
     }
   }
 
-  override fun request(command: String, arg: String?): ByteArray {
+  override suspend fun request(command: String, arg: String?): ByteArray {
     connect()
     return kipfs.request(ref, command, arg)
   }

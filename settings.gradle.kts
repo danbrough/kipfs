@@ -17,4 +17,4 @@ rootProject.name = "KIPFS"
 
 include(":api")
 include(":golib")
-include(":demos:ktor")
+//include(":demos:ktor")

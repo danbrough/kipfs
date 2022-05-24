@@ -4,7 +4,6 @@ plugins {
   kotlin("multiplatform")
   kotlin("plugin.serialization")
   // id("com.android.library")
-  `maven-publish`
 }
 
 group = ProjectVersions.GROUP_ID
@@ -44,7 +43,7 @@ kotlin {
         implementation(KotlinX.coroutines.core)
         implementation(Ktor.client.core)
         implementation(Ktor.network.network)
-
+        implementation(project(":api"))
       }
     }
 
@@ -102,6 +101,13 @@ kotlin.targets.withType<KotlinNativeTarget>().all {
   compilations["main"].apply {
 
   }
+}
+
+
+repositories {
+  maven("https://h1.danbrough.org")
+  mavenCentral()
+  google()
 }
 
 /*

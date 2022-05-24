@@ -30,7 +30,7 @@ private object KIPFSLibNative : KIPFSNativeLib {
   override fun getMessage(): String = libkipfs.KGetMessage()!!.copyToString()
   override fun getMessage2(): String = libkipfs.KGetMessage2()!!.copyToString()
   override fun dagCID(json: String): String = libkipfs.KCID(json.cstr)!!.copyToString()
-  override fun createShell(url: String) = KNativeShell(this, url)
+  override fun createShell(url: String): Shell = KNativeShell(this, url)
   override fun environment(key: String): String? = platform.posix.getenv(key)?.toKString()
 }
 

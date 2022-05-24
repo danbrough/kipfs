@@ -162,14 +162,10 @@ kotlin {
     }
   }
 
+
   android()
-
-  jvm {
-    //compilations["main"].compileKotlinTaskProvider.dependsOn("linkDebugSharedLinuxAmd64")
-  }
-
-  linuxX64("linuxAmd64")
-
+  linuxX64(ProjectVersions.PLATFORM_LINUX_AMD64)
+  jvm()
   if (!ProjectVersions.IDE_MODE) {
     androidNativeX86("android386")
     androidNativeX64("androidAmd64")
@@ -194,13 +190,14 @@ kotlin {
     val commonMain by getting {
       dependencies {
         implementation(AndroidUtils.logging)
+        implementation(project(":api"))
       }
     }
 
     commonTest {
       dependencies {
         implementation(kotlin("test"))
-        implementation(project(":api"))
+        implementation(KotlinX.coroutines.core)
       }
     }
 
