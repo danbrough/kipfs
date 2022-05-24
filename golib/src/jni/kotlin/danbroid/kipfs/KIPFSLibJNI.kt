@@ -25,7 +25,8 @@ object KIPFSLibJNI : KIPFSNativeLib {
   external override fun disposeGoObject(ref: Int)
   external override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray
 
-  override fun createShell(url: String): Shell = KNativeShell(this, url)
+  override fun createShell(ipfsAddress: String): Shell = KNativeShell(this, ipfsAddress)
+
   override fun environment(key: String): String? = System.getenv(key)
 
 }

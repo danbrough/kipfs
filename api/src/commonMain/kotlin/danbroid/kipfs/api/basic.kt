@@ -1,6 +1,5 @@
-package danbroid.kipfs.api.basic
+package danbroid.kipfs.api
 
-import danbroid.kipfs.KIPFS
 import danbroid.kipfs.Shell
 import danbroid.kipfs.decodeJson
 import kotlinx.serialization.Serializable

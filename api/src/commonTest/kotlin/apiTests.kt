@@ -1,18 +1,20 @@
 import danbroid.kipfs.DEFAULT_KIPFS_ADDRESS
 import danbroid.kipfs.ENV_KIPFS_ADDRESS
-import danbroid.kipfs.api.basic.id
+import danbroid.kipfs.api.dagGet
+import danbroid.kipfs.api.id
 import danbroid.kipfs.initKIPFSLib
 import kotlinx.coroutines.runBlocking
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class ApiTests {
 
   companion object {
-    private val log = danbroid.logging.configure("TEST", coloured = true)
-    val kipfs = initKIPFSLib()
+    const val DAG_HELLO_WORLD = "bafyreidfq7gnjnpi7hllpwowrphojoy6hgdgrsgitbnbpty6f2yirqhkom"
 
-    val ipfsAddress: String by lazy {
+    private val log = danbroid.logging.configure("TEST", coloured = true)
+    private val kipfs = initKIPFSLib()
+
+    private val ipfsAddress: String by lazy {
       kipfs.environment(ENV_KIPFS_ADDRESS)?.also {
         log.warn("USING $ENV_KIPFS_ADDRESS from environment: $it")
       } ?: DEFAULT_KIPFS_ADDRESS.also {
@@ -20,19 +22,25 @@ class ApiTests {
       }
     }
 
-    val shell by lazy { kipfs.createShell(ipfsAddress) }
-
+    private val shell by lazy { kipfs.createShell(ipfsAddress) }
   }
 
+
   @Test
-  fun test() {
+  fun testID() {
     log.warn("running test()")
 
     runBlocking {
+      log.info("got response: ${shell.id()}")
+    }
+  }
 
-      shell.id().also {
-        log.info("got response: $it")
-      }
+  @Test
+  fun testDAG() {
+    log.debug("testDAG()")
+
+    runBlocking {
+      log.trace("DAG_HELLO_WORLD = ${shell.dagGet<String>(DAG_HELLO_WORLD)}")
     }
   }
 }

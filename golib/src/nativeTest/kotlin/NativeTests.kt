@@ -1,5 +1,5 @@
 import danbroid.kipfs.*
-import danbroid.kipfs.api.basic.ResponseID
+import danbroid.kipfs.api.ResponseID
 import kotlinx.cinterop.*
 import kotlin.test.AfterClass
 import kotlin.test.BeforeClass
