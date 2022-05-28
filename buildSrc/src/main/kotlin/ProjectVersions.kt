@@ -5,9 +5,9 @@ import java.io.FileInputStream
 import java.net.URI
 
 object ProjectVersions {
-  const val SDK_VERSION = 31
+  const val SDK_VERSION = 32
   const val MIN_SDK_VERSION = 23
-  const val BUILD_TOOLS_VERSION = "31.0.0"
+  const val BUILD_TOOLS_VERSION = "32.0.0"
   val JAVA_VERSION = JavaVersion.VERSION_11
   var VERSION_FORMAT = "0.0.1-%02d"
   const val KOTLIN_JVM_VERSION = "11"

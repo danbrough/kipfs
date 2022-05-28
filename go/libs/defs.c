@@ -18,6 +18,10 @@ char* return_string() {
   return "C string";
 }
 
+void StructTest(MyStruct s){
+    printf("MyStruct: %d %f\n",s.a,s.b);
+}
+
 int copy_string(char* str, int size) {
 
 

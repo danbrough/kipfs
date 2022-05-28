@@ -29,14 +29,11 @@ class NativeTests {
     @BeforeClass
     fun setupTests() {
       log.info("setupTests()")
-
-
-
     }
 
     @AfterClass
     fun tearDownTests() {
-      // log.warn("TEAR DOWN TESTS!!!!!!!!! shellID: $shellID")
+      log.warn("TEAR DOWN TESTS!!!!!!!!!")
 
     }
   }
@@ -173,6 +170,18 @@ class NativeTests {
       val data = bytes?.reinterpret<ByteVar>()?.convertToString()
       log.info("CALLBACK RECEIVED: $data len:$len")
     })
+  }
+
+
+  @Test
+  fun structTest(){
+    log.warn("structTest()")
+    val cStruct = cValue<libkipfs.MyStruct> {
+      a = 42
+      b = 3.14
+    }
+
+    libkipfs.StructTest(cStruct)
   }
 
 

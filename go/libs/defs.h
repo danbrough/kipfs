@@ -6,7 +6,14 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
+typedef struct {
+  int a;
+  double b;
+} MyStruct;
+
 typedef void (*DataCallbackFunc)(void* data,int len,const char* err);
+
+void StructTest(MyStruct s);
 
 void testCallback(void *data,int len,const char* err);
 

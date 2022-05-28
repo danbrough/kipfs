@@ -22,7 +22,7 @@ class Testing {
       }
     }
   }
-  
+
 
   @Test
   fun test() {
