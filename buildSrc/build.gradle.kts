@@ -21,6 +21,9 @@ kotlin {
     check(this is JavaToolchainSpec)
     languageVersion.set(JavaLanguageVersion.of(11))
   }
+  sourceSets.all {
+    languageSettings.optIn("kotlin.RequiresOptIn")
+  }
 }
 
 
