@@ -13,7 +13,11 @@ kotlinDslPluginOptions {
 }
 
 dependencies {
-  compileOnly(kotlin("gradle-plugin"))
+  /*compileOnly(kotlin("gradle-plugin"))
+  compileOnly(kotlin("multiplatform"))*/
+
+
+
 }
 
 kotlin {
@@ -46,4 +50,5 @@ tasks.withType(KotlinCompile::class) {
   }
 }
 */
+
 

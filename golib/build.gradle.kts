@@ -226,7 +226,7 @@ kotlin {
         implementation(AndroidX.test.coreKtx)
         implementation(AndroidX.test.rules)
         implementation(AndroidX.test.runner)
-        implementation(AndroidX.test.ext.junitKtx)
+        implementation(AndroidX.test.ext.junit.ktx)
       }
     }
 
