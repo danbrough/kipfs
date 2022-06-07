@@ -1,4 +1,4 @@
-package danbroid.godemo;
+package danbroid.kipfs;
 
 import danbroid.logging.DBLog;
 

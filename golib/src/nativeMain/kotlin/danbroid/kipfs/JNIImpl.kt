@@ -1,4 +1,4 @@
-package danbroid.godemo
+package danbroid.kipfs
 
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.invoke

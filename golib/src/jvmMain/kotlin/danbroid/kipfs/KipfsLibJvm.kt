@@ -1,6 +1,6 @@
-package danbroid.godemo
+package danbroid.kipfs
 
-object GoLibJvm : GoLib {
+object KipfsLibJvm : KipfsLib {
 
   val log = danbroid.logging.configure("GODEMO", coloured = true).also {
     it.warn("configured logging")
@@ -12,7 +12,7 @@ object GoLibJvm : GoLib {
 }
 
 
-actual fun initGoLib(): GoLib = GoLibJvm
+actual fun initKipfsLib(): KipfsLib = KipfsLibJvm
 
 
 
