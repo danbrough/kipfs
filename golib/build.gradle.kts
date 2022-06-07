@@ -53,7 +53,18 @@ kotlin {
     createTarget(platform) {
 
       val kipfsLibDir = libsDir(platform)
-      val kipfsLibBuildTask = registerGoLibBuild(platform, goDir, kipfsLibDir).get()
+      val kipfsLibBuildTaskProvider  = registerGoLibBuild(platform, goDir, kipfsLibDir)
+
+      kipfsLibBuildTaskProvider {
+        doFirst{
+          println("STARTING KIPFS LIB BUILD...")
+        }
+        dependsOn(":openssl:buildLinuxX64")
+      }
+
+      val kipfsLibBuildTask = kipfsLibBuildTaskProvider.get()
+
+
 
       //println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
 
