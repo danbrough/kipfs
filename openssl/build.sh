@@ -47,6 +47,7 @@ function clean_src(){
 echo OPENSSL is $OPENSSL
 CRYPTO_LIB=$OPENSSL/lib/libcrypto.a
 
+export RANLIB=/mnt/files2/cache/konan/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/bin/ranlib
 if [ -f $CRYPTO_LIB ]; then
   echo not building openssl as $CRYPTO_LIB exists
 else
@@ -57,6 +58,7 @@ else
   echo SYSROOT $SYSROOT
   echo CROSS_PREFIX $CROSS_PREFIX
   echo ANDROID_API $ANDROID_API
+  echo RANLIB $RANLIB 
   sleep 2
 
   clean_src
