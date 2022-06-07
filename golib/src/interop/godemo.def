@@ -1,0 +1,9 @@
+headers = libgodemo.h
+
+linkerOpts.linux =  -lgodemo
+#libraryPaths.linux_x64 = golib/build/lib/linuxX64
+linkerOpts.linux_x64 = -Lgolib/build/lib/linuxX64
+linkerOpts.linux_arm64 = -Lgolib/build/lib/linuxArm64
+linkerOpts.linux_arm32_hfp = -Lgolib/build/lib/linuxArm32Hfp
+
+

@@ -1,0 +1,2 @@
+staticLibraries.linux = libssl.a libcrypto.a
+libraryPaths.linux_x64 = build/openssl/linuxX64/lib
