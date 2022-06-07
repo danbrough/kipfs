@@ -52,21 +52,21 @@ kotlin {
 
     createTarget(platform) {
 
-      val goLibDir = libsDir(platform)
-      val golibBuildTask = registerGoLibBuild(platform, goDir, goLibDir).get()
+      val kipfsLibDir = libsDir(platform)
+      val kipfsLibBuildTask = registerGoLibBuild(platform, goDir, kipfsLibDir).get()
 
       //println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
 
 
       compilations["main"].apply {
 
-        cinterops.create("libgodemo") {
-          packageName("godemo")
-          defFile = project.file("src/interop/godemo.def")
-          includeDirs(goLibDir, project.file("src/include"))
+        cinterops.create("kipfs") {
+          packageName("kipfs")
+          defFile = project.file("src/interop/kipfs.def")
+          includeDirs(kipfsLibDir, project.file("src/include"))
           tasks.getAt(interopProcessingTaskName).apply {
-            inputs.files(golibBuildTask.outputs)
-            dependsOn(golibBuildTask.name)
+            inputs.files(kipfsLibBuildTask.outputs)
+            dependsOn(kipfsLibBuildTask.name)
           }
         }
 
@@ -102,7 +102,7 @@ kotlin {
             binaryOptions["androidProgramType"] = "nativeActivity"
           }
 
-          runTask?.environment("LD_LIBRARY_PATH", goLibDir)
+          runTask?.environment("LD_LIBRARY_PATH", kipfsLibDir)
         }
 
         sharedLib("godemojni", setOf(NativeBuildType.DEBUG))

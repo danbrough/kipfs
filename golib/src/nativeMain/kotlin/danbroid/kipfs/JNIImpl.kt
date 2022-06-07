@@ -10,12 +10,12 @@ import platform.android.jstring
 import platform.linux.free
 
 
-@CName("Java_danbroid_godemo_JNI_getTime")
+@CName("Java_danbroid_kipfs_JNI_getTime")
 fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     init()
 
-    return godemo.GetTime().let { cs ->
+    return kipfs.GetTime().let { cs ->
       env.pointed.pointed!!.NewStringUTF!!.invoke(env, cs)!!.let {
         free(cs)
         it

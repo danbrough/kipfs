@@ -4,7 +4,7 @@ package main
 #cgo CFLAGS: -fPIC
 */
 import "C"
-import "github.com/danbrough/golibtest/misc"
+import "github.com/danbrough/kipfs/misc"
 
 
 //export GetTime

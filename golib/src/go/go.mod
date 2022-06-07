@@ -1,3 +1,3 @@
-module github.com/danbrough/golibtest
+module github.com/danbrough/kipfs
 
-go 1.17
+go 1.18

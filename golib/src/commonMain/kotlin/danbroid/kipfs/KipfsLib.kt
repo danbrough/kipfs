@@ -1,7 +1,7 @@
-package danbroid.godemo
+package danbroid.kipfs
 
-interface GoLib {
+interface KipfsLib {
   fun getTime(): String
 }
 
-expect fun initGoLib(): GoLib
+expect fun initKipfsLib(): KipfsLib

@@ -110,7 +110,7 @@ fun buildTask(platform: PlatformNative<*>) {
     platform.opensslPrefix.resolve("lib/libssl.a").exists().also {
       isEnabled = !it
       configureTask.isEnabled = !it
-      println("CONFIGURE TASK ENABLED: ${configureTask.name} ${!it}")
+      //println("CONFIGURE TASK ENABLED: ${configureTask.name} ${!it}")
     }
     dependsOn(configureTask.name)
 
