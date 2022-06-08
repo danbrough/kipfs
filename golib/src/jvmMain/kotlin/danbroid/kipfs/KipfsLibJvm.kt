@@ -1,9 +1,37 @@
 package danbroid.kipfs
 
+import danbroid.logging.DBLog
+
 object KipfsLibJvm : KipfsLib {
 
-  val log = danbroid.logging.configure("GODEMO", coloured = true).also {
+  val log = danbroid.logging.configure("KIPFS", coloured = true).also {
     it.warn("configured logging")
+/*    static DBLog log = danbroid.logging.LoggingKt.getLog("GODEMO");
+
+    static {
+      log.info("loading godemo..", null);
+      System.loadLibrary("godemojni");
+      log.info("loading godemojni..", null);
+      System.loadLibrary("godemojni");
+      log.debug("finished loading godemo libraries", null);
+    }*/
+  }
+
+  init {
+
+    runCatching {
+      log.info("loading kipfsgo ..")
+      System.loadLibrary("kipfsgo")
+    }.exceptionOrNull()?.also {
+      log.error(it.message,it)
+    }
+
+    runCatching {
+      log.info("loading kipfs ..")
+      System.loadLibrary("kipfs")
+    }.exceptionOrNull()?.also {
+      log.error(it.message,it)
+    }
   }
 
   override fun getTime(): String = JNI.getTime()
@@ -13,6 +41,10 @@ object KipfsLibJvm : KipfsLib {
 
 
 actual fun initKipfsLib(): KipfsLib = KipfsLibJvm
+
+actual fun Any.log(): DBLog = KipfsLibJvm.log.let {
+  danbroid.logging.getLog(this::class)
+}
 
 
 

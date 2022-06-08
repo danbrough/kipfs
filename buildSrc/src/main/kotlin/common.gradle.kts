@@ -30,10 +30,11 @@ object GoLib {
     platform: PlatformNative<T>,
     goDir: File,
     outputDir: File,
+    libBaseName:String,
     modules: String = ".",
     name: String = "golibBuild${platform.name.toString().capitalized()}"
   ): TaskProvider<GoLibBuildTask<T>> =
-    tasks.register<Common_gradle.GoLibBuildTask<T>>(name, platform, goDir, outputDir, modules)
+    tasks.register<Common_gradle.GoLibBuildTask<T>>(name, platform, goDir, outputDir,libBaseName, modules)
 
   fun Project.RegisterGreeting(name: String, greeting: String) = this.tasks.register<GreetingTask>(name) {
     this.greeting.set(greeting)
@@ -75,6 +76,7 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
   private val platform: PlatformNative<T>,
   private val goDir: File,
   private val outputDir: File,
+  private val outputBaseName:String,
   private val modules: String = ","
 ) : Exec() {
 
@@ -97,8 +99,11 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
     })
 
 
-    val outputFiles = listOf("libgodemo.so", "libgodemo.h").map { outputDir.resolve(it) }
-    outputs.files(outputFiles)
+    val libFile = outputDir.resolve("lib${outputBaseName}.so")
+    val headerFile = outputDir.resolve("lib${outputBaseName}.so")
+    outputs.files(libFile,headerFile)
+
+
     workingDir(goDir)
 
     val commandEnvironment = BuildEnvironment.environment(platform)
@@ -107,7 +112,7 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
     commandLine(
       listOf(
         BuildEnvironment.goBinary, "build", "-v",//"-x",
-        "-trimpath", "-ldflags", "-linkmode 'external'", "-buildmode=c-shared", "-o", outputFiles[0], modules
+        "-trimpath", "-ldflags", "-linkmode 'external'", "-buildmode=c-shared", "-o", libFile, modules
       )
     )
 

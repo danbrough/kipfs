@@ -1,6 +1,6 @@
-headers = libgodemo.h
+headers = libkipfsgo.h
 
-linkerOpts.linux =  -lgodemo
+linkerOpts.linux =  -lkipfsgo
 #libraryPaths.linux_x64 = golib/build/lib/linuxX64
 linkerOpts.linux_x64 = -Lgolib/build/lib/linuxX64
 linkerOpts.linux_arm64 = -Lgolib/build/lib/linuxArm64

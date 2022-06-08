@@ -53,21 +53,21 @@ kotlin {
     createTarget(platform) {
 
       val kipfsLibDir = libsDir(platform)
-      val kipfsLibBuildTaskProvider  = registerGoLibBuild(platform, goDir, kipfsLibDir,"libs/libkipfs.go")
+      val kipfsLibBuildTaskProvider = registerGoLibBuild(platform, goDir, kipfsLibDir, "kipfsgo", "libs/libkipfs.go")
 
       kipfsLibBuildTaskProvider {
-        doFirst{
+        doFirst {
           println("STARTING KIPFS LIB BUILD... ${commandLine.joinToString(" ")}")
         }
+
         dependsOn(":openssl:buildLinuxX64")
         commandLine(commandLine.toMutableList().also {
-          it.add(3,"-tags=openssl")
+          it.add(3, "-tags=openssl")
         })
 
       }
 
       val kipfsLibBuildTask = kipfsLibBuildTaskProvider.get()
-
 
 
       //println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
@@ -112,15 +112,15 @@ kotlin {
 
       binaries {
 
-        executable("demo") {
-          if (konanTarget.family == Family.ANDROID) {
-            binaryOptions["androidProgramType"] = "nativeActivity"
-          }
+        /*       executable("demo") {
+                 if (konanTarget.family == Family.ANDROID) {
+                   binaryOptions["androidProgramType"] = "nativeActivity"
+                 }
 
-          runTask?.environment("LD_LIBRARY_PATH", kipfsLibDir)
-        }
+                 runTask?.environment("LD_LIBRARY_PATH", kipfsLibDir)
+               }*/
 
-        sharedLib("godemojni", setOf(NativeBuildType.DEBUG))
+        sharedLib("kipfs", setOf(NativeBuildType.DEBUG))
 
       }
 
@@ -137,12 +137,14 @@ tasks.withType(KotlinNativeTest::class).all {
 
 
 tasks.withType(KotlinJvmTest::class) {
-  val linkTask = tasks.getByName("linkGodemojniDebugSharedLinuxX64")
+  val linkTask = tasks.getByName("linkKipfsDebugSharedLinuxX64")
   dependsOn(linkTask)
-
+  val libPath =
+    "${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
+  println("LIBPATH: $libPath")
   environment(
     "LD_LIBRARY_PATH",
-    "${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
+    libPath
   )
 }
 
