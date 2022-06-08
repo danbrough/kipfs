@@ -78,7 +78,7 @@ kotlin {
         cinterops.create("kipfs") {
           packageName("kipfs")
           defFile = project.file("src/interop/kipfs.def")
-          includeDirs(kipfsLibDir, project.file("src/include"))
+          includeDirs(kipfsLibDir, project.file("src/include"),project.file("src/go/libs"))
           tasks.getAt(interopProcessingTaskName).apply {
             inputs.files(kipfsLibBuildTask.outputs)
             dependsOn(kipfsLibBuildTask.name)

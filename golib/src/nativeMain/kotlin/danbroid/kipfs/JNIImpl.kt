@@ -25,6 +25,21 @@ fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   }
 }
 
+
+@CName("Java_danbroid_kipfs_JNI_dagCID")
+fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
+  memScoped {
+    init()
+    val jsonC = env.pointed.pointed!!.GetStringUTFChars!!(env, json, null)
+    val s = kipfs.KCID(jsonC)!!
+    env.pointed.pointed!!.ReleaseStringUTFChars!!(env,json,jsonC)
+    return env.pointed.pointed!!.NewStringUTF!!.invoke(
+      env,
+      s.getPointer(this)
+    )!!
+  }
+}
+
 private fun init() {
   initRuntimeIfNeeded()
   Platform.isMemoryLeakCheckerActive = true

@@ -112,7 +112,7 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
     commandLine(
       listOf(
         BuildEnvironment.goBinary, "build", "-v",//"-x",
-        "-trimpath", "-ldflags", "-linkmode 'external'", "-buildmode=c-shared", "-o", libFile, modules
+        "-trimpath", "-buildmode=c-shared", "-o", libFile, modules
       )
     )
 

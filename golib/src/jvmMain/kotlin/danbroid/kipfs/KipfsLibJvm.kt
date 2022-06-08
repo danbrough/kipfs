@@ -35,6 +35,7 @@ object KipfsLibJvm : KipfsLib {
   }
 
   override fun getTime(): String = JNI.getTime()
+  override fun dagCID(json: String): String = JNI.dagCID(json)
 
 
 }

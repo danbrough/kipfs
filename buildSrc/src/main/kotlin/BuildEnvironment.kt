@@ -41,8 +41,6 @@ object BuildEnvironment {
       AndroidAmd64,
       MingwX64
     )
-  //val nativeTargets = listOf(LinuxX64,LinuxArm64,LinuxArm)
-
 
   val androidToolchainDir by lazy {
     androidNdkDir.resolve("toolchains/llvm/prebuilt/linux-x86_64").also {

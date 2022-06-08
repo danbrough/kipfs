@@ -4,6 +4,8 @@ import danbroid.logging.DBLog
 
 interface KipfsLib {
   fun getTime(): String
+
+  fun dagCID(json:String):String
 }
 
 expect fun initKipfsLib(): KipfsLib

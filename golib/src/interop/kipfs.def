@@ -1,4 +1,4 @@
-headers = libkipfsgo.h
+headers = libkipfsgo.h defs.h
 
 linkerOpts.linux =  -lkipfsgo
 #libraryPaths.linux_x64 = golib/build/lib/linuxX64
