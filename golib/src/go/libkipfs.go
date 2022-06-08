@@ -6,10 +6,9 @@ package main
 import "C"
 import "github.com/danbrough/kipfs/misc"
 
-
 //export GetTime
 func GetTime() *C.char {
-	return C.CString("Local time: " + misc.GetTime())
+	return C.CString("Local time: " + misc.GetMessage())
 }
 
 func main() {}
