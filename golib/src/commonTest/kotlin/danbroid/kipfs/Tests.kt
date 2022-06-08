@@ -7,6 +7,6 @@ class Tests {
   @Test
   fun getTime() {
     val kipfsLib = initKipfsLib()
-    println("The time is: ${kipfsLib.getTime()}")
+    println(kipfsLib.getTime())
   }
 }

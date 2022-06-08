@@ -53,13 +53,17 @@ kotlin {
     createTarget(platform) {
 
       val kipfsLibDir = libsDir(platform)
-      val kipfsLibBuildTaskProvider  = registerGoLibBuild(platform, goDir, kipfsLibDir)
+      val kipfsLibBuildTaskProvider  = registerGoLibBuild(platform, goDir, kipfsLibDir,"libs/libkipfs.go")
 
       kipfsLibBuildTaskProvider {
         doFirst{
-          println("STARTING KIPFS LIB BUILD...")
+          println("STARTING KIPFS LIB BUILD... ${commandLine.joinToString(" ")}")
         }
         dependsOn(":openssl:buildLinuxX64")
+        commandLine(commandLine.toMutableList().also {
+          it.add(3,"-tags=openssl")
+        })
+
       }
 
       val kipfsLibBuildTask = kipfsLibBuildTaskProvider.get()

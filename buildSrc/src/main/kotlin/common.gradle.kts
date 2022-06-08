@@ -13,13 +13,10 @@ object Common {
 
   @Suppress("UNCHECKED_CAST")
   fun <T : KotlinTarget> Project.createTarget(
-    platform: Platform<T>,
-    targetName: String = platform.name.toString(),
-    conf: T.() -> Unit = {}
+    platform: Platform<T>, targetName: String = platform.name.toString(), conf: T.() -> Unit = {}
   ): T {
     val extn = kotlinExtension as KotlinMultiplatformExtension
-    val preset: KotlinTargetPreset<T> =
-      extn.presets.getByName(platform.name.toString()) as KotlinTargetPreset<T>
+    val preset: KotlinTargetPreset<T> = extn.presets.getByName(platform.name.toString()) as KotlinTargetPreset<T>
     return extn.targetFromPreset(preset, targetName, conf)
   }
 
@@ -33,13 +30,14 @@ object GoLib {
     platform: PlatformNative<T>,
     goDir: File,
     outputDir: File,
+    modules: String = ".",
     name: String = "golibBuild${platform.name.toString().capitalized()}"
-  ): TaskProvider<GoLibBuildTask<T>> = tasks.register<Common_gradle.GoLibBuildTask<T>>(name, platform, goDir, outputDir)
+  ): TaskProvider<GoLibBuildTask<T>> =
+    tasks.register<Common_gradle.GoLibBuildTask<T>>(name, platform, goDir, outputDir, modules)
 
-  fun Project.RegisterGreeting(name: String, greeting: String) =
-    this.tasks.register<GreetingTask>(name) {
-      this.greeting.set(greeting)
-    }
+  fun Project.RegisterGreeting(name: String, greeting: String) = this.tasks.register<GreetingTask>(name) {
+    this.greeting.set(greeting)
+  }
 
 
   fun Project.libsDir(platform: PlatformNative<*>): File = buildDir.resolve("lib/${platform.name}")
@@ -60,8 +58,7 @@ abstract class GreetingTask : DefaultTask() {
 
 
 
-tasks.register("styleTest")
-{
+tasks.register("styleTest") {
   doLast {
     val out = project.serviceOf<StyledTextOutputFactory>().create("testOutput")
     StyledTextOutput.Style.values().forEach {
@@ -75,7 +72,10 @@ tasks.register("styleTest")
 }
 
 abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
-  private val platform: PlatformNative<T>, private val goDir: File, private val outputDir: File
+  private val platform: PlatformNative<T>,
+  private val goDir: File,
+  private val outputDir: File,
+  private val modules: String = ","
 ) : Exec() {
 
   init {
@@ -84,7 +84,9 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
 
     environment("PLATFORM", platform.name.toString())
 
-    assert(outputDir.mkdirs())
+    doFirst {
+      // assert(outputDir.mkdirs())
+    }
 
 
     inputs.files(project.fileTree(goDir) {
@@ -104,13 +106,8 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
 
     commandLine(
       listOf(
-        BuildEnvironment.goBinary,
-        "build", "-v",//"-x",
-        "-trimpath",
-        "-ldflags", "-linkmode 'external'",
-        "-buildmode=c-shared",
-        "-o", outputFiles[0],
-        "."
+        BuildEnvironment.goBinary, "build", "-v",//"-x",
+        "-trimpath", "-ldflags", "-linkmode 'external'", "-buildmode=c-shared", "-o", outputFiles[0], modules
       )
     )
 
@@ -119,10 +116,10 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
     doFirst {
       out.style(StyledTextOutput.Style.Info).println("Building golib for $platform")
       out.style(StyledTextOutput.Style.ProgressStatus).println("environment: $commandEnvironment")
+      out.style(StyledTextOutput.Style.ProgressStatus).println("commandLine: ${commandLine.joinToString(" ")}")
     }
     doLast {
-      if (didWork)
-        out.style(StyledTextOutput.Style.Success).println("Finished building golib for $platform")
+      if (didWork) out.style(StyledTextOutput.Style.Success).println("Finished building golib for $platform")
     }
   }
 
