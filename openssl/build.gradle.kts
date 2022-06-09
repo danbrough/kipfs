@@ -13,14 +13,14 @@ val opensslTag = "OpenSSL_1_1_1o"
 
 val PlatformNative<*>.opensslPlatform
   get() = when (this) {
-    LinuxX64 -> "linux-x86_64"
-    LinuxArm64 -> "linux-aarch64"
-    LinuxArm -> "linux-armv4"
-    AndroidArm -> "android-arm"
-    AndroidArm64 -> "android-arm64"
-    Android386 -> "android-x86"
-    AndroidAmd64 -> "android-x86_64"
-    MingwX64 -> "mingw64"
+    PlatformNative.LinuxX64 -> "linux-x86_64"
+    PlatformNative.LinuxArm64 -> "linux-aarch64"
+    PlatformNative.LinuxArm -> "linux-armv4"
+    PlatformAndroid.AndroidArm -> "android-arm"
+    PlatformAndroid.AndroidArm64 -> "android-arm64"
+    PlatformAndroid.Android386 -> "android-x86"
+    PlatformAndroid.AndroidAmd64 -> "android-x86_64"
+    PlatformNative.MingwX64 -> "mingw64"
     else -> TODO("Add support for $this")
   }
 

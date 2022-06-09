@@ -1,8 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
-import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
 
@@ -30,18 +28,18 @@ object BuildEnvironment {
   val buildPath: List<String>
     get() = ProjectProperties.getProperty("build.path").split("[\\s]+".toRegex())
 
-  val hostPlatform = LinuxX64
+  val hostPlatform = PlatformNative.LinuxX64
 
   val nativeTargets: List<PlatformNative<*>>
-    get() = if (ProjectProperties.IDEA_ACTIVE) listOf(LinuxX64) else listOf(
-      LinuxX64,
-      LinuxArm64,
-      LinuxArm,
-      AndroidArm,
-      AndroidArm64,
-      Android386,
-      AndroidAmd64,
-      MingwX64
+    get() = if (ProjectProperties.IDEA_ACTIVE) listOf(PlatformNative.LinuxX64) else listOf(
+      PlatformNative.LinuxX64,
+      PlatformNative.LinuxArm64,
+      PlatformNative.LinuxArm,
+      PlatformAndroid.AndroidArm,
+      PlatformAndroid.AndroidArm64,
+      PlatformAndroid.Android386,
+      PlatformAndroid.AndroidAmd64,
+      PlatformNative.MingwX64
     )
 
   val androidToolchainDir by lazy {
@@ -79,21 +77,21 @@ object BuildEnvironment {
 
     when (platform) {
 
-      LinuxArm -> {
+      PlatformNative.LinuxArm -> {
         val clangArgs =
           "--target=${platform.host} " + "--gcc-toolchain=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2 " + "--sysroot=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2/arm-unknown-linux-gnueabihf/sysroot "
         this["CC"] = "$clangBinDir/clang $clangArgs"
         this["CXX"] = "$clangBinDir/clang++ $clangArgs"
       }
 
-      LinuxArm64 -> {
+      PlatformNative.LinuxArm64 -> {
         val clangArgs =
           "--target=${platform.host} " + "--gcc-toolchain=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2 " + "--sysroot=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot"
         this["CC"] = "$clangBinDir/clang $clangArgs"
         this["CXX"] = "$clangBinDir/clang++ $clangArgs"
       }
 
-      LinuxX64 -> {
+      PlatformNative.LinuxX64 -> {
         val clangArgs =
           "--target=${platform.host} " + "--gcc-toolchain=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2 " + "--sysroot=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot"
         this["CC"] = "$clangBinDir/clang $clangArgs"
@@ -102,7 +100,7 @@ object BuildEnvironment {
           "$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/bin/ranlib"*/
       }
 
-      MingwX64 -> {
+      PlatformNative.MingwX64 -> {
 
         /*  export HOST=x86_64-w64-mingw32
   export GOOS=windows
@@ -133,7 +131,7 @@ object BuildEnvironment {
 
       }
 
-      AndroidArm, Android386, AndroidArm64, AndroidAmd64 -> {
+      PlatformAndroid.AndroidArm, PlatformAndroid.Android386, PlatformAndroid.AndroidArm64, PlatformAndroid.AndroidAmd64 -> {
         path.add(0, androidToolchainDir.resolve("bin").absolutePath)
         this["CC"] = "${platform.host}${androidNdkApiVersion}-clang"
         this["CXX"] = "${platform.host}${androidNdkApiVersion}-clang++"
@@ -159,21 +157,66 @@ enum class GoArch(val altName: String? = null) {
   override fun toString() = altName ?: name
 }
 
+enum class PlatformName {
+  Android,
+  AndroidNativeArm32, AndroidNativeArm64, AndroidNativeX64, AndroidNativeX86,
+  IosArm32, IosArm64, IosSimulatorArm64, IosX64,
+  JS, JsBoth, JsIr,
+  Jvm, JvmWithJava,
+  LinuxArm32Hfp, LinuxArm64, LinuxMips32, LinuxMipsel32, LinuxX64,
+  MacosArm64, MacosX64,
+  MingwX64, MingwX86,
+  TvosArm64, TvosSimulatorArm64, TvosX64,
+  Wasm, Wasm32,
+  WatchosArm32, WatchosArm64, WatchosSimulatorArm64, WatchosX64, WatchosX86;
+
+  override fun toString() = name.toString().decapitalize()
+
+  companion object {
+    fun forName(name: String): Platform<*> = when (valueOf(name)) {
+      Android -> TODO()
+      AndroidNativeArm32 -> PlatformAndroid.AndroidArm
+      AndroidNativeArm64 -> PlatformAndroid.AndroidArm64
+      AndroidNativeX64 -> PlatformAndroid.AndroidAmd64
+      AndroidNativeX86 -> PlatformAndroid.Android386
+      IosArm32 -> TODO()
+      IosArm64 -> TODO()
+      IosSimulatorArm64 -> TODO()
+      IosX64 -> TODO()
+      JS -> TODO()
+      JsBoth -> TODO()
+      JsIr -> TODO()
+      Jvm -> TODO()
+      JvmWithJava -> TODO()
+      LinuxArm32Hfp -> PlatformNative.LinuxArm
+      PlatformName.LinuxArm64 -> PlatformNative.LinuxArm64
+      LinuxMips32 -> TODO()
+      LinuxMipsel32 -> TODO()
+      LinuxX64 -> TODO()
+      MacosArm64 -> TODO()
+      MacosX64 -> TODO()
+      MingwX64 -> PlatformNative.MingwX64
+      MingwX86 -> TODO()
+      TvosArm64 -> TODO()
+      TvosSimulatorArm64 -> TODO()
+      TvosX64 -> TODO()
+      Wasm -> TODO()
+      Wasm32 -> TODO()
+      WatchosArm32 -> TODO()
+      WatchosArm64 -> TODO()
+      WatchosSimulatorArm64 -> TODO()
+      WatchosX64 -> TODO()
+      WatchosX86 -> TODO()
+    }
+  }
+
+}
+
 sealed class Platform<T : KotlinTarget>(
   val name: PlatformName,
 ) {
-  enum class PlatformName {
-    Android, AndroidNativeArm32, AndroidNativeArm64, AndroidNativeX64, AndroidNativeX86, IosArm32, IosArm64, IosSimulatorArm64, IosX64, JS, JsBoth, JsIr, Jvm, JvmWithJava, LinuxArm32Hfp, LinuxArm64, LinuxMips32, LinuxMipsel32, LinuxX64, MacosArm64, MacosX64, MingwX64, MingwX86, TvosArm64, TvosSimulatorArm64, TvosX64, Wasm, Wasm32, WatchosArm32, WatchosArm64, WatchosSimulatorArm64, WatchosX64, WatchosX86;
-
-    override fun toString() = name.toString().decapitalize()
-  }
-
-
   override fun toString() = name.toString()
 }
-
-
-
 
 
 open class PlatformNative<T : KotlinNativeTarget>(
@@ -183,24 +226,26 @@ open class PlatformNative<T : KotlinNativeTarget>(
   val isAndroid = goOS == GoOS.android
   val isLinux = goOS == GoOS.linux
   val isWindows = goOS == GoOS.windows
+
+  object LinuxX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
+    PlatformName.LinuxX64, "x86_64-unknown-linux-gnu", GoOS.linux, GoArch.amd64
+  )
+
+  object LinuxArm64 : PlatformNative<KotlinNativeTarget>(
+    PlatformName.LinuxArm64, "aarch64-unknown-linux-gnu", GoOS.linux, GoArch.arm64
+  )
+
+  object LinuxArm : PlatformNative<KotlinNativeTarget>(
+    PlatformName.LinuxArm32Hfp, "arm-unknown-linux-gnueabihf", GoOS.linux, GoArch.arm
+  )
+
+  object MingwX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
+    PlatformName.MingwX64, "x86_64-w64-mingw32", GoOS.windows, GoArch.amd64
+  )
 }
 
 
-object LinuxX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
-  PlatformName.LinuxX64, "x86_64-unknown-linux-gnu", GoOS.linux, GoArch.amd64
-)
 
-object LinuxArm64 : PlatformNative<KotlinNativeTarget>(
-  PlatformName.LinuxArm64, "aarch64-unknown-linux-gnu", GoOS.linux, GoArch.arm64
-)
-
-object LinuxArm : PlatformNative<KotlinNativeTarget>(
-  PlatformName.LinuxArm32Hfp, "arm-unknown-linux-gnueabihf", GoOS.linux, GoArch.arm
-)
-
-object MingwX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
-  PlatformName.MingwX64, "x86_64-w64-mingw32", GoOS.windows, GoArch.amd64
-)
 
 open class PlatformAndroid<T : KotlinNativeTarget>(
   name: PlatformName,
@@ -209,39 +254,40 @@ open class PlatformAndroid<T : KotlinNativeTarget>(
   goArch: GoArch,
   goArm: Int = 7,
   val androidLibDir: String
-) : PlatformNative<T>(name, host, goOS, goArch, goArm)
+) : PlatformNative<T>(name, host, goOS, goArch, goArm) {
 
-object AndroidArm : PlatformAndroid<KotlinNativeTarget>(
-  PlatformName.AndroidNativeArm32,
-  "armv7a-linux-androideabi",
-  GoOS.android,
-  GoArch.arm,
-  androidLibDir = "armeabi-v7a"
-)
+  object AndroidArm : PlatformAndroid<KotlinNativeTarget>(
+    PlatformName.AndroidNativeArm32,
+    "armv7a-linux-androideabi",
+    GoOS.android,
+    GoArch.arm,
+    androidLibDir = "armeabi-v7a"
+  )
 
-object AndroidArm64 : PlatformAndroid<KotlinNativeTarget>(
-  PlatformName.AndroidNativeArm64,
-  "aarch64-linux-android",
-  GoOS.android,
-  GoArch.arm64,
-  androidLibDir = "arm64-v8a",
-)
+  object AndroidArm64 : PlatformAndroid<KotlinNativeTarget>(
+    PlatformName.AndroidNativeArm64,
+    "aarch64-linux-android",
+    GoOS.android,
+    GoArch.arm64,
+    androidLibDir = "arm64-v8a",
+  )
 
-object Android386 : PlatformAndroid<KotlinNativeTarget>(
-  PlatformName.AndroidNativeX86,
-  "i686-linux-android",
-  GoOS.android,
-  GoArch.x86,
-  androidLibDir = "x86",
-)
+  object Android386 : PlatformAndroid<KotlinNativeTarget>(
+    PlatformName.AndroidNativeX86,
+    "i686-linux-android",
+    GoOS.android,
+    GoArch.x86,
+    androidLibDir = "x86",
+  )
 
-object AndroidAmd64 : PlatformAndroid<KotlinNativeTarget>(
-  PlatformName.AndroidNativeX64,
-  "x86_64-linux-android",
-  GoOS.android,
-  GoArch.amd64,
-  androidLibDir = "x86_64",
-)
+  object AndroidAmd64 : PlatformAndroid<KotlinNativeTarget>(
+    PlatformName.AndroidNativeX64,
+    "x86_64-linux-android",
+    GoOS.android,
+    GoArch.amd64,
+    androidLibDir = "x86_64",
+  )
+}
 
 
 /*
