@@ -1,6 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
+import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
 
@@ -170,6 +172,10 @@ sealed class Platform<T : KotlinTarget>(
   override fun toString() = name.toString()
 }
 
+
+
+
+
 open class PlatformNative<T : KotlinNativeTarget>(
   name: PlatformName, val host: String, val goOS: GoOS, val goArch: GoArch, val goArm: Int = 7
 ) : Platform<T>(name) {
@@ -238,4 +244,38 @@ object AndroidAmd64 : PlatformAndroid<KotlinNativeTarget>(
 )
 
 
-
+/*
+android
+androidNativeArm32
+androidNativeArm64
+androidNativeX64
+androidNativeX86
+iosArm32
+iosArm64
+iosSimulatorArm64
+iosX64
+js
+jsBoth
+jsIr
+jvm
+jvmWithJava
+linuxArm32Hfp
+linuxArm64
+linuxMips32
+linuxMipsel32
+linuxX64
+macosArm64
+macosX64
+mingwX64
+mingwX86
+tvosArm64
+tvosSimulatorArm64
+tvosX64
+wasm
+wasm32
+watchosArm32
+watchosArm64
+watchosSimulatorArm64
+watchosX64
+watchosX86
+ */

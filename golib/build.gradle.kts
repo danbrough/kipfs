@@ -158,3 +158,8 @@ tasks.withType(KotlinJvmTest::class) {
 }
 
 
+tasks.register("printPresets"){
+  kotlin.presets.all {
+    println(name)
+  }
+}
