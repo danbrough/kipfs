@@ -30,11 +30,11 @@ object GoLib {
     platform: PlatformNative<T>,
     goDir: File,
     outputDir: File,
-    libBaseName:String,
+    libBaseName: String,
     modules: String = ".",
     name: String = "golibBuild${platform.name.toString().capitalized()}"
   ): TaskProvider<GoLibBuildTask<T>> =
-    tasks.register<Common_gradle.GoLibBuildTask<T>>(name, platform, goDir, outputDir,libBaseName, modules)
+    tasks.register<Common_gradle.GoLibBuildTask<T>>(name, platform, goDir, outputDir, libBaseName, modules)
 
   fun Project.RegisterGreeting(name: String, greeting: String) = this.tasks.register<GreetingTask>(name) {
     this.greeting.set(greeting)
@@ -76,7 +76,7 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
   private val platform: PlatformNative<T>,
   private val goDir: File,
   private val outputDir: File,
-  private val outputBaseName:String,
+  private val outputBaseName: String,
   private val modules: String = ","
 ) : Exec() {
 
@@ -101,7 +101,7 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
 
     val libFile = outputDir.resolve("lib${outputBaseName}.so")
     val headerFile = outputDir.resolve("lib${outputBaseName}.so")
-    outputs.files(libFile,headerFile)
+    outputs.files(libFile, headerFile)
 
 
     workingDir(goDir)
@@ -116,6 +116,7 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
       )
     )
 
+
     val out = project.serviceOf<StyledTextOutputFactory>().create("golibOutput")
 
     doFirst {
@@ -126,6 +127,12 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
     doLast {
       if (didWork) out.style(StyledTextOutput.Style.Success).println("Finished building golib for $platform")
     }
+  }
+
+  fun appendToEnvironment(key: String, value: String, separator: String = " ") {
+    environment(key, environment.getOrDefault(key, null).let {
+      if (it == null) value else "$it$separator$value"
+    })
   }
 
 }

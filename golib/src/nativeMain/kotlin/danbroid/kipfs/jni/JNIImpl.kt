@@ -6,8 +6,14 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.pointed
 import platform.android.JNIEnvVar
 import platform.android.jclass
+import platform.android.jint
 import platform.android.jstring
 import platform.linux.free
+
+private fun init() {
+  initRuntimeIfNeeded()
+  Platform.isMemoryLeakCheckerActive = true
+}
 
 
 @CName("Java_danbroid_kipfs_JNI_getTime")
@@ -16,13 +22,16 @@ fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
     init()
 
     return kipfs.GetTime().let { cs ->
-      env.pointed.pointed!!.NewStringUTF!!.invoke(env, cs)!!.let {
-        free(cs)
-        it
-      }
+      env.pointed.pointed!!.NewStringUTF!!.invoke(env, cs!!.getPointer(this))!!
     }
 
   }
+}
+
+
+@CName("Java_danbroid_kipfs_JNI_disposeGoObject")
+fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
+  kipfs.KDecRef(refnum)
 }
 
 
@@ -40,7 +49,3 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   }
 }
 
-private fun init() {
-  initRuntimeIfNeeded()
-  Platform.isMemoryLeakCheckerActive = true
-}

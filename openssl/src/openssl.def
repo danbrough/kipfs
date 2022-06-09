@@ -1,2 +1,3 @@
 staticLibraries.linux = libssl.a libcrypto.a
-libraryPaths.linux_x64 = build/openssl/linuxX64/lib
+#libraryPaths.linux_x64 = build/openssl/linuxX64/lib
+#linkerOpts.linux_x64 = -Lbuild/openssl/linuxX64/lib

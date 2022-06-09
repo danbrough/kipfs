@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+  //kotlin("gradle-plugin") apply false
   kotlin("multiplatform") apply false
   kotlin("plugin.serialization") apply false
   id("com.android.library") apply false
@@ -15,6 +16,7 @@ plugins {
 buildscript {
   repositories {
     mavenCentral()
+    gradlePluginPortal()
   }
 }
 

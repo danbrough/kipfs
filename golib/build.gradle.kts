@@ -1,6 +1,7 @@
 import Common_gradle.Common.createTarget
 import Common_gradle.GoLib.libsDir
 import Common_gradle.GoLib.registerGoLibBuild
+import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
@@ -58,9 +59,14 @@ kotlin {
       kipfsLibBuildTaskProvider {
         doFirst {
           println("STARTING KIPFS LIB BUILD... ${commandLine.joinToString(" ")}")
+          println("CGO_CFLAGS: ${environment["CGO_CFLAGS"]}")
+          println("CGO_LDFLAGS: ${environment["CGO_LDLAGS"]}")
         }
 
-        dependsOn(":openssl:buildLinuxX64")
+        appendToEnvironment("CGO_CFLAGS", "-I${rootProject.file("openssl/build/openssl/$platform/include")}")
+        appendToEnvironment("CGO_LDFLAGS", "-L${rootProject.file("openssl/build/openssl/$platform/lib")}")
+
+        dependsOn(":openssl:build${platform.name.toString().capitalized()}")
         commandLine(commandLine.toMutableList().also {
           it.add(3, "-tags=openssl")
         })
@@ -78,7 +84,11 @@ kotlin {
         cinterops.create("kipfs") {
           packageName("kipfs")
           defFile = project.file("src/interop/kipfs.def")
-          includeDirs(kipfsLibDir, project.file("src/include"),project.file("src/go/libs"))
+          includeDirs(
+            kipfsLibDir,
+            project.file("src/include"),
+            project.file("src/go/libs"),
+          )
           tasks.getAt(interopProcessingTaskName).apply {
             inputs.files(kipfsLibBuildTask.outputs)
             dependsOn(kipfsLibBuildTask.name)
@@ -141,7 +151,6 @@ tasks.withType(KotlinJvmTest::class) {
   dependsOn(linkTask)
   val libPath =
     "${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
-  println("LIBPATH: $libPath")
   environment(
     "LD_LIBRARY_PATH",
     libPath

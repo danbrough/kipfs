@@ -1,6 +1,7 @@
 import Common_gradle.Common.createTarget
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 plugins {
   kotlin("multiplatform")
@@ -28,7 +29,7 @@ val PlatformNative<*>.opensslPrefix
 
 
 val PlatformNative<*>.opensslSrcDir: File
-  get() = File(System.getProperty("java.io.tmpdir"),"openssl/$opensslTag/$name")
+  get() = File(System.getProperty("java.io.tmpdir"), "openssl/$opensslTag/$name")
 
 group = ProjectProperties.GROUP_ID
 version = ProjectProperties.VERSION_NAME
@@ -137,15 +138,30 @@ fun buildTask(platform: PlatformNative<*>) {
 kotlin {
 
   val buildAll by tasks.registering
+  //val nativeMain by sourceSets.creating
 
   BuildEnvironment.nativeTargets.forEach { platform ->
 
     createTarget(platform) {
       compilations["main"].apply {
         cinterops.create("openssl") {
-          this.defFile = project.file("src/openssl.def")
+          defFile = project.file("src/openssl.def")
+          extraOpts(listOf("-libraryPath", project.buildDir.resolve("openssl/$platform/lib")))
+        }
+
+  /*      defaultSourceSet {
+          dependsOn(nativeMain)
+        }*/
+      }
+
+/*
+      binaries {
+        staticLib("openssl",setOf(NativeBuildType.DEBUG)){
         }
       }
+*/
+
+
     }
 
     buildTask(platform)
@@ -155,9 +171,6 @@ kotlin {
 
 publishing {
   publications {
-    kotlin.targets.withType(KotlinNativeTarget::class) {
-
-    }
   }
 
   repositories {

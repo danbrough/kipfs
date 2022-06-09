@@ -7,6 +7,12 @@ import kotlinx.cinterop.cstr
 import kotlinx.cinterop.toKString
 import platform.posix.free
 
+interface KIPFSNativeLib : KipfsLib {
+  fun createNativeShell(address: String): Int
+  fun disposeGoObject(ref: Int)
+  fun request(shellRefID: Int, cmd: String, arg: String? = null): ByteArray
+}
+
 fun CPointer<ByteVar>.copyToKString(): String = toKString().let {
   free(this)
   it

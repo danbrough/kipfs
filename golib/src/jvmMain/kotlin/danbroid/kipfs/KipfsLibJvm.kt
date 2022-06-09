@@ -1,5 +1,6 @@
 package danbroid.kipfs
 
+import danbroid.kipfs.jni.JNI
 import danbroid.logging.DBLog
 
 object KipfsLibJvm : KipfsLib {

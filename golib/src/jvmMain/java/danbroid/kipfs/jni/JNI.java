@@ -1,10 +1,7 @@
-package danbroid.kipfs;
+package danbroid.kipfs.jni;
 
-import danbroid.logging.DBLog;
 
 public class JNI {
-
-
 
   public static native String getTime();
 
