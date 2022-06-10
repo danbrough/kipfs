@@ -63,8 +63,8 @@ kotlin {
           println("CGO_LDFLAGS: ${environment["CGO_LDLAGS"]}")
         }
 
-        appendToEnvironment("CGO_CFLAGS", "-I${rootProject.file("openssl/build/openssl/$platform/include")}")
-        appendToEnvironment("CGO_LDFLAGS", "-L${rootProject.file("openssl/build/openssl/$platform/lib")}")
+        appendToEnvironment("CGO_CFLAGS", "-I${rootProject.file("openssl/lib/$platform/include")}")
+        appendToEnvironment("CGO_LDFLAGS", "-L${rootProject.file("openssl/lib/$platform/lib")}")
 
         dependsOn(":openssl:build${platform.name.toString().capitalized()}")
         commandLine(commandLine.toMutableList().also {

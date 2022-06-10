@@ -5,7 +5,6 @@ import kotlinx.cinterop.*
 import platform.posix.free
 
 
-
 /*
   external override fun createNativeShell(address: String): Int
   external override fun disposeGoObject(ref: Int)
@@ -20,7 +19,8 @@ fun CPointer<ByteVar>.copyToKString(): String = toKString().let {
   it
 }
 
-private object KipfsLibNative : KIPFSNativeLib {
+
+actual fun initKIPFSLib(): KIPFSLib = object : KIPFSNativeLib {
 
   private val log = danbroid.logging.configure("KIPFS", coloured = true)
   override fun createNativeShell(address: String): Int = kipfs.KCreateShell(address.cstr).useContents {
@@ -44,7 +44,5 @@ private object KipfsLibNative : KIPFSNativeLib {
 
   override fun dagCID(json: String) = kipfs.KCID(json.cstr)!!.copyToKString()
 }
-
-actual fun initKipfsLib(): KipfsLib = KipfsLibNative
 
 

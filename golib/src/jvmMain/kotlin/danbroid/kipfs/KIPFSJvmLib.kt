@@ -1,9 +1,8 @@
 package danbroid.kipfs
 
 import danbroid.kipfs.jni.JNI
-import danbroid.logging.DBLog
 
-object KipfsLibJvm : KIPFSNativeLib {
+private object KIPFSJvmLib : KIPFSNativeLib {
 
   val log = danbroid.logging.configure("KIPFS", coloured = true).also {
     it.warn("configured logging")
@@ -55,7 +54,7 @@ object KipfsLibJvm : KIPFSNativeLib {
 }
 
 
-actual fun initKipfsLib(): KipfsLib = KipfsLibJvm
+actual fun initKIPFSLib(): KIPFSLib = KIPFSJvmLib
 
 
 

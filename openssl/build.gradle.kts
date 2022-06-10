@@ -26,7 +26,7 @@ val PlatformNative<*>.opensslPlatform
 
 
 val PlatformNative<*>.opensslPrefix
-  get() = project.buildDir.resolve("openssl/$name")
+  get() = project.file("lib/$name")
 
 
 val PlatformNative<*>.opensslSrcDir: File
@@ -68,8 +68,9 @@ fun srcPrepare(platform: PlatformNative<*>): Exec =
   tasks.create("srcPrepare${platform.name.toString().capitalized()}", Exec::class) {
     val srcDir = platform.opensslSrcDir
     dependsOn(srcClone)
-    isEnabled = !srcDir.exists()
-
+    onlyIf {
+      !srcDir.exists()
+    }
     commandLine(
       BuildEnvironment.gitBinary, "clone", "--branch", opensslTag, opensslGitDir, srcDir
     )
