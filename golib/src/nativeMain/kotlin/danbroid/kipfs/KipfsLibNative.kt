@@ -4,12 +4,7 @@ import danbroid.logging.DBLog
 import kotlinx.cinterop.*
 import platform.posix.free
 
-interface KIPFSNativeLib : KipfsLib {
-  fun createNativeShell(address: String): Int
-  fun disposeGoObject(ref: Int)
-  fun request(shellRefID: Int, cmd: String, arg: String? = null): ByteArray
 
-}
 
 /*
   external override fun createNativeShell(address: String): Int
@@ -42,6 +37,9 @@ private object KipfsLibNative : KIPFSNativeLib {
     TODO("Not yet implemented")
   }
 
+  override fun environment(key: String): String? = platform.posix.getenv(key)?.toKString()
+
+
   override fun getTime(): String = kipfs.GetTime()!!.copyToKString()
 
   override fun dagCID(json: String) = kipfs.KCID(json.cstr)!!.copyToKString()
@@ -50,6 +48,3 @@ private object KipfsLibNative : KIPFSNativeLib {
 actual fun initKipfsLib(): KipfsLib = KipfsLibNative
 
 
-actual fun Any.log(): DBLog = KipfsLibNative.let {
-  danbroid.logging.getLog(this::class)
-}

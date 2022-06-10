@@ -3,7 +3,7 @@ package danbroid.kipfs
 import danbroid.kipfs.jni.JNI
 import danbroid.logging.DBLog
 
-object KipfsLibJvm : KipfsLib {
+object KipfsLibJvm : KIPFSNativeLib {
 
   val log = danbroid.logging.configure("KIPFS", coloured = true).also {
     it.warn("configured logging")
@@ -35,6 +35,19 @@ object KipfsLibJvm : KipfsLib {
     }
   }
 
+  override fun createNativeShell(address: String): Int {
+    TODO("Not yet implemented")
+  }
+
+  override fun disposeGoObject(ref: Int) {
+    TODO("Not yet implemented")
+  }
+
+  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray {
+    TODO("Not yet implemented")
+  }
+  override fun environment(key: String): String? = System.getenv(key)
+
   override fun getTime(): String = JNI.getTime()
   override fun dagCID(json: String): String = JNI.dagCID(json)
 
@@ -43,10 +56,6 @@ object KipfsLibJvm : KipfsLib {
 
 
 actual fun initKipfsLib(): KipfsLib = KipfsLibJvm
-
-actual fun Any.log(): DBLog = KipfsLibJvm.log.let {
-  danbroid.logging.getLog(this::class)
-}
 
 
 

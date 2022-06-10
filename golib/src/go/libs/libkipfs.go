@@ -14,6 +14,8 @@ import (
 	"github.com/danbrough/kipfs/shell"
 
 	_seq "golang.org/x/mobile/bind/seq"
+		"unsafe"
+
 )
 
 //export GetTime
@@ -57,5 +59,30 @@ func KCreateShell(cUrl *C.char) (C.int32_t, *C.char) {
 
 	return ptr, nil
 }
+
+//export KRequest
+func KRequest(refnum C.int32_t, command *C.char, arg *C.char) (unsafe.Pointer, int, *C.char) {
+	_seq.Inc(int32(refnum))
+	ref := _seq.FromRefNum(int32(refnum))
+	kShell := ref.Get().(*shell.Shell)
+
+	println("creating request")
+	rb := kShell.NewRequest(C.GoString(command))
+	if arg != nil {
+		goArg := C.GoString(arg)
+		println("Adding Argument:", goArg)
+		rb.Argument(goArg)
+	}
+
+	println("Sending request ..")
+	data, err := rb.Send()
+	if err != nil {
+		return nil, -1, C.CString(err.Error())
+	}
+	println("returning data")
+
+	return C.CBytes(data), len(data), nil
+}
+
 
 func main() {}

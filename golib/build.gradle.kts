@@ -151,6 +151,7 @@ tasks.withType(KotlinJvmTest::class) {
   dependsOn(linkTask)
   val libPath =
     "${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
+  println("LIBPATH: $libPath")
   environment(
     "LD_LIBRARY_PATH",
     libPath
