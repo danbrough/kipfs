@@ -2,6 +2,7 @@ package danbroid.kipfs.jni
 
 import danbroid.kipfs.copyToKString
 import danbroid.kipfs.log
+import kipfs.KCreateShell
 import kotlinx.cinterop.*
 import platform.android.*
 import platform.linux.free
@@ -47,6 +48,27 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
       env,
       s.getPointer(this)
     )!!
+  }
+}
+
+@CName("Java_danbroid_kipfs_jni_JNI_createNativeShell")
+fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): jint {
+  memScoped {
+    init()
+    val e = env.pointed.pointed!!
+    val addrC = e.GetStringUTFChars!!(env, address, null)
+    val s = KCreateShell(addrC).getPointer(this).pointed
+    e.ReleaseStringUTFChars!!(env, address, addrC)
+    if (s.r1 != null) {
+      log.error("An error occurred")
+      return -1
+    }
+    return s.r0
+
+    /*return env.pointed.pointed!!.NewStringUTF!!.invoke(
+      env,
+      s.getPointer(this)
+    )!!*/
   }
 }
 

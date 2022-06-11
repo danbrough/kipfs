@@ -1,5 +1,5 @@
-import danbroid.kipfs.DEFAULT_KIPFS_ADDRESS
-import danbroid.kipfs.ENV_KIPFS_ADDRESS
+package danbroid.kipfs
+
 import danbroid.kipfs.api.dagGet
 import danbroid.kipfs.api.id
 
@@ -11,8 +11,8 @@ class ApiTests {
   companion object {
     const val DAG_HELLO_WORLD = "bafyreidfq7gnjnpi7hllpwowrphojoy6hgdgrsgitbnbpty6f2yirqhkom"
 
-    private val log = danbroid.logging.configure("TEST", coloured = true)
-    private val kipfs = danbroid.kipfs.initKipfsLib()
+    private val log = log()
+    private val kipfs = initKIPFSLib()
 
     private val ipfsAddress: String by lazy {
       kipfs.environment(ENV_KIPFS_ADDRESS)?.also {

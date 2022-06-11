@@ -23,28 +23,25 @@ private object KIPFSJvmLib : KIPFSNativeLib {
       log.info("loading kipfsgo ..")
       System.loadLibrary("kipfsgo")
     }.exceptionOrNull()?.also {
-      log.error(it.message,it)
+      log.error(it.message, it)
     }
 
     runCatching {
       log.info("loading kipfs ..")
       System.loadLibrary("kipfs")
     }.exceptionOrNull()?.also {
-      log.error(it.message,it)
+      log.error(it.message, it)
     }
   }
 
-  override fun createNativeShell(address: String): Int {
-    TODO("Not yet implemented")
-  }
+  override fun createNativeShell(address: String): Int = JNI.createNativeShell(address)
 
-  override fun disposeGoObject(ref: Int) {
-    TODO("Not yet implemented")
-  }
-
+  override fun disposeGoObject(ref: Int) =JNI.disposeGoObject(ref)
   override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray {
     TODO("Not yet implemented")
   }
+
+  override fun createShell(ipfsAddress: String): KShell = KNativeShell(this,ipfsAddress)
   override fun environment(key: String): String? = System.getenv(key)
 
   override fun getTime(): String = JNI.getTime()
@@ -54,7 +51,7 @@ private object KIPFSJvmLib : KIPFSNativeLib {
 }
 
 
-actual fun initKIPFSLib(): KIPFSLib = KIPFSJvmLib
+actual fun initKIPFSLib(): KIPFS = KIPFSJvmLib
 
 
 

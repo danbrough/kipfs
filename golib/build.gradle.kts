@@ -27,6 +27,7 @@ kotlin {
     val commonMain by getting {
       dependencies {
         implementation(AndroidUtils.logging)
+        implementation(project(":api"))
       }
     }
 

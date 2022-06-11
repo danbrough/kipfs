@@ -1,7 +1,6 @@
 package danbroid.kipfs.api
 
-import danbroid.kipfs.KIPFS
-import danbroid.kipfs.Shell
+import danbroid.kipfs.KShell
 import danbroid.kipfs.decodeJson
 
 /**
@@ -10,7 +9,7 @@ import danbroid.kipfs.decodeJson
  **/
 
 
-suspend inline fun <reified T> Shell.dagGet(arg: String): T =
+suspend inline fun <reified T> KShell.dagGet(arg: String): T =
   request("dag/get", arg).decodeJson()
 
 

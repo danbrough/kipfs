@@ -1,6 +1,5 @@
 package danbroid.kipfs
 
-import danbroid.logging.DBLog
 import kotlinx.cinterop.*
 import platform.posix.free
 
@@ -20,7 +19,7 @@ fun CPointer<ByteVar>.copyToKString(): String = toKString().let {
 }
 
 
-actual fun initKIPFSLib(): KIPFSLib = object : KIPFSNativeLib {
+actual fun initKIPFSLib(): KIPFS = object : KIPFSNativeLib {
 
   private val log = danbroid.logging.configure("KIPFS", coloured = true)
   override fun createNativeShell(address: String): Int = kipfs.KCreateShell(address.cstr).useContents {
@@ -33,9 +32,15 @@ actual fun initKIPFSLib(): KIPFSLib = object : KIPFSNativeLib {
 
   override fun disposeGoObject(ref: Int) = kipfs.KDecRef(ref)
 
-  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray {
-    TODO("Not yet implemented")
-  }
+  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray =
+    kipfs.KRequest(shellRefID, cmd.utf8, arg?.utf8).useContents {
+      r2?.copyToKString()?.also {
+        throw Exception("Request failed: $it")
+      }
+      r0!!.readBytes(r1.toInt())
+    }
+
+  override fun createShell(ipfsAddress: String): KShell = KNativeShell(this, ipfsAddress)
 
   override fun environment(key: String): String? = platform.posix.getenv(key)?.toKString()
 

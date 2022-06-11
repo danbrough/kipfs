@@ -1,7 +1,5 @@
 package danbroid.kipfs
 
-import danbroid.kipfs.initKipfsLib
-import kotlin.math.exp
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -9,7 +7,7 @@ class Tests {
 
 
   private val log = log()
-  private val kipfsLib = initKipfsLib()
+  private val kipfsLib = initKIPFSLib()
 
   @Test
   fun getTime() {
@@ -26,5 +24,11 @@ class Tests {
     assertEquals(cid, "bafyreidfq7gnjnpi7hllpwowrphojoy6hgdgrsgitbnbpty6f2yirqhkom")
 
 
+  }
+
+  @Test
+  fun base32(){
+    val text = "testing"
+    
   }
 }

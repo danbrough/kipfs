@@ -1,13 +1,11 @@
-import com.android.build.gradle.internal.tasks.factory.dependsOn
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetPreset
-import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
-import java.io.File
+import Common_gradle.Common.createTarget
 
 plugins {
   kotlin("multiplatform")
   kotlin("plugin.serialization")
-//  id("com.android.library")
+  //id("com.android.library")
+  id("common")
+
   `maven-publish`
 }
 
@@ -15,6 +13,11 @@ group = ProjectProperties.GROUP_ID
 version = ProjectProperties.VERSION_NAME
 
 kotlin {
+
+  BuildEnvironment.nativeTargets.forEach { platform ->
+    createTarget(platform)
+  }
+
   jvm()
   //android()
 
@@ -39,6 +42,7 @@ kotlin {
         api(KotlinX.serialization.json)
         api(KotlinX.serialization.cbor)
         api(KotlinX.coroutines.core)
+        implementation("io.matthewnelson.kotlin-components:encoding-base32:_")
 
       }
     }

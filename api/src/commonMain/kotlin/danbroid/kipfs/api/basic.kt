@@ -1,6 +1,6 @@
 package danbroid.kipfs.api
 
-import danbroid.kipfs.Shell
+import danbroid.kipfs.KShell
 import danbroid.kipfs.decodeJson
 import kotlinx.serialization.Serializable
 
@@ -29,6 +29,6 @@ peerIdBase [string]: Encoding used for peer IDs: Can either be a multibase encod
 
  **/
 
-suspend inline fun Shell.id(peerID: String? = null): ResponseID = request("id").decodeJson()
+suspend inline fun KShell.id(peerID: String? = null): ResponseID = request("id").decodeJson()
 
 
