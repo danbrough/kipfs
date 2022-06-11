@@ -64,11 +64,6 @@ fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring):
       return -1
     }
     return s.r0
-
-    /*return env.pointed.pointed!!.NewStringUTF!!.invoke(
-      env,
-      s.getPointer(this)
-    )!!*/
   }
 }
 

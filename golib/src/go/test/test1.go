@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/danbrough/kipfs/shell"
+	"github.com/multiformats/go-multibase"
 )
 
 func main() {
@@ -11,5 +12,7 @@ func main() {
 		panic(err.Error())
 	}
 	println("Received: ", string(req))
+
+	println(multibase.Encode(multibase.Base64url, []byte("testing")))
 
 }

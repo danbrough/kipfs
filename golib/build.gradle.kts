@@ -1,6 +1,7 @@
 import Common_gradle.Common.createTarget
 import Common_gradle.GoLib.libsDir
 import Common_gradle.GoLib.registerGoLibBuild
+import Common_gradle.OpenSSL.opensslPrefix
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
@@ -35,6 +36,8 @@ kotlin {
     commonTest {
       dependencies {
         implementation(kotlin("test"))
+        api("io.matthewnelson.kotlin-components:encoding-base32:_")
+
       }
     }
 
@@ -72,6 +75,7 @@ kotlin {
           it.add(3, "-tags=openssl")
         })
 
+
       }
 
       val kipfsLibBuildTask = kipfsLibBuildTaskProvider.get()
@@ -94,6 +98,8 @@ kotlin {
             inputs.files(kipfsLibBuildTask.outputs)
             dependsOn(kipfsLibBuildTask.name)
           }
+         // linkerOpts("-L${opensslPrefix(platform).resolve("lib")}")
+          //extraOpts("-libraryPath",opensslPrefix(platform).resolve("lib"))
         }
 
         if (platform.goOS != GoOS.android) {

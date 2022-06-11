@@ -41,11 +41,16 @@ object GoLib {
   }
 
 
-  fun Project.libsDir(platform: PlatformNative<*>): File = buildDir.resolve("lib/${platform.name}")
+  fun Project.libsDir(platform: PlatformNative<*>): File = rootProject.file("golib/build/lib/${platform.name}")
 
 
 }
 
+object OpenSSL {
+
+  fun Project.opensslPrefix(platform: PlatformNative<*>) = rootProject.file("openssl/lib/${platform.name}")
+
+}
 
 abstract class GreetingTask : DefaultTask() {
   @get:Input

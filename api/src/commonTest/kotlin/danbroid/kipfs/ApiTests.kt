@@ -2,6 +2,10 @@ package danbroid.kipfs
 
 import danbroid.kipfs.api.dagGet
 import danbroid.kipfs.api.id
+import io.matthewnelson.component.base64.Base64
+import io.matthewnelson.component.base64.encodeBase64
+import io.matthewnelson.component.base64.encodeBase64ToByteArray
+import io.matthewnelson.component.encoding.base32.encodeBase32
 
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -42,5 +46,15 @@ class ApiTests {
     runBlocking {
       log.trace("DAG_HELLO_WORLD = ${shell.dagGet<String>(DAG_HELLO_WORLD)}")
     }
+  }
+
+
+  @Test
+  fun base64(){
+    val text = "testing"
+    text.encodeToByteArray().encodeBase64(Base64.UrlSafe(true)).also {
+      log.warn("$text -> $it")
+    }
+
   }
 }

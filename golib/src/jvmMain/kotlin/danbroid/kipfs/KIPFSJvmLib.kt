@@ -42,6 +42,7 @@ private object KIPFSJvmLib : KIPFSNativeLib {
   }
 
   override fun createShell(ipfsAddress: String): KShell = KNativeShell(this,ipfsAddress)
+
   override fun environment(key: String): String? = System.getenv(key)
 
   override fun getTime(): String = JNI.getTime()

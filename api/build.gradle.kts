@@ -1,4 +1,5 @@
 import Common_gradle.Common.createTarget
+import Common_gradle.GoLib.libsDir
 
 plugins {
   kotlin("multiplatform")
@@ -42,13 +43,15 @@ kotlin {
         api(KotlinX.serialization.json)
         api(KotlinX.serialization.cbor)
         api(KotlinX.coroutines.core)
-        implementation("io.matthewnelson.kotlin-components:encoding-base32:_")
 
       }
     }
 
     commonTest {
       dependencies {
+        implementation("io.matthewnelson.kotlin-components:encoding-base32:_")
+        implementation("io.matthewnelson.kotlin-components:encoding-base64:_")
+
         implementation(kotlin("test"))
         implementation(project(":golib"))
       }
@@ -68,7 +71,24 @@ kotlin {
   }
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest::class).all {
+  environment("LD_LIBRARY_PATH", libsDir(BuildEnvironment.hostPlatform))
+}
 
+tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::class) {
+
+  val linkTask = rootProject.getTasksByName("linkKipfsDebugSharedLinuxX64",true).first()
+  println("GOT TASK $linkTask type: ${linkTask::class}")
+  dependsOn(linkTask)
+
+  val libPath =
+    "${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
+  println("LIBPATH: $libPath")
+  environment(
+    "LD_LIBRARY_PATH",
+    libPath
+  )
+}
 /*android {
   compileSdk = ProjectProperties.SDK_VERSION
   sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")

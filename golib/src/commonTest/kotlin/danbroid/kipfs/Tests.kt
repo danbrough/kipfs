@@ -1,5 +1,6 @@
 package danbroid.kipfs
 
+import io.matthewnelson.component.encoding.base32.encodeBase32
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -29,6 +30,8 @@ class Tests {
   @Test
   fun base32(){
     val text = "testing"
-    
+    text.encodeToByteArray().encodeBase32().also {
+      log.warn("$text -> $it")
+    }
   }
 }

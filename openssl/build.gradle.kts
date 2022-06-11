@@ -1,4 +1,5 @@
 import Common_gradle.Common.createTarget
+import Common_gradle.OpenSSL.opensslPrefix
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
@@ -23,10 +24,6 @@ val PlatformNative<*>.opensslPlatform
     PlatformNative.MingwX64 -> "mingw64"
     else -> TODO("Add support for $this")
   }
-
-
-val PlatformNative<*>.opensslPrefix
-  get() = project.file("lib/$name")
 
 
 val PlatformNative<*>.opensslSrcDir: File
@@ -88,7 +85,7 @@ fun configureTask(platform: PlatformNative<*>): Exec {
     val args = mutableListOf(
       "./Configure", platform.opensslPlatform,
       //"no-shared",
-      "no-tests", "--prefix=${platform.opensslPrefix}"
+      "no-tests", "--prefix=${opensslPrefix(platform)}"
     )
     if (platform.isAndroid) args += "-D__ANDROID_API__=${BuildEnvironment.androidNdkApiVersion} "
     else if (platform.isWindows) args += "--cross-compile-prefix=${platform.host}-"
@@ -110,7 +107,7 @@ fun buildTask(platform: PlatformNative<*>) {
 */
 
 
-    platform.opensslPrefix.resolve("lib/libssl.a").exists().also {
+    opensslPrefix(platform).resolve("lib/libssl.a").exists().also {
       isEnabled = !it
       configureTask.isEnabled = !it
       //println("CONFIGURE TASK ENABLED: ${configureTask.name} ${!it}")
@@ -123,7 +120,7 @@ fun buildTask(platform: PlatformNative<*>) {
 
     tasks.getAt("buildAll").dependsOn(this)
     workingDir(platform.opensslSrcDir)
-    outputs.files(fileTree(platform.opensslPrefix) {
+    outputs.files(fileTree(opensslPrefix(platform)) {
       include("lib/*.a", "lib/*.so", "lib/*.h")
     })
     environment(BuildEnvironment.environment(platform))
@@ -148,12 +145,12 @@ kotlin {
       compilations["main"].apply {
         cinterops.create("openssl") {
           defFile = project.file("src/openssl.def")
-          extraOpts(listOf("-libraryPath",platform.opensslPrefix.resolve("lib")))
+          extraOpts(listOf("-libraryPath", opensslPrefix(platform).resolve("lib")))
         }
 
-  /*      defaultSourceSet {
-          dependsOn(nativeMain)
-        }*/
+        /*      defaultSourceSet {
+                dependsOn(nativeMain)
+              }*/
       }
 
 /*
