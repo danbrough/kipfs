@@ -53,7 +53,7 @@ class ApiTests {
   fun base64(){
     val text = "testing"
     text.encodeToByteArray().encodeBase64(Base64.UrlSafe(true)).also {
-      log.warn("$text -> $it")
+      log.warn("$text -> u$it")
     }
 
   }

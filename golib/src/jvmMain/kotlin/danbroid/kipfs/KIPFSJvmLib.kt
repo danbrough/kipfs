@@ -37,10 +37,8 @@ private object KIPFSJvmLib : KIPFSNativeLib {
   override fun createNativeShell(address: String): Int = JNI.createNativeShell(address)
 
   override fun disposeGoObject(ref: Int) =JNI.disposeGoObject(ref)
-  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray {
-    TODO("Not yet implemented")
-  }
-
+  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray
+  = JNI.request(shellRefID,cmd,arg)
   override fun createShell(ipfsAddress: String): KShell = KNativeShell(this,ipfsAddress)
 
   override fun environment(key: String): String? = System.getenv(key)

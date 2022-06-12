@@ -48,6 +48,8 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNativeLib {
   override fun getTime(): String = kipfs.GetTime()!!.copyToKString()
 
   override fun dagCID(json: String) = kipfs.KCID(json.cstr)!!.copyToKString()
+
+
 }
 
 

@@ -15,4 +15,6 @@ func main() {
 
 	println(multibase.Encode(multibase.Base64url, []byte("testing")))
 
+	println("BaseEmoji", multibase.Base256Emoji)
+
 }

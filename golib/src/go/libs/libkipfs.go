@@ -13,8 +13,9 @@ import (
 	"github.com/danbrough/kipfs/misc"
 	"github.com/danbrough/kipfs/shell"
 
-	_seq "golang.org/x/mobile/bind/seq"
 	"unsafe"
+
+	_seq "golang.org/x/mobile/bind/seq"
 )
 
 //export GetTime
@@ -83,8 +84,9 @@ func KRequest(refnum C.int32_t, command *C.char, arg *C.char) (unsafe.Pointer, i
 	return C.CBytes(data), len(data), nil
 }
 
-func KMultibase(encoding int,data *C.char) *C.char {
-	 
+//export KMultiBaseEncode
+func KMultiBaseEncode(encoding int, data *C.char) *C.char {
+	return C.CString("NOt implemented")
 }
 
 func main() {}
