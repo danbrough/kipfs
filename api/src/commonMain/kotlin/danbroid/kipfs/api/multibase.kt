@@ -23,6 +23,12 @@ enum class MultibaseEncoding(val encoding: Char) {
   Base64url('u'),
   Base64pad('M'),
   Base64urlPad('U'),
-  Base256Emoji(128640.toChar())
+  Base256Emoji(128640.toChar());
 
+  companion object {
+    fun valueOf(encoding: Int): MultibaseEncoding =
+      values().first { it.encoding.code == encoding }!!
+  }
 }
+
+data class MultibaseDecodeResult(val encoding: MultibaseEncoding,val data: ByteArray)

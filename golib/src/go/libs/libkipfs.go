@@ -100,13 +100,13 @@ func KMultiBaseEncode(encoding C.int32_t, cData *C.char, dataLength C.int32_t) (
 }
 
 //export KMultiBaseDecode
-func KMultiBaseDecode(cData *C.char, dataLength C.int32_t) (C.int32_t, *C.char, *C.char) {
+func KMultiBaseDecode(cData *C.char, dataLength C.int32_t) (C.int32_t, *C.char, C.int32_t, *C.char) {
 
 	encoding, data, err := multibase.Decode(C.GoStringN(cData, dataLength))
 	if err != nil {
-		return -1, nil, C.CString(err.Error())
+		return -1, nil, -1, C.CString(err.Error())
 	}
-	return C.int32_t(encoding), C.CString(string(data)), nil
+	return C.int32_t(encoding), C.CString(string(data)), C.int32_t(len(data)), nil
 }
 
 func main() {}
