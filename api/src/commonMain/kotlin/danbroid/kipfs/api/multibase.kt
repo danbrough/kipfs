@@ -1,28 +1,28 @@
 package danbroid.kipfs.api
 
-object MultibaseEncoding {
-	const val Identity = 0x00
-	const val Base2 = '0'
-	const val Base8 = '7'
-	const val Base10 = '9'
-	const val Base16 = 'f'
-	const val Base16Upper = 'F'
-	const val Base32 = 'b'
-	const val Base32Upper = 'B'
-	const val Base32pad = 'c'
-	const val Base32padUpper = 'C'
-	const val Base32hex = 'v'
-	const val Base32hexUpper = 'V'
-	const val Base32hexPad = 't'
-	const val Base32hexPadUpper = 'T'
-	const val Base36 = 'k'
-	const val Base36Upper = 'K'
-	const val Base58BTC = 'z'
-	const val Base58Flickr = 'Z'
-	const val Base64 = 'm'
-	const val Base64url = 'u'
-	const val Base64pad = 'M'
-	const val Base64urlPad = 'U'
-	const val Base256Emoji: Int = 128640//'🚀'
+enum class MultibaseEncoding(val encoding: Char) {
+  Identity(0.toChar()),
+  Base2('0'),
+  Base8('7'),
+  Base10('9'),
+  Base16('f'),
+  Base16Upper('F'),
+  Base32('b'),
+  Base32Upper('B'),
+  Base32pad('c'),
+  Base32padUpper('C'),
+  Base32hex('v'),
+  Base32hexUpper('V'),
+  Base32hexPad('t'),
+  Base32hexPadUpper('T'),
+  Base36('k'),
+  Base36Upper('K'),
+  Base58BTC('z'),
+  Base58Flickr('Z'),
+  Base64('m'),
+  Base64url('u'),
+  Base64pad('M'),
+  Base64urlPad('U'),
+  Base256Emoji(128640.toChar())
 
 }

@@ -1,10 +1,7 @@
 package danbroid.kipfs
 
 import danbroid.kipfs.api.MultibaseEncoding
-import kipfs.GoInt
-import kipfs.GoInt32
-import kipfs.GoInt64
-import kotlinx.cinterop.cstr
+import kotlinx.cinterop.toCValues
 import kotlinx.cinterop.useContents
 import kotlin.test.Test
 
@@ -12,17 +9,22 @@ class NativeTests {
 
   val log = log()
 
-  @Test
-  fun test1() {
-    val text = "testing"
 
-    kipfs.KMultiBaseEncode(MultibaseEncoding.Base64url.code, text.cstr, text.length).useContents {
+  fun multibaseEncode(encoding: MultibaseEncoding, data: ByteArray): String =
+    kipfs.KMultiBaseEncode(encoding.encoding.code, data.toCValues(), data.size).useContents {
       r1?.also {
         throw Exception(it.copyToKString())
       }
       r0!!.copyToKString()
-    }.also {
-      log.info("returned <$it>")
+    }
+
+
+  @Test
+  fun test1() {
+    val encoding = MultibaseEncoding.Base58Flickr
+    listOf("testing", "123", "\u0000\u0001\u0002").forEach {
+      val result = multibaseEncode(encoding, it.encodeToByteArray())
+      log.info("$it => $result")
     }
   }
 
