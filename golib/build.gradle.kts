@@ -24,32 +24,35 @@ kotlin {
     withJava()
   }
 
-  sourceSets {
-    val commonMain by getting {
-      dependencies {
-        implementation(AndroidUtils.logging)
-        implementation(project(":api"))
-      }
-    }
 
-
-    commonTest {
-      dependencies {
-        implementation(kotlin("test"))
-        api("io.matthewnelson.kotlin-components:encoding-base32:_")
-
-      }
-    }
-
-    val nativeMain by creating {
-      dependsOn(commonMain)
-    }
-
-    val jvmMain by getting {
-      dependsOn(commonMain)
+  val commonMain by sourceSets.getting {
+    dependencies {
+      implementation(AndroidUtils.logging)
+      implementation(project(":api"))
     }
   }
 
+
+  val commonTest by sourceSets.getting {
+    dependencies {
+      implementation(kotlin("test"))
+      api("io.matthewnelson.kotlin-components:encoding-base32:_")
+    }
+  }
+
+
+  val jvmMain by sourceSets.getting {
+    dependsOn(commonMain)
+  }
+
+
+  val nativeMain by sourceSets.creating {
+    dependsOn(commonMain)
+  }
+
+  val nativeTest by sourceSets.creating {
+    dependsOn(commonTest)
+  }
 
   val goDir = project.file("src/go")
 
@@ -98,7 +101,7 @@ kotlin {
             inputs.files(kipfsLibBuildTask.outputs)
             dependsOn(kipfsLibBuildTask.name)
           }
-         // linkerOpts("-L${opensslPrefix(platform).resolve("lib")}")
+          // linkerOpts("-L${opensslPrefix(platform).resolve("lib")}")
           //extraOpts("-libraryPath",opensslPrefix(platform).resolve("lib"))
         }
 
@@ -122,9 +125,11 @@ kotlin {
         }
 
         defaultSourceSet {
-          dependsOn(sourceSets["nativeMain"])
+          dependsOn(nativeMain)
         }
       }
+
+      compilations["test"].defaultSourceSet.dependsOn(nativeTest)
 
 
       binaries {
@@ -166,7 +171,7 @@ tasks.withType(KotlinJvmTest::class) {
 }
 
 
-tasks.register("printPresets"){
+tasks.register("printPresets") {
   kotlin.presets.all {
     println(name)
   }

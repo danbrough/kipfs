@@ -12,6 +12,7 @@ import (
 	"github.com/danbrough/kipfs/cids"
 	"github.com/danbrough/kipfs/misc"
 	"github.com/danbrough/kipfs/shell"
+	"github.com/multiformats/go-multibase"
 
 	"unsafe"
 
@@ -85,8 +86,17 @@ func KRequest(refnum C.int32_t, command *C.char, arg *C.char) (unsafe.Pointer, i
 }
 
 //export KMultiBaseEncode
-func KMultiBaseEncode(encoding int, data *C.char) *C.char {
-	return C.CString("NOt implemented")
+func KMultiBaseEncode(encoding C.int32_t, cData *C.char, dataLength C.int32_t) (*C.char, *C.char) {
+	//	multibase.Encode(encoding, C.B)
+
+	data := C.GoBytes(unsafe.Pointer(cData), dataLength)
+
+	encoded, err := multibase.Encode(multibase.Encoding(encoding), data)
+	if err != nil {
+		return nil, C.CString(err.Error())
+	}
+	println("GOT DATA: ", string(data))
+	return C.CString(encoded), nil
 }
 
 func main() {}
