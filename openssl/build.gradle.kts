@@ -11,6 +11,7 @@ plugins {
 }
 
 val opensslTag = "OpenSSL_1_1_1o"
+//val opensslTag = "openssl-3.0.3"
 
 val PlatformNative<*>.opensslPlatform
   get() = when (this) {

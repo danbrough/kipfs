@@ -27,7 +27,6 @@ class NativeTests {
       r3?.copyToKString()?.also {
         throw Exception(it)
       }
-
       MultibaseDecodeResult(MultibaseEncoding.valueOf(r0.toInt()),r1!!.readBytes(r2))
     }
 
