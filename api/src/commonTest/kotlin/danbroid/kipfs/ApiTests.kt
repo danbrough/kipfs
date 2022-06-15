@@ -4,9 +4,7 @@ import danbroid.kipfs.api.dagGet
 import danbroid.kipfs.api.id
 import io.matthewnelson.component.base64.Base64
 import io.matthewnelson.component.base64.encodeBase64
-import io.matthewnelson.component.base64.encodeBase64ToByteArray
-import io.matthewnelson.component.encoding.base32.encodeBase32
-
+import klog.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 
@@ -15,7 +13,12 @@ class ApiTests {
   companion object {
     const val DAG_HELLO_WORLD = "bafyreidfq7gnjnpi7hllpwowrphojoy6hgdgrsgitbnbpty6f2yirqhkom"
 
-    private val log = log()
+    private val log =
+      KLog("", Level.TRACE, LogFormatters.colored(LogFormatters.verbose), LogWriters.stdOut).also {
+        logFactory.rootLog = it
+        klog()
+      }
+
     private val kipfs = initKIPFSLib()
 
     private val ipfsAddress: String by lazy {
@@ -50,7 +53,7 @@ class ApiTests {
 
 
   @Test
-  fun base64(){
+  fun base64() {
     val text = "testing"
     text.encodeToByteArray().encodeBase64(Base64.UrlSafe(true)).also {
       log.warn("$text -> u$it")

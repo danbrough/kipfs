@@ -3,11 +3,12 @@ package danbroid.kipfs
 import io.matthewnelson.component.encoding.base32.encodeBase32
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import klog.klog
 
 class Tests {
 
 
-  private val log = log()
+  private val log = klog()
   private val kipfsLib = initKIPFSLib()
 
   @Test
@@ -28,7 +29,7 @@ class Tests {
   }
 
   @Test
-  fun base32(){
+  fun base32() {
     val text = "testing"
     text.encodeToByteArray().encodeBase32().also {
       log.warn("$text -> $it")

@@ -1,21 +1,15 @@
 package danbroid.kipfs
 
 import danbroid.kipfs.jni.JNI
+import klog.*
 
 private object KIPFSJvmLib : KIPFSNativeLib {
 
-  val log = danbroid.logging.configure("KIPFS", coloured = true).also {
-    it.warn("configured logging")
-/*    static DBLog log = danbroid.logging.LoggingKt.getLog("GODEMO");
-
-    static {
-      log.info("loading godemo..", null);
-      System.loadLibrary("godemojni");
-      log.info("loading godemojni..", null);
-      System.loadLibrary("godemojni");
-      log.debug("finished loading godemo libraries", null);
-    }*/
-  }
+  val log =
+    KLog("", Level.TRACE, LogFormatters.colored(LogFormatters.verbose), LogWriters.stdOut).let {
+      logFactory.rootLog = it
+      klog()
+    }
 
   init {
 
@@ -36,10 +30,11 @@ private object KIPFSJvmLib : KIPFSNativeLib {
 
   override fun createNativeShell(address: String): Int = JNI.createNativeShell(address)
 
-  override fun disposeGoObject(ref: Int) =JNI.disposeGoObject(ref)
-  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray
-  = JNI.request(shellRefID,cmd,arg)
-  override fun createShell(ipfsAddress: String): KShell = KNativeShell(this,ipfsAddress)
+  override fun disposeGoObject(ref: Int) = JNI.disposeGoObject(ref)
+  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray =
+    JNI.request(shellRefID, cmd, arg)
+
+  override fun createShell(ipfsAddress: String): KShell = KNativeShell(this, ipfsAddress)
 
   override fun environment(key: String): String? = System.getenv(key)
 

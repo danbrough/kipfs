@@ -1,12 +1,11 @@
 package danbroid.kipfs
 
-import danbroid.logging.DBLog
-
-
+import klog.KLog
+import klog.klog
 
 
 expect fun initKIPFSLib(): KIPFS
 
-fun Any.log(): DBLog = initKIPFSLib().let {
-  danbroid.logging.getLog(this::class)
+fun Any.log(): KLog = initKIPFSLib().let {
+  this.klog()
 }

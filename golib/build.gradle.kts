@@ -27,7 +27,6 @@ kotlin {
 
   val commonMain by sourceSets.getting {
     dependencies {
-      implementation(AndroidUtils.logging)
       implementation(project(":api"))
     }
   }

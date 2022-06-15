@@ -38,7 +38,7 @@ kotlin {
 
     commonMain {
       dependencies {
-        implementation(AndroidUtils.logging)
+        api("com.github.danbrough.klog:klog:_")
         api(KotlinX.serialization.core)
         api(KotlinX.serialization.json)
         api(KotlinX.serialization.cbor)
