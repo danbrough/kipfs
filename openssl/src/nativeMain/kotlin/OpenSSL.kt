@@ -1,5 +1,0 @@
-class OpenSSL {
-  fun test(){
-    
-  }
-}

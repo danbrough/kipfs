@@ -35,18 +35,6 @@ version = ProjectProperties.VERSION_NAME
 
 val opensslGitDir = project.file("src/openssl.git")
 
-//fun gitCommand(args:List<String>,)
-
-/*fun gitCommand(vararg args: String, conf: Exec.() -> Unit = {}): TaskProvider<Exec> {
-  val task by tasks.registering(Exec::class) {
-    workingDir(opensslSrcDir)
-    commandLine(BuildEnvironment.gitBinary + args)
-    conf.invoke(this)
-  }
-  return task
-}*/
-
-
 val srcClone by tasks.registering(Exec::class) {
   commandLine(
     BuildEnvironment.gitBinary,
@@ -97,26 +85,13 @@ fun configureTask(platform: PlatformNative<*>): Exec {
 fun buildTask(platform: PlatformNative<*>) {
   val configureTask = configureTask(platform)
 
-
   tasks.create("build${platform.name.toString().capitalized()}", Exec::class) {
-/*
-    doFirst {
-      platform.opensslPrefix.parentFile.also {
-        if (!it.exists()) it.mkdirs()
-      }
-    }
-*/
-
 
     opensslPrefix(platform).resolve("lib/libssl.a").exists().also {
       isEnabled = !it
       configureTask.isEnabled = !it
-      //println("CONFIGURE TASK ENABLED: ${configureTask.name} ${!it}")
     }
     dependsOn(configureTask.name)
-
-
-    //dependsOn("configure${platform.name.toString().capitalized()}")
 
 
     tasks.getAt("buildAll").dependsOn(this)
@@ -148,20 +123,7 @@ kotlin {
           defFile = project.file("src/openssl.def")
           extraOpts(listOf("-libraryPath", opensslPrefix(platform).resolve("lib")))
         }
-
-        /*      defaultSourceSet {
-                dependsOn(nativeMain)
-              }*/
       }
-
-/*
-      binaries {
-        staticLib("openssl",setOf(NativeBuildType.DEBUG)){
-        }
-      }
-*/
-
-
     }
 
     buildTask(platform)

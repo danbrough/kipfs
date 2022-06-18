@@ -1,7 +1,7 @@
 package danbroid.kipfs
 
-import klog.KLog
-import klog.klog
+import org.danbrough.klog.KLog
+import org.danbrough.klog.klog
 
 
 expect fun initKIPFSLib(): KIPFS
