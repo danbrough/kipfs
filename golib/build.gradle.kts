@@ -1,12 +1,10 @@
 import Common_gradle.Common.createTarget
 import Common_gradle.GoLib.libsDir
 import Common_gradle.GoLib.registerGoLibBuild
-import Common_gradle.OpenSSL.opensslPrefix
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
-import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
@@ -16,7 +14,6 @@ plugins {
 
 group = ProjectProperties.GROUP_ID
 version = ProjectProperties.VERSION_NAME
-
 
 
 kotlin {
@@ -60,9 +57,10 @@ kotlin {
     createTarget(platform) {
 
       val kipfsLibDir = libsDir(platform)
-      val kipfsLibBuildTaskProvider = registerGoLibBuild(platform, goDir, kipfsLibDir, "kipfsgo", "libs/libkipfs.go")
+      val golibBuild =
+        registerGoLibBuild(platform, goDir, kipfsLibDir, "kipfsgo", "libs/libkipfs.go")
 
-      kipfsLibBuildTaskProvider {
+      golibBuild {
         doFirst {
           println("STARTING KIPFS LIB BUILD... ${commandLine.joinToString(" ")}")
           println("CGO_CFLAGS: ${environment["CGO_CFLAGS"]}")
@@ -76,11 +74,9 @@ kotlin {
         commandLine(commandLine.toMutableList().also {
           it.add(3, "-tags=openssl")
         })
-
-
       }
 
-      val kipfsLibBuildTask = kipfsLibBuildTaskProvider.get()
+      val kipfsLibBuildTask = golibBuild.get()
 
 
       //println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")

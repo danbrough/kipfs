@@ -1,15 +1,16 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package danbroid.kipfs.jni
 
 import danbroid.kipfs.copyToKString
-import danbroid.kipfs.log
 import kipfs.KCreateShell
 import kotlinx.cinterop.*
+import org.danbrough.klog.klog
 import platform.android.*
-import platform.linux.free
 
 private object JNIImpl
 
-private val log = JNIImpl.log()
+private val log = JNIImpl.klog()
 
 
 private fun init() {
@@ -31,6 +32,7 @@ fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
 }
 
 
+@Suppress("SpellCheckingInspection")
 @CName("Java_danbroid_kipfs_jni_JNI_disposeGoObject")
 fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
   kipfs.KDecRef(refnum)

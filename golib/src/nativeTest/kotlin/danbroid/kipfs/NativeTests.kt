@@ -6,14 +6,15 @@ import kotlinx.cinterop.cstr
 import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.toCValues
 import kotlinx.cinterop.useContents
+import org.danbrough.klog.*
 import kotlin.test.Test
 
 class NativeTests {
 
-  val log = log()
+  private val log = klog(level = Level.TRACE, formatter = KLogFormatters.verbose.colored, writer = KLogWriters.stdOut)
 
 
-  fun multibaseEncode(encoding: MultibaseEncoding, data: ByteArray): String =
+  private fun multibaseEncode(encoding: MultibaseEncoding, data: ByteArray): String =
     kipfs.KMultiBaseEncode(encoding.encoding.code, data.toCValues(), data.size).useContents {
       r1?.also {
         throw Exception(it.copyToKString())
@@ -22,14 +23,13 @@ class NativeTests {
     }
 
 
-  fun multibaseDecode(data:String):MultibaseDecodeResult=
-    kipfs.KMultiBaseDecode(data.cstr,data.length).useContents {
+  private fun multibaseDecode(data: String): MultibaseDecodeResult =
+    kipfs.KMultiBaseDecode(data.cstr, data.length).useContents {
       r3?.copyToKString()?.also {
         throw Exception(it)
       }
-      MultibaseDecodeResult(MultibaseEncoding.valueOf(r0.toInt()),r1!!.readBytes(r2))
+      MultibaseDecodeResult(MultibaseEncoding.valueOf(r0.toInt()), r1!!.readBytes(r2))
     }
-
 
 
   @Test

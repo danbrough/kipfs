@@ -27,8 +27,8 @@ enum class MultibaseEncoding(val encoding: Char) {
 
   companion object {
     fun valueOf(encoding: Int): MultibaseEncoding =
-      values().first { it.encoding.code == encoding }!!
+      values().first { it.encoding.code == encoding }
   }
 }
 
-data class MultibaseDecodeResult(val encoding: MultibaseEncoding,val data: ByteArray)
+data class MultibaseDecodeResult(val encoding: MultibaseEncoding, val data: ByteArray)

@@ -38,7 +38,7 @@ kotlin {
 
     commonMain {
       dependencies {
-        api("com.github.danbrough.klog:klog:_")
+        api(Dependencies.klog)
         api(KotlinX.serialization.core)
         api(KotlinX.serialization.json)
         api(KotlinX.serialization.cbor)
@@ -77,7 +77,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
 tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::class) {
 
-  val linkTask = rootProject.getTasksByName("linkKipfsDebugSharedLinuxX64",true).first()
+  val linkTask = rootProject.getTasksByName("linkKipfsDebugSharedLinuxX64", true).first()
   println("GOT TASK $linkTask type: ${linkTask::class}")
   dependsOn(linkTask)
 

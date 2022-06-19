@@ -1,3 +1,4 @@
+import groovy.lang.Closure
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
@@ -16,7 +17,8 @@ object Common {
     platform: Platform<T>, targetName: String = platform.name.toString(), conf: T.() -> Unit = {}
   ): T {
     val extn = kotlinExtension as KotlinMultiplatformExtension
-    val preset: KotlinTargetPreset<T> = extn.presets.getByName(platform.name.toString()) as KotlinTargetPreset<T>
+    val preset: KotlinTargetPreset<T> =
+      extn.presets.getByName(platform.name.toString()) as KotlinTargetPreset<T>
     return extn.targetFromPreset(preset, targetName, conf)
   }
 
@@ -34,21 +36,19 @@ object GoLib {
     modules: String = ".",
     name: String = "golibBuild${platform.name.toString().capitalized()}"
   ): TaskProvider<GoLibBuildTask<T>> =
-    tasks.register<Common_gradle.GoLibBuildTask<T>>(name, platform, goDir, outputDir, libBaseName, modules)
-
-  fun Project.RegisterGreeting(name: String, greeting: String) = this.tasks.register<GreetingTask>(name) {
-    this.greeting.set(greeting)
-  }
+    tasks.register(name, platform, goDir, outputDir, libBaseName, modules)
 
 
-  fun Project.libsDir(platform: PlatformNative<*>): File = rootProject.file("golib/build/lib/${platform.name}")
+  fun Project.libsDir(platform: PlatformNative<*>): File =
+    rootProject.file("golib/build/lib/${platform.name}")
 
 
 }
 
 object OpenSSL {
 
-  fun Project.opensslPrefix(platform: PlatformNative<*>) = rootProject.file("openssl/lib/${platform.name}")
+  fun Project.opensslPrefix(platform: PlatformNative<*>) =
+    rootProject.file("openssl/lib/${platform.name}")
 
 }
 
@@ -86,15 +86,12 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
   private val modules: String = ","
 ) : Exec() {
 
+
   init {
     group = BasePlugin.BUILD_GROUP
     // println("PLATFORM $platform  godir: $goDir: libDir: ${libDir.orNull}")
 
     environment("PLATFORM", platform.name.toString())
-
-    doFirst {
-      // assert(outputDir.mkdirs())
-    }
 
 
     inputs.files(project.fileTree(goDir) {
@@ -128,12 +125,15 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
     doFirst {
       out.style(StyledTextOutput.Style.Info).println("Building golib for $platform")
       out.style(StyledTextOutput.Style.ProgressStatus).println("environment: $commandEnvironment")
-      out.style(StyledTextOutput.Style.ProgressStatus).println("commandLine: ${commandLine.joinToString(" ")}")
+      out.style(StyledTextOutput.Style.ProgressStatus)
+        .println("commandLine: ${commandLine.joinToString(" ")}")
     }
     doLast {
-      if (didWork) out.style(StyledTextOutput.Style.Success).println("Finished building golib for $platform")
+      if (didWork) out.style(StyledTextOutput.Style.Success)
+        .println("Finished building golib for $platform")
     }
   }
+
 
   fun appendToEnvironment(key: String, value: String, separator: String = " ") {
     environment(key, environment.getOrDefault(key, null).let {

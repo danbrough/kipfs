@@ -1,8 +1,10 @@
 package danbroid.kipfs
 
+import org.danbrough.klog.klog
+
 class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: String) : KShell {
 
-  val log = log()
+  private val log = klog()
 
   private var ref = 0
 

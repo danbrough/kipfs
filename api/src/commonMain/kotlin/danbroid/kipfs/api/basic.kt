@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package danbroid.kipfs.api
 
 import danbroid.kipfs.KShell
