@@ -3,7 +3,7 @@ package danbroid.kipfs
 import io.matthewnelson.component.encoding.base32.encodeBase32
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import klog.klog
+import org.danbrough.klog.*
 
 class Tests {
 

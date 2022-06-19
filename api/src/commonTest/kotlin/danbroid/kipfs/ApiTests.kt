@@ -4,7 +4,7 @@ import danbroid.kipfs.api.dagGet
 import danbroid.kipfs.api.id
 import io.matthewnelson.component.base64.Base64
 import io.matthewnelson.component.base64.encodeBase64
-import klog.*
+import org.danbrough.klog.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 
@@ -13,12 +13,7 @@ class ApiTests {
   companion object {
     const val DAG_HELLO_WORLD = "bafyreidfq7gnjnpi7hllpwowrphojoy6hgdgrsgitbnbpty6f2yirqhkom"
 
-    private val log =
-      KLog("", Level.TRACE, LogFormatters.colored(LogFormatters.verbose), LogWriters.stdOut).also {
-        logFactory.rootLog = it
-        klog()
-      }
-
+    private val log = klog(Level.TRACE, KLogFormatters.verbose.colored, KLogWriters.stdOut)
     private val kipfs = initKIPFSLib()
 
     private val ipfsAddress: String by lazy {

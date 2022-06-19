@@ -1,15 +1,11 @@
 package danbroid.kipfs
 
 import danbroid.kipfs.jni.JNI
-import klog.*
+import org.danbrough.klog.klog
 
 private object KIPFSJvmLib : KIPFSNativeLib {
 
-  val log =
-    KLog("", Level.TRACE, LogFormatters.colored(LogFormatters.verbose), LogWriters.stdOut).let {
-      logFactory.rootLog = it
-      klog()
-    }
+  val log = klog("danbroid.kipfs")
 
   init {
 

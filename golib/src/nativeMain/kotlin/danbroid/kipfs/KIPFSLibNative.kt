@@ -1,6 +1,6 @@
 package danbroid.kipfs
 
-import klog.*
+import org.danbrough.klog.*
 import kotlinx.cinterop.*
 import platform.posix.free
 
@@ -22,10 +22,7 @@ fun CPointer<ByteVar>.copyToKString(): String = toKString().let {
 
 actual fun initKIPFSLib(): KIPFS = object : KIPFSNativeLib {
 
-  private val log =
-    KLog("", Level.TRACE, LogFormatters.colored(LogFormatters.verbose), LogWriters.stdOut).also {
-      logFactory.rootLog = it
-    }
+  private val log = klog("danbroid.kipfs")
 
   override fun createNativeShell(address: String): Int =
     kipfs.KCreateShell(address.cstr).useContents {
