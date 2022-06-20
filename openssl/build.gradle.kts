@@ -23,6 +23,7 @@ val PlatformNative<*>.opensslPlatform
     PlatformAndroid.Android386 -> "android-x86"
     PlatformAndroid.AndroidAmd64 -> "android-x86_64"
     PlatformNative.MingwX64 -> "mingw64"
+    PlatformNative.MacosX64 -> "darwin64-x86_64"
     else -> TODO("Add support for $this")
   }
 

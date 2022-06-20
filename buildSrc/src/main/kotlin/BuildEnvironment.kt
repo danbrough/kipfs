@@ -147,7 +147,7 @@ object BuildEnvironment {
 }
 
 enum class GoOS {
-  linux, windows, android
+  linux, windows, android,darwin
 }
 
 
@@ -189,12 +189,12 @@ enum class PlatformName {
       Jvm -> TODO()
       JvmWithJava -> TODO()
       LinuxArm32Hfp -> PlatformNative.LinuxArm
-      PlatformName.LinuxArm64 -> PlatformNative.LinuxArm64
+      LinuxArm64 -> PlatformNative.LinuxArm64
       LinuxMips32 -> TODO()
       LinuxMipsel32 -> TODO()
       LinuxX64 -> TODO()
       MacosArm64 -> TODO()
-      MacosX64 -> TODO()
+      MacosX64 -> PlatformNative.MacosX64
       MingwX64 -> PlatformNative.MingwX64
       MingwX86 -> TODO()
       TvosArm64 -> TODO()
@@ -241,6 +241,10 @@ open class PlatformNative<T : KotlinNativeTarget>(
 
   object MingwX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
     PlatformName.MingwX64, "x86_64-w64-mingw32", GoOS.windows, GoArch.amd64
+  )
+
+  object MacosX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
+    PlatformName.MacosX64,"darwin64-x86_64-cc",GoOS.darwin,GoArch.amd64
   )
 }
 
