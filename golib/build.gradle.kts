@@ -112,6 +112,9 @@ kotlin {
               GoOS.windows -> {
                 includeDirs(project.file("src/include/win32"))
               }
+              GoOS.darwin -> {
+                includeDirs(project.file("src/include/darwin"))
+              }
               else -> {
                 TODO("add other jni headers")
               }
