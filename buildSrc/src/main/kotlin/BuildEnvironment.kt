@@ -39,7 +39,8 @@ object BuildEnvironment {
       PlatformAndroid.AndroidArm64,
       PlatformAndroid.Android386,
       PlatformAndroid.AndroidAmd64,
-      PlatformNative.MingwX64
+      PlatformNative.MingwX64,
+      PlatformNative.MacosX64,
     )
 
   val androidToolchainDir by lazy {
