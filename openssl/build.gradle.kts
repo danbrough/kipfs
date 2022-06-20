@@ -71,6 +71,7 @@ fun configureTask(platform: PlatformNative<*>): Exec {
   return tasks.create("configure${platform.name.toString().capitalized()}", Exec::class) {
     dependsOn(srcPrepare)
     workingDir(platform.opensslSrcDir)
+    println("configuring with platform: ${platform.opensslPlatform}")
     environment(BuildEnvironment.environment(platform))
     val args = mutableListOf(
       "./Configure", platform.opensslPlatform,

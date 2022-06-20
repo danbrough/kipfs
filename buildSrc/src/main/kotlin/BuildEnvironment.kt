@@ -101,6 +101,11 @@ object BuildEnvironment {
           "$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/bin/ranlib"*/
       }
 
+      PlatformNative.MacosX64 -> {
+
+      }
+
+
       PlatformNative.MingwX64 -> {
 
         /*  export HOST=x86_64-w64-mingw32
