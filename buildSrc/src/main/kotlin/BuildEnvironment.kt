@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
@@ -21,10 +23,13 @@ object BuildEnvironment {
         "konan.dir", "${System.getProperty("user.home")}/.konan"
       )
     )
+
   val androidNdkDir: File
     get() = File(ProjectProperties.getProperty("android.ndk.dir"))
+
   val androidNdkApiVersion: Int
     get() = ProjectProperties.getProperty("android.ndk.api.version", "23").toInt()
+
   val buildPath: List<String>
     get() = ProjectProperties.getProperty("build.path").split("[\\s]+".toRegex())
 
@@ -52,11 +57,9 @@ object BuildEnvironment {
   }
 
   val clangBinDir by lazy {
-    File("$konanDir/dependencies/llvm-11.1.0-linux-x64-essentials/bin").also {
-      assert(it.exists()) {
-        "Failed to locate ${it.absolutePath}"
-      }
-    }
+    File("$konanDir/dependencies").listFiles()?.first {
+      it.isDirectory && it.name.contains("essentials")
+    }?.let { it.resolve("bin") } ?: throw Error("Failed to locate clang folder in ${konanDir}/dependencies")
   }
 
   fun environment(platform: PlatformNative<*>): Map<String, Any> = mutableMapOf(
@@ -153,7 +156,7 @@ object BuildEnvironment {
 }
 
 enum class GoOS {
-  linux, windows, android,darwin
+  linux, windows, android, darwin
 }
 
 
@@ -250,11 +253,9 @@ open class PlatformNative<T : KotlinNativeTarget>(
   )
 
   object MacosX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
-    PlatformName.MacosX64,"darwin64-x86_64-cc",GoOS.darwin,GoArch.amd64
+    PlatformName.MacosX64, "darwin64-x86_64-cc", GoOS.darwin, GoArch.amd64
   )
 }
-
-
 
 
 open class PlatformAndroid<T : KotlinNativeTarget>(

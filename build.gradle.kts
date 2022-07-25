@@ -3,13 +3,12 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  //kotlin("gradle-plugin") apply false
   kotlin("multiplatform") apply false
-  kotlin("plugin.serialization") apply false
-  id("com.android.library") apply false
+  //kotlin("plugin.serialization") apply false
+  //id("com.android.library") apply false
   //id("org.jetbrains.kotlin.jvm") apply false
-  id("com.android.application") apply false
-  id("org.jetbrains.kotlin.android") apply false
+  //id("com.android.application") apply false
+//  id("org.jetbrains.kotlin.android")
 
 }
 
@@ -28,6 +27,10 @@ configure<Project_gradle.ProjectInitExtension> {
   message.set("Hi")
 }
 */
+
+
+
+println("MAVEN REPO: ${ProjectProperties.MAVEN_REPO}")
 
 
 allprojects {

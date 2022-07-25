@@ -99,7 +99,7 @@ fun buildTask(platform: PlatformNative<*>) {
     tasks.getAt("buildAll").dependsOn(this)
     workingDir(platform.opensslSrcDir)
     outputs.files(fileTree(opensslPrefix(platform)) {
-      include("lib/*.a", "lib/*.so", "lib/*.h")
+      include("lib/*.a", "lib/*.so", "lib/*.h", "lib/*.dylib")
     })
     environment(BuildEnvironment.environment(platform))
     group = BasePlugin.BUILD_GROUP
@@ -115,17 +115,43 @@ fun buildTask(platform: PlatformNative<*>) {
 kotlin {
 
   val buildAll by tasks.registering
-  //val nativeMain by sourceSets.creating
+  val commonTest by sourceSets.getting {
+    dependencies {
+      implementation(kotlin("test"))
+    }
+  }
+
+  val nativeTest by sourceSets.creating
+  val nativeMain by sourceSets.creating
 
   BuildEnvironment.nativeTargets.forEach { platform ->
 
     createTarget(platform) {
       compilations["main"].apply {
+
         cinterops.create("openssl") {
+          packageName("libopenssl")
           defFile = project.file("src/openssl.def")
           extraOpts(listOf("-libraryPath", opensslPrefix(platform).resolve("lib")))
         }
+
+        defaultSourceSet {
+          dependsOn(nativeMain)
+        }
       }
+
+
+      compilations["test"].apply {
+        defaultSourceSet {
+          dependsOn(nativeTest)
+        }
+      }
+
+/*      binaries {
+        executable("testApp") {
+          entryPoint = "openssl.TestApp"
+        }
+      }*/
     }
 
     buildTask(platform)
