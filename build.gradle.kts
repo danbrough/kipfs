@@ -29,20 +29,16 @@ configure<Project_gradle.ProjectInitExtension> {
 */
 
 
-
-println("MAVEN REPO: ${ProjectProperties.MAVEN_REPO}")
-
-
 allprojects {
-
-
   repositories {
-    maven(ProjectProperties.MAVEN_REPO)
-    maven("https://h1.danbrough.org/maven")
+    // maven(ProjectProperties.MAVEN_REPO)
+    //   maven("https://h1.danbrough.org/maven")
     mavenCentral()
     google()
+    maven("https://s01.oss.sonatype.org/content/repositories/releases/")
   }
-
+  
+  
   tasks.withType<AbstractTestTask>() {
     testLogging {
       events = setOf(
@@ -56,14 +52,14 @@ allprojects {
       false
     }
   }
-
+  
   tasks.withType(KotlinCompile::class) {
     kotlinOptions {
       jvmTarget = ProjectProperties.KOTLIN_JVM_VERSION
     }
   }
-
-
+  
+  
 }
 
 
