@@ -1,5 +1,5 @@
 import Common_gradle.Common.createTarget
-import Common_gradle.OpenSSL.opensslPrefix
+import OpenSSL.opensslPrefix
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
@@ -10,7 +10,7 @@ plugins {
   `maven-publish`
 }
 
-val opensslTag = "OpenSSL_1_1_1o"
+val opensslTag = "OpenSSL_1_1_1q"
 //val opensslTag = "openssl-3.0.3"
 
 val PlatformNative<*>.opensslPlatform
@@ -31,8 +31,8 @@ val PlatformNative<*>.opensslPlatform
 val PlatformNative<*>.opensslSrcDir: File
   get() = File(System.getProperty("java.io.tmpdir"), "openssl/$opensslTag/$name")
 
-group = ProjectProperties.GROUP_ID
-version = ProjectProperties.VERSION_NAME
+group = ProjectProperties.projectGroup
+version = ProjectProperties.buildVersionName
 
 val opensslGitDir = project.file("src/openssl.git")
 
@@ -164,7 +164,7 @@ publishing {
   }
 
   repositories {
-    maven(ProjectProperties.MAVEN_REPO)
+    maven(ProjectProperties.LOCAL_M2)
   }
 }
 

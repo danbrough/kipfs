@@ -5,25 +5,23 @@ plugins {
   kotlin("multiplatform")
   kotlin("plugin.serialization")
   //id("com.android.library")
-  id("common")
-
   `maven-publish`
 }
 
-group = ProjectProperties.GROUP_ID
-version = ProjectProperties.VERSION_NAME
+group = ProjectProperties.projectGroup
+version = ProjectProperties.buildVersionName
 
 kotlin {
-
+  
   BuildEnvironment.nativeTargets.forEach { platform ->
     createTarget(platform)
   }
-
+  
   jvm()
   //android()
-
+  
   sourceSets {
-
+    
     all {
       listOf(
         "kotlin.RequiresOptIn",
@@ -35,7 +33,7 @@ kotlin {
         languageSettings.optIn(it)
       }
     }
-
+    
     commonMain {
       dependencies {
         api(Dependencies.klog)
@@ -43,15 +41,15 @@ kotlin {
         api(KotlinX.serialization.json)
         api(KotlinX.serialization.cbor)
         api(KotlinX.coroutines.core)
-
+        
       }
     }
-
+    
     commonTest {
       dependencies {
         implementation("io.matthewnelson.kotlin-components:encoding-base32:_")
         implementation("io.matthewnelson.kotlin-components:encoding-base64:_")
-
+        
         implementation(kotlin("test"))
         implementation(project(":golib"))
       }
@@ -62,7 +60,7 @@ kotlin {
         // implementation(KotlinX.coroutines.android)
       }
     }*/
-
+    
     val jvmMain by getting {
       dependencies {
         //implementation(KotlinX.coroutines.jdk8)
@@ -76,11 +74,11 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::class) {
-
+  
   val linkTask = rootProject.getTasksByName("linkKipfsDebugSharedLinuxX64", true).first()
   println("GOT TASK $linkTask type: ${linkTask::class}")
   dependsOn(linkTask)
-
+  
   val libPath =
     "${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
   println("LIBPATH: $libPath")
@@ -111,7 +109,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
 afterEvaluate {
   publishing {
     repositories {
-      maven(ProjectProperties.MAVEN_REPO)
+      //maven(ProjectProperties.MAVEN_REPO)
     }
   }
 }

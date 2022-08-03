@@ -20,21 +20,17 @@ dependencies {
   implementation(kotlin("serialization"))
   implementation(gradleApi())
   implementation(gradleKotlinDsl())
-
-
-  //implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
-
+  
 
 }
 
 kotlin {
-/*
+
   jvmToolchain {
     check(this is JavaToolchainSpec)
-    languageVersion.set(JavaLanguageVersion.of(8))
-
+    languageVersion.set(JavaLanguageVersion.of(11))
   }
-*/
+
 
   sourceSets.all {
     languageSettings {
@@ -52,31 +48,9 @@ kotlin {
 }
 
 
-
 tasks.withType(KotlinCompile::class) {
-  this.kotlinOptions {
-    this.jvmTarget = "11"
-
-  }
-}
-
-/*
-tasks.withType(KotlinCompile::class) {
-
   kotlinOptions {
-    listOf(
-      "kotlin.RequiresOptIn",
-      "kotlin.ExperimentalStdlibApi",
-      "kotlin.ExperimentalMultiplatform",
-
-      //  "kotlinx.serialization.InternalSerializationApi",
-    //  "kotlinx.serialization.ExperimentalSerializationApi",
-      // "kotlinx.coroutines.ExperimentalCoroutinesApi",
-      // "kotlin.time.ExperimentalTime",
-    ).map { "-Xopt-in=$it" }.also {
-      freeCompilerArgs = freeCompilerArgs + it
-    }
+    jvmTarget = "11"
   }
 }
-*/
 

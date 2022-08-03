@@ -1,6 +1,6 @@
 package org.danbrough.kipfs
 
-import org.danbrough.klog.*
+import klog.*
 import kotlinx.cinterop.*
 import platform.posix.free
 

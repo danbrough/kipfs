@@ -12,78 +12,78 @@ plugins {
 }
 
 
-group = ProjectProperties.GROUP_ID
-version = ProjectProperties.VERSION_NAME
+group = ProjectProperties.projectGroup
+version = ProjectProperties.buildVersionName
 
 
 kotlin {
   jvm {
     withJava()
   }
-
-
+  
+  
   val commonMain by sourceSets.getting {
     dependencies {
       implementation(project(":api"))
     }
   }
-
-
+  
+  
   val commonTest by sourceSets.getting {
     dependencies {
       implementation(kotlin("test"))
       api("io.matthewnelson.kotlin-components:encoding-base32:_")
     }
   }
-
-
+  
+  
   val jvmMain by sourceSets.getting {
     dependsOn(commonMain)
   }
-
-
+  
+  
   val nativeMain by sourceSets.creating {
     dependsOn(commonMain)
   }
-
+  
   val nativeTest by sourceSets.creating {
     dependsOn(commonTest)
   }
-
+  
   val goDir = project.file("src/go")
-
+  
   BuildEnvironment.nativeTargets.forEach { platform ->
-
+    
     createTarget(platform) {
-
+      
       val kipfsLibDir = libsDir(platform)
       val golibBuild =
         registerGoLibBuild(platform, goDir, kipfsLibDir, "kipfsgo", "libs/libkipfs.go")
-
+      
       golibBuild {
         doFirst {
           println("STARTING KIPFS LIB BUILD... ${commandLine.joinToString(" ")}")
           println("CGO_CFLAGS: ${environment["CGO_CFLAGS"]}")
           println("CGO_LDFLAGS: ${environment["CGO_LDLAGS"]}")
         }
-
+        
         appendToEnvironment("CGO_CFLAGS", "-I${rootProject.file("openssl/lib/$platform/include")}")
         appendToEnvironment("CGO_LDFLAGS", "-L${rootProject.file("openssl/lib/$platform/lib")}")
-
+        
         dependsOn(":openssl:build${platform.name.toString().capitalized()}")
         commandLine(commandLine.toMutableList().also {
           it.add(3, "-tags=openssl")
         })
       }
-
+      
       val kipfsLibBuildTask = golibBuild.get()
-
-
+      
+      
       //println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
-
-
+      
+      
       compilations["main"].apply {
-
+        
         cinterops.create("kipfs") {
           packageName("kipfs")
           defFile = project.file("src/interop/kipfs.def")
@@ -99,7 +99,7 @@ kotlin {
           // linkerOpts("-L${opensslPrefix(platform).resolve("lib")}")
           //extraOpts("-libraryPath",opensslPrefix(platform).resolve("lib"))
         }
-
+        
         if (platform.goOS != GoOS.android) {
           cinterops.create("jni") {
             packageName("platform.android")
@@ -121,17 +121,17 @@ kotlin {
             }
           }
         }
-
+        
         defaultSourceSet {
           dependsOn(nativeMain)
         }
       }
-
+      
       compilations["test"].defaultSourceSet.dependsOn(nativeTest)
-
-
+      
+      
       binaries {
-
+        
         /*       executable("demo") {
                  if (konanTarget.family == Family.ANDROID) {
                    binaryOptions["androidProgramType"] = "nativeActivity"
@@ -139,16 +139,16 @@ kotlin {
 
                  runTask?.environment("LD_LIBRARY_PATH", kipfsLibDir)
                }*/
-
+        
         sharedLib("kipfs", setOf(NativeBuildType.DEBUG))
-
+        
       }
-
-
+      
+      
     }
   }
-
-
+  
+  
 }
 
 tasks.withType(KotlinNativeTest::class).all {

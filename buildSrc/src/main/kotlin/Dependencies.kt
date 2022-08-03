@@ -1,3 +1,3 @@
 object Dependencies {
-  const val klog = "com.github.danbrough.klog:klog:_"
+  const val klog = "org.danbrough:klog:_"
 }

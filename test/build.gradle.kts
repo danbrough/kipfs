@@ -1,8 +1,4 @@
-import Common_gradle.Common.createTarget
-import Common_gradle.OpenSSL.opensslPrefix
-import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 plugins {
   kotlin("multiplatform")

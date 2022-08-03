@@ -5,7 +5,7 @@ package org.danbrough.kipfs.jni
 import org.danbrough.kipfs.copyToKString
 import kipfs.KCreateShell
 import kotlinx.cinterop.*
-import org.danbrough.klog.klog
+import klog.klog
 import platform.android.*
 
 private object JNIImpl
