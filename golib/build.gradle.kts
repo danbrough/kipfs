@@ -1,14 +1,13 @@
-import Common_gradle.Common.createTarget
-import Common_gradle.GoLib.libsDir
-import Common_gradle.GoLib.registerGoLibBuild
+import BuildEnvironment.platformName
+import BuildEnvironment.registerTarget
 import org.gradle.configurationcache.extensions.capitalized
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
 plugins {
   kotlin("multiplatform")
-  id("common")
 }
 
 
@@ -52,9 +51,9 @@ kotlin {
   
   val goDir = project.file("src/go")
   
-  BuildEnvironment.nativeTargets.forEach { platform ->
+  BuildEnvironment.nativeTargets.forEach { target ->
     
-    createTarget(platform) {
+    registerTarget<KotlinNativeTarget>(target){
       
       val kipfsLibDir = libsDir(platform)
       val golibBuild =
@@ -160,7 +159,7 @@ tasks.withType(KotlinJvmTest::class) {
   val linkTask = tasks.getByName("linkKipfsDebugSharedLinuxX64")
   dependsOn(linkTask)
   val libPath =
-    "${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
+    "${libsDir(BuildEnvironment.hostTarget.platformName)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
   println("LIBPATH: $libPath")
   environment(
     "LD_LIBRARY_PATH",

@@ -1,16 +1,17 @@
 import org.gradle.api.Project
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
+import BuildEnvironment.platformName
 
 object OpenSSL {
   
   const val TAG = "OpenSSL_1_1_1q"
   
-  val KonanTarget.opensslSrcDir: File
-    get() = File(System.getProperty("java.io.tmpdir"), "openssl/$TAG/$name")
+  fun KonanTarget.opensslSrcDir(project: Project): File =
+    project.rootProject.buildDir.resolve("openssl/$TAG/$platformName")
   
   fun KonanTarget.opensslPrefix(project: Project): File =
-    project.rootProject.file("openssl/lib/$name")
+    project.rootProject.file("openssl/lib/$platformName")
   
   val KonanTarget.opensslPlatform: String
     get() = when (this) {

@@ -4,6 +4,7 @@ import BuildEnvironment.goArch
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinTargetPreset
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 import org.jetbrains.kotlin.konan.target.Architecture
@@ -38,18 +39,32 @@ object BuildEnvironment {
     get() = buildPathList.split("[\\s]+".toRegex())
   
   val KonanTarget.platformName: String
-    get() = name.split("_").joinToString("") { it.capitalize() }.decapitalize()
+    get() {
+      if (family == Family.ANDROID) {
+        return when (this) {
+          KonanTarget.ANDROID_X64 -> "androidNativeX64"
+          KonanTarget.ANDROID_X86 -> "androidNativeX86"
+          KonanTarget.ANDROID_ARM64 -> "androidNativeArm64"
+          KonanTarget.ANDROID_ARM32 -> "androidNativeArm32"
+          else -> throw Error("Unhandled android target $this")
+        }
+      }
+      return name.split("_").joinToString("") { it.capitalize() }.decapitalize()
+    }
   
   
-  val KonanTarget.hostTriple: String
+  val KonanTarget.hostTriplet: String
     get() = when (this) {
       KonanTarget.LINUX_ARM64 -> "aarch64-unknown-linux-gnu"
       KonanTarget.LINUX_X64 -> "x86_64-unknown-linux-gnu"
+      KonanTarget.LINUX_ARM32_HFP -> "arm-linux-gnueabihf"
       KonanTarget.ANDROID_ARM32 -> "armv7a-linux-androideabi"
       KonanTarget.ANDROID_ARM64 -> "aarch64-linux-android"
       KonanTarget.ANDROID_X64 -> "x86_64-linux-android"
       KonanTarget.ANDROID_X86 -> "i686-linux-android"
-      KonanTarget.IOS_ARM32 -> TODO()
+      KonanTarget.MACOS_X64 -> "darwin64-x86_64-cc"
+      KonanTarget.MINGW_X64 -> "x86_64-w64-mingw32"
+/*      KonanTarget.IOS_ARM32 -> TODO()
       KonanTarget.IOS_ARM64 -> TODO()
       KonanTarget.IOS_SIMULATOR_ARM64 -> TODO()
       KonanTarget.IOS_X64 -> TODO()
@@ -57,8 +72,7 @@ object BuildEnvironment {
       KonanTarget.LINUX_MIPS32 -> TODO()
       KonanTarget.LINUX_MIPSEL32 -> TODO()
       KonanTarget.MACOS_ARM64 -> TODO()
-      KonanTarget.MACOS_X64 -> "darwin64-x86_64-cc"
-      KonanTarget.MINGW_X64 -> "x86_64-w64-mingw32"
+
       KonanTarget.MINGW_X86 -> TODO()
       KonanTarget.TVOS_ARM64 -> TODO()
       KonanTarget.TVOS_SIMULATOR_ARM64 -> TODO()
@@ -68,7 +82,7 @@ object BuildEnvironment {
       KonanTarget.WATCHOS_ARM64 -> TODO()
       KonanTarget.WATCHOS_SIMULATOR_ARM64 -> TODO()
       KonanTarget.WATCHOS_X64 -> TODO()
-      KonanTarget.WATCHOS_X86 -> TODO()
+      KonanTarget.WATCHOS_X86 -> TODO()*/
       else -> TODO("Add hostTriple for $this")
       
     }
@@ -121,9 +135,31 @@ object BuildEnvironment {
   
   val nativeTargets: List<KonanTarget> =
     if (ProjectProperties.IDE_ACTIVE) listOf(hostTarget) else listOf(
-      KonanTarget.LINUX_X64, KonanTarget.MACOS_X64
+      KonanTarget.LINUX_X64,
+      KonanTarget.LINUX_ARM64,
+      KonanTarget.LINUX_ARM32_HFP,
+      KonanTarget.MINGW_X64,
+      KonanTarget.MACOS_X64,
+      KonanTarget.MACOS_ARM64,
+      KonanTarget.ANDROID_ARM64,
+      KonanTarget.ANDROID_ARM32,
+      KonanTarget.ANDROID_X86,
+      KonanTarget.ANDROID_X64
+    
     )
   
+  
+  fun <T : KotlinTarget> KotlinMultiplatformExtension.registerTarget(
+    konanTarget: KonanTarget,
+    conf: T.() -> Unit = {}
+  ): T {
+    @Suppress("UNCHECKED_CAST")
+    
+    
+    val preset: KotlinTargetPreset<T> =
+      presets.getByName(konanTarget.platformName) as KotlinTargetPreset<T>
+    return targetFromPreset(preset, konanTarget.platformName, conf)
+  }
   
   val androidToolchainDir by lazy {
     androidNdkDir.resolve("toolchains/llvm/prebuilt/linux-x86_64").also {
@@ -133,6 +169,12 @@ object BuildEnvironment {
     }
   }
   
+  /*  fun KotlinMultiplatformExtension.registerNativeTargets(conf: KotlinNativeTarget.() -> Unit) {
+      nativeTargets.forEach {
+        registerTarget(it, conf)
+      }
+    }
+    */
   val clangBinDir by lazy {
     File("$konanDir/dependencies").listFiles()?.first {
       it.isDirectory && it.name.contains("essentials")
@@ -188,21 +230,21 @@ object BuildEnvironment {
       
       KonanTarget.LINUX_ARM32_HFP -> {
         val clangArgs =
-          "--target=$hostTriple --gcc-toolchain=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2 --sysroot=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2/arm-unknown-linux-gnueabihf/sysroot "
+          "--target=$hostTriplet --gcc-toolchain=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2 --sysroot=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2/arm-unknown-linux-gnueabihf/sysroot "
         this["CC"] = "$clangBinDir/clang $clangArgs"
         this["CXX"] = "$clangBinDir/clang++ $clangArgs"
       }
       
       KonanTarget.LINUX_ARM64 -> {
         val clangArgs =
-          "--target=$hostTriple --gcc-toolchain=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2 --sysroot=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot"
+          "--target=$hostTriplet --gcc-toolchain=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2 --sysroot=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot"
         this["CC"] = "$clangBinDir/clang $clangArgs"
         this["CXX"] = "$clangBinDir/clang++ $clangArgs"
       }
       
       KonanTarget.LINUX_X64 -> {
         val clangArgs =
-          "--target=$hostTriple --gcc-toolchain=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2 --sysroot=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot"
+          "--target=$hostTriplet --gcc-toolchain=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2 --sysroot=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot"
         this["CC"] = "$clangBinDir/clang $clangArgs"
         this["CXX"] = "$clangBinDir/clang++ $clangArgs"
 /*        this["RANLIB"] =
@@ -247,8 +289,8 @@ object BuildEnvironment {
       
       KonanTarget.ANDROID_X64, KonanTarget.ANDROID_X86, KonanTarget.ANDROID_ARM64, KonanTarget.ANDROID_ARM32 -> {
         path.add(0, androidToolchainDir.resolve("bin").absolutePath)
-        this["CC"] = "$hostTriple${androidNdkApiVersion}-clang"
-        this["CXX"] = "$hostTriple${androidNdkApiVersion}-clang++"
+        this["CC"] = "$hostTriplet${androidNdkApiVersion}-clang"
+        this["CXX"] = "$hostTriplet${androidNdkApiVersion}-clang++"
         this["AR"] = "llvm-ar"
         this["RANLIB"] = "llvm-ranlib"
       }

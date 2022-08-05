@@ -1,21 +1,23 @@
 import BuildEnvironment.buildEnviroment
+import BuildEnvironment.hostTriplet
 import BuildEnvironment.platformName
-import Common_gradle.Common.createTarget
+import BuildEnvironment.registerTarget
 import OpenSSL.opensslPlatform
 import OpenSSL.opensslPrefix
 import OpenSSL.opensslSrcDir
 import org.gradle.configurationcache.extensions.capitalized
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
-  id("common")
   `maven-publish`
 }
 
 group = ProjectProperties.projectGroup
 version = ProjectProperties.buildVersionName
+
 
 val opensslGitDir = project.file("src/openssl.git")
 
@@ -36,7 +38,7 @@ val srcClone by tasks.registering(Exec::class) {
 
 fun srcPrepare(target: KonanTarget): Exec =
   tasks.create("srcPrepare${target.platformName.capitalize()}", Exec::class) {
-    val srcDir = target.opensslSrcDir
+    val srcDir = target.opensslSrcDir(project)
     dependsOn(srcClone)
     onlyIf {
       !srcDir.exists()
@@ -55,7 +57,7 @@ fun configureTask(target: KonanTarget): Exec {
     "configure${target.platformName.capitalize()}", Exec::class
   ) {
     dependsOn(srcPrepare)
-    workingDir(target.opensslSrcDir)
+    workingDir(target.opensslSrcDir(project))
     println("configuring with platform: ${target.opensslPlatform}")
     environment(target.buildEnviroment())
     val args = mutableListOf(
@@ -64,33 +66,34 @@ fun configureTask(target: KonanTarget): Exec {
       "no-tests", "--prefix=${target.opensslPrefix(project)}"
     )
     if (target.family == Family.ANDROID) args += "-D__ANDROID_API__=${BuildEnvironment.androidNdkApiVersion} "
-    else if (target.family == Family.MINGW) args += "--cross-compile-prefix=${target.hostTriple}-"
+    else if (target.family == Family.MINGW) args += "--cross-compile-prefix=${target.hostTriplet}-"
     commandLine(args)
   }
 }
 
-fun buildTask(target: PlatformNative<*>) {
-  val configureTask = configureTask(platform)
+
+fun buildTask(target: KonanTarget): TaskProvider<*> {
+  val configureTask = configureTask(target)
   
-  tasks.create("build${platform.name.toString().capitalized()}", Exec::class) {
-    
-    opensslPrefix(platform).resolve("lib/libssl.a").exists().also {
+  
+  return tasks.register("build${target.platformName.capitalized()}", Exec::class) {
+    target.opensslPrefix(project).resolve("lib/libssl.a").exists().also {
       isEnabled = !it
       configureTask.isEnabled = !it
     }
     dependsOn(configureTask.name)
     
     
-    tasks.getAt("buildAll").dependsOn(this)
-    workingDir(platform.opensslSrcDir)
-    outputs.files(fileTree(opensslPrefix(platform)) {
+    //tasks.getAt("buildAll").dependsOn(this)
+    workingDir(target.opensslSrcDir(project))
+    outputs.files(fileTree(target.opensslPrefix(project)) {
       include("lib/*.a", "lib/*.so", "lib/*.h", "lib/*.dylib")
     })
-    environment(BuildEnvironment.environment(platform))
+    environment(target.buildEnviroment())
     group = BasePlugin.BUILD_GROUP
     commandLine("make", "install_sw")
     doLast {
-      platform.opensslSrcDir.deleteRecursively()
+      target.opensslSrcDir(project).deleteRecursively()
     }
     
   }
@@ -99,7 +102,6 @@ fun buildTask(target: PlatformNative<*>) {
 
 kotlin {
   
-  val buildAll by tasks.registering
   val commonTest by sourceSets.getting {
     dependencies {
       implementation(kotlin("test"))
@@ -109,21 +111,16 @@ kotlin {
   val nativeTest by sourceSets.creating
   val nativeMain by sourceSets.creating
   
-  linuxX64()
-  linuxArm64()
-  macosX64()
-  macosArm64()
+  val buildAll by tasks.creating
   
-  
-  BuildEnvironment.nativeTargets.forEach { platform ->
+  BuildEnvironment.nativeTargets.forEach { target ->
     
-    createTarget(platform) {
+    registerTarget<KotlinNativeTarget>(target) {
       compilations["main"].apply {
-        
         cinterops.create("openssl") {
           packageName("libopenssl")
           defFile = project.file("src/openssl.def")
-          extraOpts(listOf("-libraryPath", opensslPrefix(platform).resolve("lib")))
+          extraOpts(listOf("-libraryPath", konanTarget.opensslPrefix(project).resolve("lib")))
         }
         
         defaultSourceSet {
@@ -137,17 +134,14 @@ kotlin {
           dependsOn(nativeTest)
         }
       }
-
-/*      binaries {
-        executable("testApp") {
-          entryPoint = "openssl.TestApp"
-        }
-      }*/
     }
-    
-    buildTask(platform)
+    buildTask(target).also {
+      buildAll.dependsOn(it)
+    }
   }
 }
+
+
 
 
 publishing {
@@ -187,3 +181,5 @@ else
   make install_sw || exit 1
 fi
  */
+
+
