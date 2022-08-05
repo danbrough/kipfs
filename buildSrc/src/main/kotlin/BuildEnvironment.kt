@@ -1,8 +1,14 @@
 @file:Suppress("MemberVisibilityCanBePrivate")
 
+import BuildEnvironment.goArch
+import org.gradle.configurationcache.extensions.capitalized
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
+import org.jetbrains.kotlin.konan.target.Architecture
+import org.jetbrains.kotlin.konan.target.Family
+import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
 
@@ -14,9 +20,12 @@ object BuildEnvironment {
   
   val buildCacheDir: File by ProjectProperties.createProperty("build.cache")
   
+  val goCacheDir: File by lazy {
+    buildCacheDir.resolve("go")
+  }
+  
   val konanDir: File by ProjectProperties.createProperty(
-    "konan.dir",
-    "${System.getProperty("user.home")}/.konan"
+    "konan.dir", "${System.getProperty("user.home")}/.konan"
   )
   
   val androidNdkDir: File by ProjectProperties.createProperty("android.ndk.dir")
@@ -28,20 +37,93 @@ object BuildEnvironment {
   val buildPath: List<String>
     get() = buildPathList.split("[\\s]+".toRegex())
   
-  val hostPlatform = PlatformNative.LinuxX64
+  val KonanTarget.platformName: String
+    get() = name.split("_").joinToString("") { it.capitalize() }.decapitalize()
   
-  val nativeTargets: List<PlatformNative<*>>
-    get() = if (ProjectProperties.IDE_ACTIVE) listOf(PlatformNative.LinuxX64) else listOf(
-      PlatformNative.LinuxX64,
-      PlatformNative.LinuxArm64,
-      PlatformNative.LinuxArm,
-      PlatformAndroid.AndroidArm,
-      PlatformAndroid.AndroidArm64,
-      PlatformAndroid.Android386,
-      PlatformAndroid.AndroidAmd64,
-      PlatformNative.MingwX64,
-      PlatformNative.MacosX64,
+  
+  val KonanTarget.hostTriple: String
+    get() = when (this) {
+      KonanTarget.LINUX_ARM64 -> "aarch64-unknown-linux-gnu"
+      KonanTarget.LINUX_X64 -> "x86_64-unknown-linux-gnu"
+      KonanTarget.ANDROID_ARM32 -> "armv7a-linux-androideabi"
+      KonanTarget.ANDROID_ARM64 -> "aarch64-linux-android"
+      KonanTarget.ANDROID_X64 -> "x86_64-linux-android"
+      KonanTarget.ANDROID_X86 -> "i686-linux-android"
+      KonanTarget.IOS_ARM32 -> TODO()
+      KonanTarget.IOS_ARM64 -> TODO()
+      KonanTarget.IOS_SIMULATOR_ARM64 -> TODO()
+      KonanTarget.IOS_X64 -> TODO()
+      KonanTarget.LINUX_ARM32_HFP -> TODO()
+      KonanTarget.LINUX_MIPS32 -> TODO()
+      KonanTarget.LINUX_MIPSEL32 -> TODO()
+      KonanTarget.MACOS_ARM64 -> TODO()
+      KonanTarget.MACOS_X64 -> "darwin64-x86_64-cc"
+      KonanTarget.MINGW_X64 -> "x86_64-w64-mingw32"
+      KonanTarget.MINGW_X86 -> TODO()
+      KonanTarget.TVOS_ARM64 -> TODO()
+      KonanTarget.TVOS_SIMULATOR_ARM64 -> TODO()
+      KonanTarget.TVOS_X64 -> TODO()
+      KonanTarget.WASM32 -> TODO()
+      KonanTarget.WATCHOS_ARM32 -> TODO()
+      KonanTarget.WATCHOS_ARM64 -> TODO()
+      KonanTarget.WATCHOS_SIMULATOR_ARM64 -> TODO()
+      KonanTarget.WATCHOS_X64 -> TODO()
+      KonanTarget.WATCHOS_X86 -> TODO()
+      else -> TODO("Add hostTriple for $this")
+      
+    }
+  
+  val KonanTarget.androidLibDir: String?
+    get() = when (this) {
+      KonanTarget.ANDROID_ARM32 -> "armeabi-v7a"
+      KonanTarget.ANDROID_ARM64 -> "arm64-v8a"
+      KonanTarget.ANDROID_X64 -> "x86_64"
+      KonanTarget.ANDROID_X86 -> "x86"
+      else -> null
+    }
+  
+  val hostTarget: KonanTarget
+    get() {
+      val osName = System.getProperty("os.name")
+      val osArch = System.getProperty("os.arch")
+      val hostArchitecture: Architecture = when (osArch) {
+        "amd64", "x86_64" -> Architecture.X64
+        "arm64", "aarch64" -> Architecture.ARM64
+        else -> throw Error("Unknown os.arch value: $osArch")
+      }
+      
+      return when {
+        osName == "Linux" -> {
+          when (hostArchitecture) {
+            Architecture.ARM64 -> KonanTarget.LINUX_ARM64
+            Architecture.X64 -> KonanTarget.LINUX_X64
+            else -> null
+          }
+        }
+        
+        osName.startsWith("Mac") -> {
+          when (hostArchitecture) {
+            Architecture.X64 -> KonanTarget.MACOS_X64
+            Architecture.ARM64 -> KonanTarget.MACOS_ARM64
+            else -> null
+          }
+        }
+        
+        osName.startsWith("Windows") -> {
+          when (hostArchitecture) {
+            Architecture.X64 -> KonanTarget.MINGW_X64
+            else -> null
+          }
+        }
+        else -> null
+      } ?: throw Error("Unknown build host: $osName:$osArch")
+    }
+  
+  val nativeTargets: List<KonanTarget> =
+    if (ProjectProperties.IDE_ACTIVE) listOf(hostTarget) else listOf(
+      KonanTarget.LINUX_X64, KonanTarget.MACOS_X64
     )
+  
   
   val androidToolchainDir by lazy {
     androidNdkDir.resolve("toolchains/llvm/prebuilt/linux-x86_64").also {
@@ -58,54 +140,81 @@ object BuildEnvironment {
       ?: throw Error("Failed to locate clang folder in ${konanDir}/dependencies")
   }
   
-  fun environment(platform: PlatformNative<*>): Map<String, Any> = mutableMapOf(
-    "CGO_ENABLED" to 1,
-    "GOOS" to platform.goOS,
-    "GOARM" to platform.goArm,
-    "GOARCH" to platform.goArch,
-    "GOBIN" to platform.goCacheDir.resolve("${platform.name}/bin"),
-    "GOCACHE" to platform.goCacheDir.resolve("${platform.name}/gobuild"),
-    "GOCACHEDIR" to platform.goCacheDir,
-    "GOMODCACHE" to platform.goCacheDir.resolve("mod"),
-    "GOPATH" to platform.goCacheDir.resolve(platform.name.toString()),
-    "KONAN_DATA_DIR" to platform.goCacheDir.resolve("konan"),
+  
+  /*
+  see:   go/src/go/build/syslist.go
+  const goosList = "aix android darwin dragonfly freebsd hurd illumos
+  ios js linux nacl netbsd openbsd plan9 solaris windows zos "
+  const goarchList = "386 amd64 amd64p32 arm armbe arm64
+  arm64be loong64 mips mipsle mips64 mips64le mips64p32 mips64p32le ppc
+   ppc64 ppc64le riscv riscv64 s390 s390x sparc sparc64 wasm "
+    */
+  val KonanTarget.goOS: String?
+    get() = when (family) {
+      Family.OSX -> "darwin"
+      Family.IOS, Family.TVOS, Family.WATCHOS -> "ios"
+      Family.LINUX -> "linux"
+      Family.MINGW -> "windows"
+      Family.ANDROID -> "android"
+      Family.WASM -> null
+      Family.ZEPHYR -> null
+    }
+  
+  val KonanTarget.goArch: String
+    get() = when (architecture) {
+      Architecture.ARM64 -> "arm64"
+      Architecture.X64 -> "amd64"
+      Architecture.X86 -> "386"
+      Architecture.ARM32 -> "arm"
+      Architecture.MIPS32 -> "mips" //TODO: confirm this
+      Architecture.MIPSEL32 -> "mipsle" //TODO: confirm this
+      Architecture.WASM32 -> "wasm"
+    }
+  
+  fun KonanTarget.buildEnviroment(): Map<String, Any?> = mutableMapOf(
+    "CGO_ENABLED" to 1, "GOARM" to 7, "GOOS" to goOS, "GOARCH" to goArch,
+    "GOBIN" to buildCacheDir.resolve("$name/bin"),
+    "GOCACHE" to buildCacheDir.resolve("$name/gobuild"),
+    "GOCACHEDIR" to buildCacheDir.resolve("$name/gocache"),
+    "GOMODCACHE" to buildCacheDir.resolve("gomodcache"),
+    "GOPATH" to buildCacheDir.resolve(name),
+    "KONAN_DATA_DIR" to buildCacheDir.resolve("konan"),
     "CFLAGS" to "-O3  -Wno-macro-redefined -Wno-deprecated-declarations -DOPENSSL_SMALL_FOOTPRINT=1",
     "MAKE" to "make -j4",
   ).apply {
-    
     val path = buildPath.toMutableList()
     
-    when (platform) {
+    when (this@buildEnviroment) {
       
-      PlatformNative.LinuxArm -> {
+      KonanTarget.LINUX_ARM32_HFP -> {
         val clangArgs =
-          "--target=${platform.host} " + "--gcc-toolchain=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2 " + "--sysroot=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2/arm-unknown-linux-gnueabihf/sysroot "
+          "--target=$hostTriple --gcc-toolchain=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2 --sysroot=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2/arm-unknown-linux-gnueabihf/sysroot "
         this["CC"] = "$clangBinDir/clang $clangArgs"
         this["CXX"] = "$clangBinDir/clang++ $clangArgs"
       }
       
-      PlatformNative.LinuxArm64 -> {
+      KonanTarget.LINUX_ARM64 -> {
         val clangArgs =
-          "--target=${platform.host} " + "--gcc-toolchain=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2 " + "--sysroot=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot"
+          "--target=$hostTriple --gcc-toolchain=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2 --sysroot=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot"
         this["CC"] = "$clangBinDir/clang $clangArgs"
         this["CXX"] = "$clangBinDir/clang++ $clangArgs"
       }
       
-      PlatformNative.LinuxX64 -> {
+      KonanTarget.LINUX_X64 -> {
         val clangArgs =
-          "--target=${platform.host} " + "--gcc-toolchain=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2 " + "--sysroot=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot"
+          "--target=$hostTriple --gcc-toolchain=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2 --sysroot=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot"
         this["CC"] = "$clangBinDir/clang $clangArgs"
         this["CXX"] = "$clangBinDir/clang++ $clangArgs"
 /*        this["RANLIB"] =
           "$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/bin/ranlib"*/
       }
       
-      PlatformNative.MacosX64 -> {
+      KonanTarget.MACOS_X64 -> {
       
       }
       
       
-      PlatformNative.MingwX64 -> {
+      KonanTarget.MINGW_X64 -> {
         
         /*  export HOST=x86_64-w64-mingw32
   export GOOS=windows
@@ -136,10 +245,10 @@ object BuildEnvironment {
         
       }
       
-      PlatformAndroid.AndroidArm, PlatformAndroid.Android386, PlatformAndroid.AndroidArm64, PlatformAndroid.AndroidAmd64 -> {
+      KonanTarget.ANDROID_X64, KonanTarget.ANDROID_X86, KonanTarget.ANDROID_ARM64, KonanTarget.ANDROID_ARM32 -> {
         path.add(0, androidToolchainDir.resolve("bin").absolutePath)
-        this["CC"] = "${platform.host}${androidNdkApiVersion}-clang"
-        this["CXX"] = "${platform.host}${androidNdkApiVersion}-clang++"
+        this["CC"] = "$hostTriple${androidNdkApiVersion}-clang"
+        this["CXX"] = "$hostTriple${androidNdkApiVersion}-clang++"
         this["AR"] = "llvm-ar"
         this["RANLIB"] = "llvm-ranlib"
       }
@@ -151,174 +260,3 @@ object BuildEnvironment {
   
 }
 
-enum class GoOS {
-  linux, windows, android, darwin
-}
-
-
-enum class GoArch(val altName: String? = null) {
-  x86("386"), amd64, arm, arm64;
-  
-  override fun toString() = altName ?: name
-}
-
-enum class PlatformName {
-  Android, AndroidNativeArm32, AndroidNativeArm64, AndroidNativeX64, AndroidNativeX86, IosArm32, IosArm64, IosSimulatorArm64, IosX64, JS, JsBoth, JsIr, Jvm, JvmWithJava, LinuxArm32Hfp, LinuxArm64, LinuxMips32, LinuxMipsel32, LinuxX64, MacosArm64, MacosX64, MingwX64, MingwX86, TvosArm64, TvosSimulatorArm64, TvosX64, Wasm, Wasm32, WatchosArm32, WatchosArm64, WatchosSimulatorArm64, WatchosX64, WatchosX86;
-  
-  override fun toString() = name.toString().decapitalize()
-  
-  companion object {
-    fun forName(name: String): Platform<*> = when (valueOf(name)) {
-      Android -> TODO()
-      AndroidNativeArm32 -> PlatformAndroid.AndroidArm
-      AndroidNativeArm64 -> PlatformAndroid.AndroidArm64
-      AndroidNativeX64 -> PlatformAndroid.AndroidAmd64
-      AndroidNativeX86 -> PlatformAndroid.Android386
-      IosArm32 -> TODO()
-      IosArm64 -> TODO()
-      IosSimulatorArm64 -> TODO()
-      IosX64 -> TODO()
-      JS -> TODO()
-      JsBoth -> TODO()
-      JsIr -> TODO()
-      Jvm -> TODO()
-      JvmWithJava -> TODO()
-      LinuxArm32Hfp -> PlatformNative.LinuxArm
-      LinuxArm64 -> PlatformNative.LinuxArm64
-      LinuxMips32 -> TODO()
-      LinuxMipsel32 -> TODO()
-      LinuxX64 -> TODO()
-      MacosArm64 -> TODO()
-      MacosX64 -> PlatformNative.MacosX64
-      MingwX64 -> PlatformNative.MingwX64
-      MingwX86 -> TODO()
-      TvosArm64 -> TODO()
-      TvosSimulatorArm64 -> TODO()
-      TvosX64 -> TODO()
-      Wasm -> TODO()
-      Wasm32 -> TODO()
-      WatchosArm32 -> TODO()
-      WatchosArm64 -> TODO()
-      WatchosSimulatorArm64 -> TODO()
-      WatchosX64 -> TODO()
-      WatchosX86 -> TODO()
-    }
-  }
-  
-}
-
-sealed class Platform<T : KotlinTarget>(
-  val name: PlatformName,
-) {
-  override fun toString() = name.toString()
-}
-
-
-open class PlatformNative<T : KotlinNativeTarget>(
-  name: PlatformName, val host: String, val goOS: GoOS, val goArch: GoArch, val goArm: Int = 7
-) : Platform<T>(name) {
-  val goCacheDir: File = BuildEnvironment.buildCacheDir.resolve("go")
-  val isAndroid = goOS == GoOS.android
-  val isLinux = goOS == GoOS.linux
-  val isWindows = goOS == GoOS.windows
-  
-  object LinuxX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
-    PlatformName.LinuxX64, "x86_64-unknown-linux-gnu", GoOS.linux, GoArch.amd64
-  )
-  
-  object LinuxArm64 : PlatformNative<KotlinNativeTarget>(
-    PlatformName.LinuxArm64, "aarch64-unknown-linux-gnu", GoOS.linux, GoArch.arm64
-  )
-  
-  object LinuxArm : PlatformNative<KotlinNativeTarget>(
-    PlatformName.LinuxArm32Hfp, "arm-unknown-linux-gnueabihf", GoOS.linux, GoArch.arm
-  )
-  
-  object MingwX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
-    PlatformName.MingwX64, "x86_64-w64-mingw32", GoOS.windows, GoArch.amd64
-  )
-  
-  object MacosX64 : PlatformNative<KotlinNativeTargetWithHostTests>(
-    PlatformName.MacosX64, "darwin64-x86_64-cc", GoOS.darwin, GoArch.amd64
-  )
-}
-
-
-open class PlatformAndroid<T : KotlinNativeTarget>(
-  name: PlatformName,
-  host: String,
-  goOS: GoOS,
-  goArch: GoArch,
-  goArm: Int = 7,
-  val androidLibDir: String
-) : PlatformNative<T>(name, host, goOS, goArch, goArm) {
-  
-  object AndroidArm : PlatformAndroid<KotlinNativeTarget>(
-    PlatformName.AndroidNativeArm32,
-    "armv7a-linux-androideabi",
-    GoOS.android,
-    GoArch.arm,
-    androidLibDir = "armeabi-v7a"
-  )
-  
-  object AndroidArm64 : PlatformAndroid<KotlinNativeTarget>(
-    PlatformName.AndroidNativeArm64,
-    "aarch64-linux-android",
-    GoOS.android,
-    GoArch.arm64,
-    androidLibDir = "arm64-v8a",
-  )
-  
-  object Android386 : PlatformAndroid<KotlinNativeTarget>(
-    PlatformName.AndroidNativeX86,
-    "i686-linux-android",
-    GoOS.android,
-    GoArch.x86,
-    androidLibDir = "x86",
-  )
-  
-  object AndroidAmd64 : PlatformAndroid<KotlinNativeTarget>(
-    PlatformName.AndroidNativeX64,
-    "x86_64-linux-android",
-    GoOS.android,
-    GoArch.amd64,
-    androidLibDir = "x86_64",
-  )
-}
-
-
-/*
-android
-androidNativeArm32
-androidNativeArm64
-androidNativeX64
-androidNativeX86
-iosArm32
-iosArm64
-iosSimulatorArm64
-iosX64
-js
-jsBoth
-jsIr
-jvm
-jvmWithJava
-linuxArm32Hfp
-linuxArm64
-linuxMips32
-linuxMipsel32
-linuxX64
-macosArm64
-macosX64
-mingwX64
-mingwX86
-tvosArm64
-tvosSimulatorArm64
-tvosX64
-wasm
-wasm32
-watchosArm32
-watchosArm64
-watchosSimulatorArm64
-watchosX64
-watchosX86
- */

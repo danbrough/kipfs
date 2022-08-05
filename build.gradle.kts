@@ -1,6 +1,8 @@
+import BuildEnvironment.platformName
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.konan.target.KonanTarget
 
 plugins {
   kotlin("multiplatform") apply false
@@ -21,11 +23,8 @@ buildscript {
 
 ProjectProperties.init(project)
 
-
 allprojects {
   repositories {
-    // maven(ProjectProperties.MAVEN_REPO)
-    //   maven("https://h1.danbrough.org/maven")
     mavenCentral()
     google()
     maven("https://s01.oss.sonatype.org/content/repositories/releases/")

@@ -23,11 +23,13 @@ object ProjectProperties {
   
   
   private val snapshotVersionFormat: String by createProperty(
-    "build.snapshot.format", "0.0.1-SHAPSHOT"
+    "build.snapshot.format",
+    "0.0.1-SHAPSHOT"
   )
   
   private val releaseVersionFormat: String by createProperty(
-    "build.version.format", "0.0.1-alpha%02d"
+    "build.version.format",
+    "0.0.1-alpha%02d"
   )
   
   private val buildVersionFormat: String
@@ -54,9 +56,13 @@ object ProjectProperties {
   val localProperties = Properties()
   var projectProperties = Properties()
   
-  class ProjectProperty(val key: String, val hasDefault: Boolean = true, val defaultValue: String?) {
+  class ProjectProperty(
+    val key: String,
+    val hasDefault: Boolean = true,
+    val defaultValue: String?
+  ) {
     inline operator fun <reified T : Any?> getValue(thisRef: Any?, property: KProperty<*>): T =
-      getProjectProperty(key, defaultValue , hasDefault)
+      getProjectProperty(key, defaultValue, hasDefault)
   }
   
   fun createProperty(propName: String) =
