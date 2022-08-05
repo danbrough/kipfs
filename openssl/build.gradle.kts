@@ -143,9 +143,9 @@ kotlin {
   }
 }
 
-tasks.create("doSomething"){
+tasks.create("nativeTargets"){
   doLast {
-    println("TARGETS: ${kotlin.targets.map{it.name}}")
+    println("nativeTargets: ${BuildEnvironment.nativeTargets}")
   }
 }
 
