@@ -113,6 +113,8 @@ kotlin {
   
   val buildAll by tasks.creating
   
+
+  
   BuildEnvironment.nativeTargets.forEach { target ->
     
     registerTarget<KotlinNativeTarget>(target) {
@@ -141,7 +143,11 @@ kotlin {
   }
 }
 
-
+tasks.create("doSomething"){
+  doLast {
+    println("TARGETS: ${kotlin.targets.map{it.name}}")
+  }
+}
 
 
 publishing {

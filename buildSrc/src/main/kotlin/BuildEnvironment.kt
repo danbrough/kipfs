@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
-
 object BuildEnvironment {
   
   val goBinary: String by ProjectProperties.createProperty("go.binary", "/usr/bin/go")
@@ -133,25 +132,34 @@ object BuildEnvironment {
       } ?: throw Error("Unknown build host: $osName:$osArch")
     }
   
-  val nativeTargets: List<KonanTarget> =
-    if (ProjectProperties.IDE_ACTIVE) listOf(hostTarget) else listOf(
-      KonanTarget.LINUX_X64,
-      KonanTarget.LINUX_ARM64,
-      KonanTarget.LINUX_ARM32_HFP,
-      KonanTarget.MINGW_X64,
-      KonanTarget.MACOS_X64,
-      KonanTarget.MACOS_ARM64,
-      KonanTarget.ANDROID_ARM64,
-      KonanTarget.ANDROID_ARM32,
-      KonanTarget.ANDROID_X86,
-      KonanTarget.ANDROID_X64
-    
-    )
+  val hostIsMac: Boolean by lazy {
+    hostTarget.family.isAppleFamily
+  }
+  
+  val nativeTargets: List<KonanTarget> by lazy {
+    if (ProjectProperties.IDE_ACTIVE)
+      listOf(hostTarget)
+    else
+      listOf(
+        KonanTarget.LINUX_X64,
+        KonanTarget.LINUX_ARM64,
+        KonanTarget.LINUX_ARM32_HFP,
+        KonanTarget.MINGW_X64,
+        KonanTarget.MACOS_X64,
+        KonanTarget.MACOS_ARM64,
+        KonanTarget.ANDROID_ARM64,
+        KonanTarget.ANDROID_ARM32,
+        KonanTarget.ANDROID_X86,
+        KonanTarget.ANDROID_X64
+      ).filter {
+        if (hostIsMac) it.family.isAppleFamily
+        else !it.family.isAppleFamily
+      }
+  }
   
   
   fun <T : KotlinTarget> KotlinMultiplatformExtension.registerTarget(
-    konanTarget: KonanTarget,
-    conf: T.() -> Unit = {}
+    konanTarget: KonanTarget, conf: T.() -> Unit = {}
   ): T {
     @Suppress("UNCHECKED_CAST")
     
@@ -298,7 +306,8 @@ object BuildEnvironment {
     
     this["PATH"] = path.joinToString(File.pathSeparator)
   }
-  
-  
 }
+  
+  
+
 
