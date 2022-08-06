@@ -158,14 +158,12 @@ object BuildEnvironment {
   }
   
   
-  fun <T : KotlinTarget> KotlinMultiplatformExtension.registerTarget(
-    konanTarget: KonanTarget, conf: T.() -> Unit = {}
-  ): T {
+  fun  KotlinMultiplatformExtension.registerTarget(
+    konanTarget: KonanTarget, conf: KotlinNativeTarget.() -> Unit = {}
+  ): KotlinNativeTarget {
     @Suppress("UNCHECKED_CAST")
-    
-    
-    val preset: KotlinTargetPreset<T> =
-      presets.getByName(konanTarget.platformName) as KotlinTargetPreset<T>
+    val preset: KotlinTargetPreset<KotlinNativeTarget> =
+      presets.getByName(konanTarget.platformName) as KotlinTargetPreset<KotlinNativeTarget>
     return targetFromPreset(preset, konanTarget.platformName, conf)
   }
   
@@ -221,7 +219,7 @@ object BuildEnvironment {
       Architecture.WASM32 -> "wasm"
     }
   
-  fun KonanTarget.buildEnviroment(): Map<String, Any?> = mutableMapOf(
+  fun KonanTarget.buildEnvironment(): Map<String, Any?> = mutableMapOf(
     "CGO_ENABLED" to 1, "GOARM" to 7, "GOOS" to goOS, "GOARCH" to goArch,
     "GOBIN" to buildCacheDir.resolve("$name/bin"),
     "GOCACHE" to buildCacheDir.resolve("$name/gobuild"),
@@ -234,7 +232,7 @@ object BuildEnvironment {
   ).apply {
     val path = buildPath.toMutableList()
     
-    when (this@buildEnviroment) {
+    when (this@buildEnvironment) {
       
       KonanTarget.LINUX_ARM32_HFP -> {
         val clangArgs =

@@ -1,10 +1,13 @@
 import BuildEnvironment.platformName
 import BuildEnvironment.registerTarget
+import GoLib.goLibsDir
+import GoLib.registerGoLibBuild
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
+import  org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
@@ -53,11 +56,21 @@ kotlin {
   
   BuildEnvironment.nativeTargets.forEach { target ->
     
-    registerTarget<KotlinNativeTarget>(target){
+    registerTarget(target) {
       
-      val kipfsLibDir = libsDir(platform)
+      
+      val kipfsLibDir = target.goLibsDir(project)
+      
       val golibBuild =
-        registerGoLibBuild(platform, goDir, kipfsLibDir, "kipfsgo", "libs/libkipfs.go")
+        registerGoLibBuild<KotlinNativeTarget>(
+          target,
+          goDir,
+          kipfsLibDir,
+          "kipfsgo",
+          "libs/libkipfs.go"
+        )
+      
+      
       
       golibBuild {
         doFirst {
@@ -66,10 +79,16 @@ kotlin {
           println("CGO_LDFLAGS: ${environment["CGO_LDLAGS"]}")
         }
         
-        appendToEnvironment("CGO_CFLAGS", "-I${rootProject.file("openssl/lib/$platform/include")}")
-        appendToEnvironment("CGO_LDFLAGS", "-L${rootProject.file("openssl/lib/$platform/lib")}")
+        appendToEnvironment(
+          "CGO_CFLAGS",
+          "-I${rootProject.file("openssl/lib/${target.platformName}/include")}"
+        )
+        appendToEnvironment(
+          "CGO_LDFLAGS",
+          "-L${rootProject.file("openssl/lib/${target.platformName}/lib")}"
+        )
         
-        dependsOn(":openssl:build${platform.name.toString().capitalized()}")
+        dependsOn(":openssl:build${target.platformName.capitalized()}")
         commandLine(commandLine.toMutableList().also {
           it.add(3, "-tags=openssl")
         })
@@ -99,24 +118,17 @@ kotlin {
           //extraOpts("-libraryPath",opensslPrefix(platform).resolve("lib"))
         }
         
-        if (platform.goOS != GoOS.android) {
+        if (target.family != Family.ANDROID) {
           cinterops.create("jni") {
             packageName("platform.android")
             defFile = project.file("src/interop/jni.def")
             includeDirs(project.file("src/include"))
-            when (platform.goOS) {
-              GoOS.linux -> {
-                includeDirs(project.file("src/include/linux"))
-              }
-              GoOS.windows -> {
-                includeDirs(project.file("src/include/win32"))
-              }
-              GoOS.darwin -> {
-                includeDirs(project.file("src/include/darwin"))
-              }
-              else -> {
-                TODO("add other jni headers")
-              }
+            if (target.family.isAppleFamily) {
+              includeDirs(project.file("src/include/darwin"))
+            } else if (target.family == org.jetbrains.kotlin.konan.target.Family.MINGW) {
+              includeDirs(project.file("src/include/win32"))
+            } else {
+              includeDirs(project.file("src/include/linux"))
             }
           }
         }
@@ -151,7 +163,7 @@ kotlin {
 }
 
 tasks.withType(KotlinNativeTest::class).all {
-  environment("LD_LIBRARY_PATH", libsDir(BuildEnvironment.hostPlatform))
+  environment("LD_LIBRARY_PATH", BuildEnvironment.hostTarget.goLibsDir(project))
 }
 
 
@@ -159,7 +171,7 @@ tasks.withType(KotlinJvmTest::class) {
   val linkTask = tasks.getByName("linkKipfsDebugSharedLinuxX64")
   dependsOn(linkTask)
   val libPath =
-    "${libsDir(BuildEnvironment.hostTarget.platformName)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
+    "${BuildEnvironment.hostTarget.goLibsDir(project)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
   println("LIBPATH: $libPath")
   environment(
     "LD_LIBRARY_PATH",

@@ -1,4 +1,4 @@
-import BuildEnvironment.buildEnviroment
+import BuildEnvironment.buildEnvironment
 import BuildEnvironment.hostTriplet
 import BuildEnvironment.platformName
 import BuildEnvironment.registerTarget
@@ -59,7 +59,7 @@ fun configureTask(target: KonanTarget): Exec {
     dependsOn(srcPrepare)
     workingDir(target.opensslSrcDir(project))
     println("configuring with platform: ${target.opensslPlatform}")
-    environment(target.buildEnviroment())
+    environment(target.buildEnvironment())
     val args = mutableListOf(
       "./Configure", target.opensslPlatform,
       //"no-shared",
@@ -89,7 +89,7 @@ fun buildTask(target: KonanTarget): TaskProvider<*> {
     outputs.files(fileTree(target.opensslPrefix(project)) {
       include("lib/*.a", "lib/*.so", "lib/*.h", "lib/*.dylib")
     })
-    environment(target.buildEnviroment())
+    environment(target.buildEnvironment())
     group = BasePlugin.BUILD_GROUP
     commandLine("make", "install_sw")
     doLast {
@@ -113,11 +113,10 @@ kotlin {
   
   val buildAll by tasks.creating
   
-
   
   BuildEnvironment.nativeTargets.forEach { target ->
     
-    registerTarget<KotlinNativeTarget>(target) {
+    registerTarget(target) {
       compilations["main"].apply {
         cinterops.create("openssl") {
           packageName("libopenssl")

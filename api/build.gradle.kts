@@ -1,5 +1,4 @@
-import Common_gradle.Common.createTarget
-import Common_gradle.GoLib.libsDir
+import BuildEnvironment.registerTarget
 
 plugins {
   kotlin("multiplatform")
@@ -13,8 +12,11 @@ version = ProjectProperties.buildVersionName
 
 kotlin {
   
-  BuildEnvironment.nativeTargets.forEach { platform ->
-    createTarget(platform)
+  
+  BuildEnvironment.nativeTargets.forEach { target ->
+    
+    registerTarget(target) {
+    }
   }
   
   jvm()
@@ -70,7 +72,7 @@ kotlin {
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest::class).all {
-  environment("LD_LIBRARY_PATH", libsDir(BuildEnvironment.hostPlatform))
+  environment("LD_LIBRARY_PATH", "")//libsDir(BuildEnvironment.hostPlatform))
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::class) {
@@ -79,8 +81,8 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
   println("GOT TASK $linkTask type: ${linkTask::class}")
   dependsOn(linkTask)
   
-  val libPath =
-    "${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
+  val libPath =""
+    //"${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
   println("LIBPATH: $libPath")
   environment(
     "LD_LIBRARY_PATH",
