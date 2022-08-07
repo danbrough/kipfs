@@ -1,3 +1,4 @@
+import BuildEnvironment.hostTarget
 import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
 import GoLib.goLibsDir
@@ -74,7 +75,10 @@ kotlin {
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest::class).all {
-  environment("LD_LIBRARY_PATH", BuildEnvironment.hostTarget.goLibsDir(project))
+  environment(
+    if (BuildEnvironment.hostTarget.family.isAppleFamily) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH",
+    BuildEnvironment.hostTarget.goLibsDir(project)
+  )
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::class) {
@@ -91,8 +95,13 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
     "${BuildEnvironment.hostTarget.goLibsDir(project)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
   println("LIBPATH: $libPath")
   
-  environment("LD_LIBRARY_PATH", libPath)
-  environment("DYLD_LIBRARY_PATH", libPath)
+  
+  environment(
+    if (hostTarget.family.isAppleFamily) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH",
+    libPath
+  )
+  
+  
 }
 
 /*android {
