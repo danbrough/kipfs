@@ -1,4 +1,6 @@
+import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
+import GoLib.goLibsDir
 
 plugins {
   kotlin("multiplatform")
@@ -72,23 +74,28 @@ kotlin {
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest::class).all {
-  environment("LD_LIBRARY_PATH", "")//libsDir(BuildEnvironment.hostPlatform))
+  environment("LD_LIBRARY_PATH", BuildEnvironment.hostTarget.goLibsDir(project))
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::class) {
   
-  val linkTask = rootProject.getTasksByName("linkKipfsDebugSharedLinuxX64", true).first()
+  val hostTarget = BuildEnvironment.hostTarget
+  
+  val linkTask =
+    rootProject.getTasksByName("linkKipfsDebugShared${hostTarget.platformNameCapitalized}", true)
+      .first()
   println("GOT TASK $linkTask type: ${linkTask::class}")
   dependsOn(linkTask)
   
-  val libPath =""
-    //"${libsDir(BuildEnvironment.hostPlatform)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
+  val libPath =
+    "${BuildEnvironment.hostTarget.goLibsDir(project)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
   println("LIBPATH: $libPath")
   environment(
     "LD_LIBRARY_PATH",
     libPath
   )
 }
+
 /*android {
   compileSdk = ProjectProperties.SDK_VERSION
   sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
