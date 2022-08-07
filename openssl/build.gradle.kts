@@ -6,7 +6,6 @@ import OpenSSL.opensslPlatform
 import OpenSSL.opensslPrefix
 import OpenSSL.opensslSrcDir
 import org.gradle.configurationcache.extensions.capitalized
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.konan.target.Family
 

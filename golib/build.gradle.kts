@@ -1,4 +1,5 @@
 import BuildEnvironment.platformName
+import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
 import GoLib.goLibsDir
 import GoLib.registerGoLibBuild
@@ -16,7 +17,21 @@ plugins {
 
 group = ProjectProperties.projectGroup
 version = ProjectProperties.buildVersionName
+println("IDE ACTIVE: ${ProjectProperties.IDE_ACTIVE}")
 
+
+tasks.create("dude") {
+  
+  doLast {
+    System.getProperties().also {
+      it.keys.forEach { key ->
+        println("PROP: $key -> ${it[key]}")
+      }
+    }
+    
+    println("IDEA ACTIVE: ${ProjectProperties.IDE_ACTIVE}")
+  }
+}
 
 kotlin {
   jvm {
@@ -53,9 +68,12 @@ kotlin {
   }
   
   val goDir = project.file("src/go")
+  val buildAll by tasks.creating
   
   BuildEnvironment.nativeTargets.forEach { target ->
     
+    
+    println("REGISTERING $target")
     registerTarget(target) {
       
       
@@ -73,6 +91,9 @@ kotlin {
       
       
       golibBuild {
+        
+        buildAll.dependsOn(this)
+        
         doFirst {
           println("STARTING KIPFS LIB BUILD... ${commandLine.joinToString(" ")}")
           println("CGO_CFLAGS: ${environment["CGO_CFLAGS"]}")
@@ -168,7 +189,8 @@ tasks.withType(KotlinNativeTest::class).all {
 
 
 tasks.withType(KotlinJvmTest::class) {
-  val linkTask = tasks.getByName("linkKipfsDebugSharedLinuxX64")
+  
+  val linkTask = tasks.getByName("linkKipfsDebugShared${BuildEnvironment.hostTarget.platformNameCapitalized}")
   dependsOn(linkTask)
   val libPath =
     "${BuildEnvironment.hostTarget.goLibsDir(project)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"

@@ -1,16 +1,13 @@
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-import BuildEnvironment.goArch
-import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetPreset
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
 import org.jetbrains.kotlin.konan.target.Architecture
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
+import java.util.*
 
 object BuildEnvironment {
   
@@ -37,6 +34,13 @@ object BuildEnvironment {
   val buildPath: List<String>
     get() = buildPathList.split("[\\s]+".toRegex())
   
+  private fun String.capitalize(): String =
+    replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+  
+  private fun String.decapitalize(): String =
+    replaceFirstChar { it.lowercase(Locale.getDefault()) }
+  
+  
   val KonanTarget.platformName: String
     get() {
       if (family == Family.ANDROID) {
@@ -50,6 +54,9 @@ object BuildEnvironment {
       }
       return name.split("_").joinToString("") { it.capitalize() }.decapitalize()
     }
+  
+  val KonanTarget.platformNameCapitalized: String
+    get() = platformName.capitalize()
   
   
   val KonanTarget.hostTriplet: String
@@ -158,7 +165,7 @@ object BuildEnvironment {
   }
   
   
-  fun  KotlinMultiplatformExtension.registerTarget(
+  fun KotlinMultiplatformExtension.registerTarget(
     konanTarget: KonanTarget, conf: KotlinNativeTarget.() -> Unit = {}
   ): KotlinNativeTarget {
     @Suppress("UNCHECKED_CAST")
