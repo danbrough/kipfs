@@ -233,7 +233,7 @@ object BuildEnvironment {
     "GOCACHEDIR" to buildCacheDir.resolve("$name/gocache"),
     "GOMODCACHE" to buildCacheDir.resolve("gomodcache"),
     "GOPATH" to buildCacheDir.resolve(name),
-    "KONAN_DATA_DIR" to buildCacheDir.resolve("konan"),
+    "KONAN_DATA_DIR" to konanDir,
     "CFLAGS" to "-O3  -Wno-macro-redefined -Wno-deprecated-declarations -DOPENSSL_SMALL_FOOTPRINT=1",
     "MAKE" to "make -j4",
   ).apply {
@@ -265,7 +265,8 @@ object BuildEnvironment {
       }
       
       KonanTarget.MACOS_X64 -> {
-      
+        this["CC"] = "gcc"
+        this["CXX"] = "g++"
       }
       
       
