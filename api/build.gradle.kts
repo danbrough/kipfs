@@ -1,3 +1,4 @@
+import BuildEnvironment.hostIsMac
 import BuildEnvironment.hostTarget
 import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
@@ -91,14 +92,9 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
   println("GOT TASK $linkTask type: ${linkTask::class}")
   dependsOn(linkTask)
   
-  val libPath =
-    "${BuildEnvironment.hostTarget.goLibsDir(project)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
-  println("LIBPATH: $libPath")
-  
-  
   environment(
-    if (hostTarget.family.isAppleFamily) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH",
-    libPath
+    if (BuildEnvironment.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH",
+    "${BuildEnvironment.hostTarget.goLibsDir(project)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
   )
   
   

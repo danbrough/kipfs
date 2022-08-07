@@ -184,20 +184,23 @@ kotlin {
 }
 
 tasks.withType(KotlinNativeTest::class).all {
-  environment("LD_LIBRARY_PATH", BuildEnvironment.hostTarget.goLibsDir(project))
+  environment(
+    if (BuildEnvironment.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH",
+    BuildEnvironment.hostTarget.goLibsDir(project)
+  )
 }
 
 
 tasks.withType(KotlinJvmTest::class) {
   
-  val linkTask = tasks.getByName("linkKipfsDebugShared${BuildEnvironment.hostTarget.platformNameCapitalized}")
+  val linkTask =
+    tasks.getByName("linkKipfsDebugShared${BuildEnvironment.hostTarget.platformNameCapitalized}")
   dependsOn(linkTask)
-  val libPath =
-    "${BuildEnvironment.hostTarget.goLibsDir(project)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
-  println("LIBPATH: $libPath")
+  
+  
   environment(
-    "LD_LIBRARY_PATH",
-    libPath
+    if (BuildEnvironment.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH",
+    "${BuildEnvironment.hostTarget.goLibsDir(project)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
   )
 }
 
