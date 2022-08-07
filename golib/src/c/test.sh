@@ -8,6 +8,8 @@ else
   LIBDIR="$(realpath ../../build/lib/linuxX64/)"
 fi
 
+echo "LIBDIR $LIBDIR"
+
 export LD_LIBRARY_PATH="$LIBDIR"
 
 gcc -o test test.c -lkipfsgo -L "$LIBDIR" -I "$LIBDIR" -I ../../src/go/libs/ || exit 1
