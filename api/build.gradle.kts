@@ -90,10 +90,9 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
   val libPath =
     "${BuildEnvironment.hostTarget.goLibsDir(project)}${File.pathSeparator}${linkTask.outputs.files.files.first()}"
   println("LIBPATH: $libPath")
-  environment(
-    "LD_LIBRARY_PATH",
-    libPath
-  )
+  
+  environment("LD_LIBRARY_PATH", libPath)
+  environment("DYLD_LIBRARY_PATH", libPath)
 }
 
 /*android {
