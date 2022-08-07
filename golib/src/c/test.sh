@@ -2,7 +2,7 @@
 
 cd $(dirname "$0")
 
-if [ "$MACH_TYPE" = "x86_64-apple-darwin21" ]; then
+if [ "$MACHTYPE" = "x86_64-apple-darwin21" ]; then
   LIBDIR="$(realpath ../../build/lib/macosX64/)"
 else
   LIBDIR="$(realpath ../../build/lib/linuxX64/)"
