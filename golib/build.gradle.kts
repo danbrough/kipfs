@@ -132,7 +132,7 @@ kotlin {
             inputs.files(kipfsLibBuildTask.outputs)
             dependsOn(kipfsLibBuildTask.name)
           }
-          extraOpts("-verbose","true")
+          extraOpts("-verbose")
           // linkerOpts("-L${opensslPrefix(platform).resolve("lib")}")
           //extraOpts("-libraryPath",opensslPrefix(platform).resolve("lib"))
         }

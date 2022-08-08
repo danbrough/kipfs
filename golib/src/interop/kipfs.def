@@ -1,6 +1,6 @@
 headers = libkipfsgo.h defs.h
 
-linkerOpts.linux =  -lkipfsgo -lssl -lcrypto
+linkerOpts =  -lkipfsgo -lssl -lcrypto
 linkerOpts.linux_x64 = -Lgolib/build/lib/linuxX64 -Lopenssl/lib/linuxX64/lib
 linkerOpts.linux_arm64 = -Lgolib/build/lib/linuxArm64 -Lopenssl/lib/linuxArm64/lib
 linkerOpts.linux_arm32_hfp = -Lgolib/build/lib/linuxArm32Hfp -Lopenssl/lib/linuxArm32Hfp/lib
