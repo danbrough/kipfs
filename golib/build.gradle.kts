@@ -168,7 +168,7 @@ kotlin {
                  runTask?.environment("LD_LIBRARY_PATH", kipfsLibDir)
                }*/
         
-        sharedLib("kipfs", setOf(NativeBuildType.DEBUG))
+        sharedLib("kipfs")
       }
       
       
@@ -179,6 +179,8 @@ kotlin {
 }
 
 tasks.withType(KotlinNativeTest::class).all {
+  
+  
   environment(
     if (BuildEnvironment.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH",
     BuildEnvironment.hostTarget.goLibsDir(project).also {
