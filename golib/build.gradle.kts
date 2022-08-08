@@ -132,6 +132,7 @@ kotlin {
             inputs.files(kipfsLibBuildTask.outputs)
             dependsOn(kipfsLibBuildTask.name)
           }
+          extraOpts("-verbose","true")
           // linkerOpts("-L${opensslPrefix(platform).resolve("lib")}")
           //extraOpts("-libraryPath",opensslPrefix(platform).resolve("lib"))
         }
@@ -168,7 +169,9 @@ kotlin {
                  runTask?.environment("LD_LIBRARY_PATH", kipfsLibDir)
                }*/
         
-        sharedLib("kipfs")
+        sharedLib("kipfs") {
+        
+        }
       }
       
       
