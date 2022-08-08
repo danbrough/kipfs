@@ -72,8 +72,6 @@ kotlin {
   
   BuildEnvironment.nativeTargets.forEach { target ->
     
-    
-    println("REGISTERING $target")
     registerTarget(target) {
       
       
@@ -87,7 +85,6 @@ kotlin {
           "kipfsgo",
           "libs/libkipfs.go"
         )
-      
       
       
       golibBuild {
@@ -109,7 +106,7 @@ kotlin {
           "-L${rootProject.file("openssl/lib/${target.platformName}/lib")}"
         )
         
-        dependsOn(":openssl:build${target.platformName.capitalized()}")
+        dependsOn(":openssl:build${target.platformNameCapitalized}")
         commandLine(commandLine.toMutableList().also {
           it.add(3, "-tags=openssl")
         })
@@ -163,7 +160,6 @@ kotlin {
       
       
       binaries {
-        
         /*       executable("demo") {
                  if (konanTarget.family == Family.ANDROID) {
                    binaryOptions["androidProgramType"] = "nativeActivity"
@@ -173,7 +169,6 @@ kotlin {
                }*/
         
         sharedLib("kipfs", setOf(NativeBuildType.DEBUG))
-        
       }
       
       
@@ -186,7 +181,9 @@ kotlin {
 tasks.withType(KotlinNativeTest::class).all {
   environment(
     if (BuildEnvironment.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH",
-    BuildEnvironment.hostTarget.goLibsDir(project)
+    BuildEnvironment.hostTarget.goLibsDir(project).also {
+      println("KotlinNativeTest using lib path: $it")
+    }
   )
 }
 
