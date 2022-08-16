@@ -1,6 +1,5 @@
 package org.danbrough.kipfs
 
-import io.matthewnelson.component.encoding.base32.encodeBase32
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import klog.*
@@ -15,6 +14,7 @@ class Tests {
       level = Level.TRACE
       writer = KLogWriters.stdOut
       messageFormatter = KMessageFormatters.verbose.colored
+      
     }
   }
   
@@ -35,11 +35,5 @@ class Tests {
     
   }
   
-  @Test
-  fun base32() {
-    val text = "testing"
-    text.encodeToByteArray().encodeBase32().also {
-      log.warn("$text -> $it")
-    }
-  }
+
 }

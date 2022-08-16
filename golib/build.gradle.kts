@@ -17,21 +17,7 @@ plugins {
 
 group = ProjectProperties.projectGroup
 version = ProjectProperties.buildVersionName
-println("IDE ACTIVE: ${ProjectProperties.IDE_ACTIVE}")
 
-
-tasks.create("dude") {
-  
-  doLast {
-    System.getProperties().also {
-      it.keys.forEach { key ->
-        println("PROP: $key -> ${it[key]}")
-      }
-    }
-    
-    println("IDEA ACTIVE: ${ProjectProperties.IDE_ACTIVE}")
-  }
-}
 
 kotlin {
   jvm {
@@ -49,7 +35,6 @@ kotlin {
   val commonTest by sourceSets.getting {
     dependencies {
       implementation(kotlin("test"))
-      api("io.matthewnelson.kotlin-components:encoding-base32:_")
     }
   }
   

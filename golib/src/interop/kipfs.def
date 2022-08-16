@@ -4,7 +4,7 @@ linkerOpts =  -lkipfsgo -lssl -lcrypto
 linkerOpts.linux_x64 = -Lgolib/build/lib/linuxX64 -Lopenssl/lib/linuxX64/lib
 linkerOpts.linux_arm64 = -Lgolib/build/lib/linuxArm64 -Lopenssl/lib/linuxArm64/lib
 linkerOpts.linux_arm32_hfp = -Lgolib/build/lib/linuxArm32Hfp -Lopenssl/lib/linuxArm32Hfp/lib
-
-
 linkerOpts.macos_x64 = -Lgolib/build/lib/macosX64 -Lopenssl/lib/macosX64/lib
 linkerOpts.macos_arm64 = -Lgolib/build/lib/macosArm64 -Lopenssl/lib/macosArm64/lib
+linkerOpts.mingw_x64 = -Lgolib/build/lib/mingwX64 -Lopenssl/lib/mingwX64/lib
+compilerOpts.mingw_x64 = -pthread

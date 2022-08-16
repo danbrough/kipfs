@@ -53,19 +53,10 @@ kotlin {
     
     commonTest {
       dependencies {
-        implementation("io.matthewnelson.kotlin-components:encoding-base32:_")
-        implementation("io.matthewnelson.kotlin-components:encoding-base64:_")
-        
         implementation(kotlin("test"))
         implementation(project(":golib"))
       }
     }
-
-/*    val androidMain by getting {
-      dependencies {
-        // implementation(KotlinX.coroutines.android)
-      }
-    }*/
     
     val jvmMain by getting {
       dependencies {

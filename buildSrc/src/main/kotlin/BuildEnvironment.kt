@@ -139,30 +139,30 @@ object BuildEnvironment {
       } ?: throw Error("Unknown build host: $osName:$osArch")
     }
   
-  val hostIsMac: Boolean by lazy {
-    hostTarget.family.isAppleFamily
-  }
+  val hostIsMac: Boolean
+    get() = hostTarget.family.isAppleFamily
   
-  val nativeTargets: List<KonanTarget> by lazy {
-    if (ProjectProperties.IDE_ACTIVE)
-      listOf(hostTarget)
-    else
-      listOf(
-        KonanTarget.LINUX_X64,
-        KonanTarget.LINUX_ARM64,
-        KonanTarget.LINUX_ARM32_HFP,
-        KonanTarget.MINGW_X64,
-        KonanTarget.MACOS_X64,
-        KonanTarget.MACOS_ARM64,
-        KonanTarget.ANDROID_ARM64,
-        KonanTarget.ANDROID_ARM32,
-        KonanTarget.ANDROID_X86,
-        KonanTarget.ANDROID_X64
-      ).filter {
-        if (hostIsMac) it.family.isAppleFamily
-        else !it.family.isAppleFamily
-      }
-  }
+  
+  val nativeTargets: List<KonanTarget>
+    get() =
+      if (ProjectProperties.IDE_ACTIVE)
+        listOf(hostTarget)
+      else
+        listOf(
+          KonanTarget.LINUX_X64,
+          KonanTarget.LINUX_ARM64,
+          KonanTarget.LINUX_ARM32_HFP,
+          KonanTarget.MINGW_X64,
+          KonanTarget.MACOS_X64,
+          KonanTarget.MACOS_ARM64,
+          KonanTarget.ANDROID_ARM64,
+          KonanTarget.ANDROID_ARM32,
+          KonanTarget.ANDROID_X86,
+          KonanTarget.ANDROID_X64
+        ).filter {
+          if (hostIsMac) it.family.isAppleFamily
+          else !it.family.isAppleFamily
+        }
   
   
   fun KotlinMultiplatformExtension.registerTarget(
@@ -295,8 +295,8 @@ object BuildEnvironment {
         val toolChain = "$konanDir/dependencies/msys2-mingw-w64-x86_64-1"
         this["PATH"] = "$toolChain/bin:${this["PATH"]}"*/
         
-        this["CC"] = "gcc"
-        this["CXX"] = "g++"
+        this["CC"] = "x86_64-w64-mingw32-gcc"
+        this["CXX"] = "x86_64-w64-mingw32-g++"
         
         
       }

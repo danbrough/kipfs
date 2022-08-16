@@ -9,6 +9,7 @@ import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 import javax.inject.Inject
@@ -28,7 +29,7 @@ object GoLib {
   
   
   fun KonanTarget.goLibsDir(project: Project): File =
-    project.rootProject.file("golib/build/lib/$platformName")
+    project.rootProject.file("golib/build/golib/$platformName")
 }
 
 
@@ -70,8 +71,9 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
     })
     
     
-    val libFile = outputDir.resolve("lib${outputBaseName}.so")
-    val headerFile = outputDir.resolve("lib${outputBaseName}.so")
+    val libFile =
+      outputDir.resolve("lib${outputBaseName}.${if (target.family == Family.MINGW) "dll" else "so"}")
+    val headerFile = outputDir.resolve("lib${outputBaseName}.h")
     outputs.files(libFile, headerFile)
     
     

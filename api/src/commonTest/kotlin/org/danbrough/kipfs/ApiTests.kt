@@ -2,8 +2,6 @@ package org.danbrough.kipfs
 
 import org.danbrough.kipfs.api.dagGet
 import org.danbrough.kipfs.api.id
-import io.matthewnelson.component.base64.Base64
-import io.matthewnelson.component.base64.encodeBase64
 import klog.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -53,12 +51,4 @@ class ApiTests {
   }
   
   
-  @Test
-  fun base64() {
-    val text = "testing"
-    text.encodeToByteArray().encodeBase64(Base64.UrlSafe(true)).also {
-      log.warn("$text -> u$it")
-    }
-    
-  }
 }

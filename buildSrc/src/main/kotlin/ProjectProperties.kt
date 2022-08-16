@@ -17,8 +17,8 @@ object ProjectProperties {
   val JAVA_VERSION = JavaVersion.VERSION_11
   const val KOTLIN_JVM_VERSION = "11"
   
-  val IDE_ACTIVE:Boolean
-  get() = System.getProperty("idea.active", "false").toBoolean()
+  val IDE_ACTIVE: Boolean
+    get() = System.getProperty("idea.active", "false").toBoolean()
   
   lateinit var LOCAL_M2: URI
   
