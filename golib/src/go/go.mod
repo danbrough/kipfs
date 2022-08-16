@@ -8,14 +8,14 @@ require (
 	github.com/ipfs/go-ipfs-files v0.1.1
 	github.com/ipld/go-ipld-prime v0.18.0
 	github.com/multiformats/go-multibase v0.1.1
-	github.com/multiformats/go-multihash v0.2.0
+	github.com/multiformats/go-multihash v0.2.1
 	github.com/sirupsen/logrus v1.9.0
-	golang.org/x/mobile v0.0.0-20220518205345-8578da9835fd
+	golang.org/x/mobile v0.0.0-20220722155234-aaac322e2105
 )
 
 require (
 	github.com/benbjohnson/clock v1.3.0 // indirect
-	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
+	github.com/btcsuite/btcd/btcec/v2 v2.2.1 // indirect
 	github.com/crackcomm/go-gitignore v0.0.0-20170627025303-887ab5e44cc3 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -40,6 +40,6 @@ require (
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/whyrusleeping/tar-utils v0.0.0-20201201191210-20a61371de5b // indirect
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
-	golang.org/x/sys v0.0.0-20220731174439-a90be440212d // indirect
+	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
 )
