@@ -3,6 +3,7 @@ import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
 import GoLib.goLibsDir
 import GoLib.registerGoLibBuild
+import OpenSSL.opensslPrefix
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
@@ -120,9 +121,11 @@ kotlin {
             dependsOn(kipfsLibBuildTask.name)
           }
           extraOpts("-verbose")
+          
           // linkerOpts("-L${opensslPrefix(platform).resolve("lib")}")
           //extraOpts("-libraryPath",opensslPrefix(platform).resolve("lib"))
         }
+        
         
         if (target.family != Family.ANDROID) {
           cinterops.create("jni") {
@@ -144,7 +147,9 @@ kotlin {
         }
       }
       
-      compilations["test"].defaultSourceSet.dependsOn(nativeTest)
+      compilations["test"].apply {
+        defaultSourceSet.dependsOn(nativeTest)
+      }
       
       
       binaries {
@@ -157,25 +162,22 @@ kotlin {
                }*/
         
         sharedLib("kipfs") {
-        
+          
+ 
         }
       }
-      
-      
     }
+    
+    
   }
-  
-  
 }
 
+
+
 tasks.withType(KotlinNativeTest::class).all {
-  
-  
   environment(
     if (BuildEnvironment.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH",
-    BuildEnvironment.hostTarget.goLibsDir(project).also {
-      println("KotlinNativeTest using lib path: $it")
-    }
+    BuildEnvironment.hostTarget.goLibsDir(project)
   )
 }
 
