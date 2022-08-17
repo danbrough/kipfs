@@ -12,6 +12,7 @@ import  org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
+  id("org.jetbrains.dokka")
 }
 
 
@@ -27,7 +28,7 @@ kotlin {
   
   val commonMain by sourceSets.getting {
     dependencies {
-      implementation(project(":api"))
+      //implementation(project(":api"))
     }
   }
   

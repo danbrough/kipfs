@@ -3,12 +3,14 @@ import BuildEnvironment.hostTarget
 import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
 import GoLib.goLibsDir
-
+import org.jetbrains.kotlin.konan.target.Family
 plugins {
   kotlin("multiplatform")
   kotlin("plugin.serialization")
   //id("com.android.library")
   `maven-publish`
+  id("org.jetbrains.dokka")
+  
 }
 
 group = ProjectProperties.projectGroup
@@ -17,11 +19,12 @@ version = ProjectProperties.buildVersionName
 kotlin {
   
   
-  BuildEnvironment.nativeTargets.forEach { target ->
-    
-    registerTarget(target) {
+  BuildEnvironment.nativeTargets.filter { it.family != Family.ANDROID }
+    .forEach { target ->
+      
+      registerTarget(target) {
+      }
     }
-  }
   
   jvm()
   //android()
@@ -43,11 +46,9 @@ kotlin {
     commonMain {
       dependencies {
         api(Dependencies.klog)
-        api(KotlinX.serialization.core)
-        api(KotlinX.serialization.json)
-        api(KotlinX.serialization.cbor)
-        api(KotlinX.coroutines.core)
-        
+        implementation(KotlinX.serialization.core)
+        runtimeOnly(KotlinX.serialization.json)
+        runtimeOnly(KotlinX.serialization.cbor)
       }
     }
     
@@ -109,11 +110,3 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
 
 }*/
 
-
-afterEvaluate {
-  publishing {
-    repositories {
-      //maven(ProjectProperties.MAVEN_REPO)
-    }
-  }
-}

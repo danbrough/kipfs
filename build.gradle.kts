@@ -11,7 +11,7 @@ plugins {
   //id("org.jetbrains.kotlin.jvm") apply false
   //id("com.android.application") apply false
 //  id("org.jetbrains.kotlin.android")
-
+  id("org.jetbrains.dokka")
 }
 
 buildscript {
@@ -27,7 +27,7 @@ allprojects {
   repositories {
     mavenCentral()
     google()
-    maven("https://s01.oss.sonatype.org/content/repositories/releases/")
+    // maven("https://s01.oss.sonatype.org/content/repositories/releases/")
   }
   
   
@@ -53,7 +53,35 @@ allprojects {
   
   
 }
+/*
+subprojects {
+  plugins.apply("org.jetbrains.dokka")
+}
+*/
 
 
+tasks.register<Delete>("deleteDocs") {
+  setDelete(file("docs/api"))
+}
 
+tasks.register<Copy>("copyDocs") {
+  dependsOn("deleteDocs")
+  from(buildDir.resolve("dokka"))
+  destinationDir = file("docs/api")
+}
+
+
+tasks.dokkaHtml.configure {
+  outputDirectory.set(buildDir.resolve("dokka"))
+  finalizedBy("copyDocs")
+}
+
+tasks.dokkaJekyll.configure {
+  outputDirectory.set(buildDir.resolve("jekyll"))
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+  archiveClassifier.set("javadoc")
+  from(tasks.dokkaHtml)
+}
 
