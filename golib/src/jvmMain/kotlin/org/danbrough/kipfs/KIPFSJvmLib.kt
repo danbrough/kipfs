@@ -1,5 +1,7 @@
 package org.danbrough.kipfs
 
+import kipfs.KIPFS
+import kipfs.KShell
 import org.danbrough.kipfs.jni.JNI
 import klog.klog
 

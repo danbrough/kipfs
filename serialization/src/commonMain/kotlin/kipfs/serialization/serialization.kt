@@ -1,4 +1,4 @@
-package org.danbrough.kipfs
+package kipfs.serialization
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -36,6 +36,10 @@ fun <T> String.decodeJson(serializer: KSerializer<T>): T = decodeJson(this, seri
 @JvmName("decodeJsonWithSerializer")
 inline fun <reified T> ByteArray.decodeJson(serializer: KSerializer<T> = serializer()): T =
   decodeJson(decodeToString(), serializer)
+
+
+inline fun <reified T> KResponse<T>.decodeJson(serializer: KSerializer<T> = serializer()): T =
+  TODO()
 
 /*
 fun <T> decodeCbor(

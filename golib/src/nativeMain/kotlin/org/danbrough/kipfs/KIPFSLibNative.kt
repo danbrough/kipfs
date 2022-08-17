@@ -1,5 +1,7 @@
 package org.danbrough.kipfs
 
+import kipfs.KIPFS
+import kipfs.KShell
 import klog.*
 import kotlinx.cinterop.*
 import platform.posix.free

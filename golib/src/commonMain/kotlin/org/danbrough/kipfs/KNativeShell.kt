@@ -1,8 +1,12 @@
 package org.danbrough.kipfs
 
+import kipfs.KResponse
+import kipfs.KShell
 import klog.klog
 
 class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: String) : KShell {
+  
+  class KByteResponse<T>(val data:ByteArray): KResponse<T>
   
   private val log = klog()
   
@@ -27,9 +31,9 @@ class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: S
     }
   }
   
-  override suspend fun request(command: String, arg: String?): ByteArray {
+  override suspend fun <T> request(command: String, arg: String?): KResponse<T> {
     connect()
-    return kipfs.request(ref, command, arg)
+    return KByteResponse(kipfs.request(ref, command, arg))
   }
   
   override fun toString(): String = "KShell[$ipfsAddress]"

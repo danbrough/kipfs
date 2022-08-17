@@ -9,7 +9,7 @@ pluginManagement {
       }
     }
   }*/
-
+  
   repositories {
     gradlePluginPortal()
     mavenCentral()
@@ -28,6 +28,7 @@ rootProject.name = "kipfs"
 
 include(":openssl")
 include(":api")
+include(":serialization")
 include(":golib")
 include(":test")
 

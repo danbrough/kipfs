@@ -11,6 +11,7 @@ plugins {
   //id("org.jetbrains.kotlin.jvm") apply false
   //id("com.android.application") apply false
 //  id("org.jetbrains.kotlin.android")
+  `maven-publish`
   id("org.jetbrains.dokka")
 }
 
@@ -71,13 +72,9 @@ tasks.register<Copy>("copyDocs") {
 }
 
 
-tasks.dokkaHtml.configure {
+tasks.dokkaHtmlMultiModule.configure {
   outputDirectory.set(buildDir.resolve("dokka"))
   finalizedBy("copyDocs")
-}
-
-tasks.dokkaJekyll.configure {
-  outputDirectory.set(buildDir.resolve("jekyll"))
 }
 
 val javadocJar by tasks.registering(Jar::class) {

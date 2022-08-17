@@ -3,7 +3,9 @@ import BuildEnvironment.hostTarget
 import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
 import GoLib.goLibsDir
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
+
 plugins {
   kotlin("multiplatform")
   kotlin("plugin.serialization")
@@ -21,9 +23,7 @@ kotlin {
   
   BuildEnvironment.nativeTargets.filter { it.family != Family.ANDROID }
     .forEach { target ->
-      
-      registerTarget(target) {
-      }
+      registerTarget(target)
     }
   
   jvm()
@@ -43,27 +43,39 @@ kotlin {
       }
     }
     
-    commonMain {
+    val commonMain by getting {
       dependencies {
         api(Dependencies.klog)
         implementation(KotlinX.serialization.core)
-        runtimeOnly(KotlinX.serialization.json)
-        runtimeOnly(KotlinX.serialization.cbor)
+        implementation(KotlinX.serialization.json)
+        implementation(KotlinX.serialization.cbor)
       }
     }
     
-    commonTest {
+    val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
         implementation(project(":golib"))
+        implementation("org.danbrough.kotlinx:kotlinx-coroutines-core:_")
       }
     }
     
     val jvmMain by getting {
       dependencies {
+        //dependsOn(baseMain)
         //implementation(KotlinX.coroutines.jdk8)
       }
     }
+  }
+  
+  
+  targets.withType(KotlinNativeTarget::class) {
+/*    compilations["main"].apply {
+      defaultSourceSet.dependsOn(sourceSets.getAt("baseMain"))
+    }
+    compilations["test"].apply {
+      defaultSourceSet.dependsOn(sourceSets.getAt("baseTest"))
+    }*/
   }
 }
 

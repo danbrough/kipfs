@@ -1,7 +1,7 @@
 package org.danbrough.kipfs
 
-import org.danbrough.kipfs.api.MultibaseDecodeResult
-import org.danbrough.kipfs.api.MultibaseEncoding
+import kipfs.api.MultibaseDecodeResult
+import kipfs.api.MultibaseEncoding
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.toCValues

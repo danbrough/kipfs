@@ -1,7 +1,9 @@
 package org.danbrough.kipfs
 
-import org.danbrough.kipfs.api.dagGet
-import org.danbrough.kipfs.api.id
+import kipfs.DEFAULT_KIPFS_ADDRESS
+import kipfs.ENV_KIPFS_ADDRESS
+import kipfs.api.dagGet
+import kipfs.api.id
 import klog.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
