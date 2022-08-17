@@ -1,8 +1,8 @@
 @file:Suppress("UNUSED_PARAMETER")
 
-package org.danbrough.kipfs.jni
+package kipfs.golib.jni
 
-import org.danbrough.kipfs.copyToKString
+import kipfs.golib.copyToKString
 import kipfs.KCreateShell
 import kotlinx.cinterop.*
 import klog.klog
@@ -19,7 +19,7 @@ private fun init() {
 }
 
 
-@CName("Java_org_danbrough_kipfs_jni_JNI_getTime")
+@CName("Java_kipfs_golib_jni_JNI_getTime")
 fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     init()
@@ -33,13 +33,13 @@ fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
 
 
 @Suppress("SpellCheckingInspection")
-@CName("Java_org_danbrough_kipfs_jni_JNI_disposeGoObject")
+@CName("Java_kipfs_golib_jni_JNI_disposeGoObject")
 fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
   kipfs.KDecRef(refnum)
 }
 
 
-@CName("Java_org_danbrough_kipfs_jni_JNI_dagCID")
+@CName("Java_kipfs_golib_jni_JNI_dagCID")
 fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   memScoped {
     init()
@@ -53,7 +53,7 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   }
 }
 
-@CName("Java_org_danbrough_kipfs_jni_JNI_createNativeShell")
+@CName("Java_kipfs_golib_jni_JNI_createNativeShell")
 fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): jint {
   memScoped {
     init()
@@ -69,7 +69,7 @@ fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring):
   }
 }
 
-@CName("Java_org_danbrough_kipfs_jni_JNI_request")
+@CName("Java_kipfs_golib_jni_JNI_request")
 fun request(
   env: CPointer<JNIEnvVar>,
   thiz: jclass,
@@ -80,7 +80,7 @@ fun request(
   memScoped {
     init()
 
-    log.debug("Java_org_danbrough_kipfs_KIPFSLibJNI_request()")
+    log.debug("Java_kipfs_golib_jni_JNI_request()")
     val e = env.pointed.pointed!!
     val cmdC = e.GetStringUTFChars!!(env, cmd, null)
 

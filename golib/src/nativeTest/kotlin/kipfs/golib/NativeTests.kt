@@ -1,4 +1,4 @@
-package org.danbrough.kipfs
+package kipfs.golib
 
 import kipfs.api.MultibaseDecodeResult
 import kipfs.api.MultibaseEncoding

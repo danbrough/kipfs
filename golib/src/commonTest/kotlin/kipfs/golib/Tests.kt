@@ -1,4 +1,4 @@
-package org.danbrough.kipfs
+package kipfs.golib
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

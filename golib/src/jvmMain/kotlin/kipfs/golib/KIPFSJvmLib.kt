@@ -1,8 +1,8 @@
-package org.danbrough.kipfs
+package kipfs.golib
 
 import kipfs.KIPFS
 import kipfs.KShell
-import org.danbrough.kipfs.jni.JNI
+import kipfs.golib.jni.JNI
 import klog.klog
 
 private object KIPFSJvmLib : KIPFSNativeLib {

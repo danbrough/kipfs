@@ -1,4 +1,4 @@
-package org.danbrough.kipfs
+package kipfs.golib
 
 import kipfs.KResponse
 import kipfs.KShell
@@ -6,7 +6,7 @@ import klog.klog
 
 class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: String) : KShell {
   
-  class KByteResponse<T>(val data:ByteArray): KResponse<T>
+  class KByteResponse<T>(val data: ByteArray) : KResponse<T>
   
   private val log = klog()
   

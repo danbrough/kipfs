@@ -1,4 +1,4 @@
-package org.danbrough.kipfs.jni;
+package kipfs.golib.jni;
 
 
 import org.jetbrains.annotations.NotNull;

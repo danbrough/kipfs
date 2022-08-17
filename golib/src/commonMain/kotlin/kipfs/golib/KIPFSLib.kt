@@ -1,4 +1,4 @@
-package org.danbrough.kipfs
+package kipfs.golib
 
 import kipfs.KIPFS
 
