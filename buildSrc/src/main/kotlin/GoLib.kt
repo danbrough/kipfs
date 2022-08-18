@@ -1,5 +1,6 @@
 import BuildEnvironment.buildEnvironment
 import BuildEnvironment.platformName
+import BuildEnvironment.sharedLibExtn
 import org.gradle.api.Project
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.tasks.Exec
@@ -72,7 +73,7 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
     
     
     val libFile =
-      outputDir.resolve("lib${outputBaseName}.${if (target.family == Family.MINGW) "dll" else "so"}")
+      outputDir.resolve("lib${outputBaseName}.${target.sharedLibExtn}")
     val headerFile = outputDir.resolve("lib${outputBaseName}.h")
     outputs.files(libFile, headerFile)
     

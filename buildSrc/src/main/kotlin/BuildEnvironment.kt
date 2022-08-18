@@ -102,6 +102,13 @@ object BuildEnvironment {
       else -> null
     }
   
+  val KonanTarget.sharedLibExtn: String
+    get() = when {
+      family.isAppleFamily -> "dylib"
+      family == Family.MINGW -> "dll"
+      else -> "so"
+    }
+  
   val hostTarget: KonanTarget
     get() {
       val osName = System.getProperty("os.name")
