@@ -12,6 +12,7 @@ plugins {
   //id("com.android.library")
   `maven-publish`
   id("org.jetbrains.dokka")
+  signing
   
 }
 
@@ -21,10 +22,9 @@ version = ProjectProperties.buildVersionName
 kotlin {
   
   
-  BuildEnvironment.nativeTargets.filter { it.family != Family.ANDROID }
-    .forEach { target ->
-      registerTarget(target)
-    }
+  BuildEnvironment.nativeTargets.filter { it.family != Family.ANDROID }.forEach {target->
+    registerTarget(target)
+  }
   
   jvm()
   //android()
@@ -47,8 +47,6 @@ kotlin {
       dependencies {
         api(Dependencies.klog)
         implementation(KotlinX.serialization.core)
-        implementation(KotlinX.serialization.json)
-        implementation(KotlinX.serialization.cbor)
       }
     }
     
@@ -56,7 +54,7 @@ kotlin {
       dependencies {
         implementation(kotlin("test"))
         implementation(project(":golib"))
-        implementation("org.danbrough.kotlinx:kotlinx-coroutines-core:_")
+        implementation(Dependencies.coroutines_core)
       }
     }
     
@@ -93,7 +91,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
   val linkTask =
     rootProject.getTasksByName("linkKipfsDebugShared${hostTarget.platformNameCapitalized}", true)
       .first()
-  println("GOT TASK $linkTask type: ${linkTask::class}")
+  //println("GOT TASK $linkTask type: ${linkTask::class}")
   dependsOn(linkTask)
   
   environment(

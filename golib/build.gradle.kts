@@ -15,6 +15,7 @@ plugins {
   kotlin("multiplatform")
   `maven-publish`
   id("org.jetbrains.dokka")
+  signing
 }
 
 
@@ -26,6 +27,8 @@ kotlin {
   jvm {
     withJava()
   }
+  
+  
   
   
   val commonMain by sourceSets.getting {

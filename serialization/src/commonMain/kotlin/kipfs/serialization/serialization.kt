@@ -1,5 +1,6 @@
 package kipfs.serialization
 
+import kipfs.KResponse
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.cbor.Cbor

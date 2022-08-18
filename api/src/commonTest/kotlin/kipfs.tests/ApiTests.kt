@@ -1,9 +1,10 @@
-package org.danbrough.kipfs
+package kipfs.tests
 
 import kipfs.DEFAULT_KIPFS_ADDRESS
 import kipfs.ENV_KIPFS_ADDRESS
 import kipfs.api.dagGet
 import kipfs.api.id
+import kipfs.golib.initKIPFSLib
 import klog.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -26,7 +27,7 @@ class ApiTests {
       kipfs.environment(ENV_KIPFS_ADDRESS)?.also {
         log.warn("USING $ENV_KIPFS_ADDRESS from environment: $it")
       } ?: DEFAULT_KIPFS_ADDRESS.also {
-        log.warn("using $ENV_KIPFS_ADDRESS not set. Using default address: $it")
+        log.warn("$ENV_KIPFS_ADDRESS not set. Using default address: $it")
       }
     }
     

@@ -162,10 +162,10 @@ object BuildEnvironment {
           KonanTarget.MINGW_X64,
           KonanTarget.MACOS_X64,
           KonanTarget.MACOS_ARM64,
-          /*KonanTarget.ANDROID_ARM64,
+          KonanTarget.ANDROID_ARM64,
           KonanTarget.ANDROID_ARM32,
           KonanTarget.ANDROID_X86,
-          KonanTarget.ANDROID_X64*/
+          KonanTarget.ANDROID_X64
         ).filter {
           if (hostIsMac) it.family.isAppleFamily
           else !it.family.isAppleFamily

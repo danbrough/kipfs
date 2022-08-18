@@ -12,7 +12,7 @@ plugins {
   //id("com.android.library")
   `maven-publish`
   id("org.jetbrains.dokka")
-  
+  signing
 }
 
 group = ProjectProperties.projectGroup
@@ -20,7 +20,7 @@ version = ProjectProperties.buildVersionName
 
 kotlin {
   
-  
+  //kotlinx-serialization currently doesn't support android native
   BuildEnvironment.nativeTargets.filter { it.family != Family.ANDROID }
     .forEach { target ->
       registerTarget(target)
@@ -46,6 +46,10 @@ kotlin {
     val commonMain by getting {
       dependencies {
         implementation(project(":api"))
+        implementation(KotlinX.serialization.core)
+        implementation(KotlinX.serialization.cbor)
+        implementation(KotlinX.serialization.json)
+  
       }
     }
     
