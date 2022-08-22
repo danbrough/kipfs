@@ -13,7 +13,6 @@ plugins {
   `maven-publish`
   id("org.jetbrains.dokka")
   signing
-  
 }
 
 group = ProjectProperties.projectGroup
@@ -21,10 +20,11 @@ version = ProjectProperties.buildVersionName
 
 kotlin {
   
-  
-  BuildEnvironment.nativeTargets.filter { it.family != Family.ANDROID }.forEach {target->
-    registerTarget(target)
-  }
+  //kotlinx-serialization currently doesn't support android native
+  BuildEnvironment.nativeTargets.filter { it.family != Family.ANDROID }
+    .forEach { target ->
+      registerTarget(target)
+    }
   
   jvm()
   //android()
@@ -45,10 +45,14 @@ kotlin {
     
     val commonMain by getting {
       dependencies {
-        api(Dependencies.klog)
+        implementation(project(":core"))
         implementation(KotlinX.serialization.core)
+        implementation(KotlinX.serialization.cbor)
+        implementation(KotlinX.serialization.json)
+        
       }
     }
+    
     
     val commonTest by getting {
       dependencies {
@@ -58,22 +62,6 @@ kotlin {
       }
     }
     
-    val jvmMain by getting {
-      dependencies {
-        //dependsOn(baseMain)
-        //implementation(KotlinX.coroutines.jdk8)
-      }
-    }
-  }
-  
-  
-  targets.withType(KotlinNativeTarget::class) {
-/*    compilations["main"].apply {
-      defaultSourceSet.dependsOn(sourceSets.getAt("baseMain"))
-    }
-    compilations["test"].apply {
-      defaultSourceSet.dependsOn(sourceSets.getAt("baseTest"))
-    }*/
   }
 }
 
@@ -101,22 +89,3 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
   
   
 }
-
-/*android {
-  compileSdk = ProjectProperties.SDK_VERSION
-  sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-
-  namespace = "danbroid.kipfs.api"
-
-  defaultConfig {
-    minSdk = ProjectProperties.MIN_SDK_VERSION
-    targetSdk = ProjectProperties.SDK_VERSION
-  }
-
-  compileOptions {
-    sourceCompatibility = ProjectProperties.JAVA_VERSION
-    targetCompatibility = ProjectProperties.JAVA_VERSION
-  }
-
-}*/
-

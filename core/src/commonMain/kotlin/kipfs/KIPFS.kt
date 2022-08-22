@@ -7,13 +7,16 @@ const val DEFAULT_KIPFS_ADDRESS = "/ip4/127.0.0.1/tcp/5001"
 interface KResponse<T>
 
 interface KShell {
+  
   fun connect()
+  
   fun close()
+  
   suspend fun <T> request(command: String, arg: String? = null): KResponse<T>
 }
 
-interface KIPFS {
 
+interface KIPFS {
   
   fun createShell(ipfsAddress: String = DEFAULT_KIPFS_ADDRESS): KShell
 

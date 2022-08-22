@@ -5,6 +5,7 @@ import kipfs.ENV_KIPFS_ADDRESS
 import kipfs.api.dagGet
 import kipfs.api.id
 import kipfs.golib.initKIPFSLib
+import kipfs.serialization.decodeJson
 import klog.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -40,7 +41,7 @@ class ApiTests {
     log.warn("running test()")
     
     runBlocking {
-      log.info("got response: ${shell.id()}")
+      log.info("got response: ${shell.id().decodeJson()}")
     }
   }
   

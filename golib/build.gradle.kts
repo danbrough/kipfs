@@ -33,7 +33,7 @@ kotlin {
   
   val commonMain by sourceSets.getting {
     dependencies {
-      implementation(project(":api"))
+      implementation(project(":core"))
     }
   }
   
@@ -174,7 +174,6 @@ kotlin {
     
   }
 }
-
 
 
 tasks.withType(KotlinNativeTest::class).all {
