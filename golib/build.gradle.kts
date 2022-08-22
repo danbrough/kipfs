@@ -139,20 +139,20 @@ kotlin {
         }
         
         
-        cinterops.create("jni_headers") {
-          packageName("platform.android")
-          defFile = project.file("src/interop/jni.def")
-          if (target.family.isAppleFamily) {
-            includeDirs(project.file("src/include"))
-            includeDirs(project.file("src/include/darwin"))
-          } else if (target.family == Family.MINGW) {
-            includeDirs(project.file("src/include"))
-            includeDirs(project.file("src/include/win32"))
-          } else if (target.family == Family.LINUX) {
-            includeDirs(project.file("src/include"))
-            includeDirs(project.file("src/include/linux"))
-          } else if (target.family == Family.ANDROID) {
-            includeDirs("/mnt/files/sdk/android/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include")
+        if (target.family != Family.ANDROID) {
+          cinterops.create("jni_headers") {
+            packageName("platform.android")
+            defFile = project.file("src/interop/jni.def")
+            if (target.family.isAppleFamily) {
+              includeDirs(project.file("src/include"))
+              includeDirs(project.file("src/include/darwin"))
+            } else if (target.family == Family.MINGW) {
+              includeDirs(project.file("src/include"))
+              includeDirs(project.file("src/include/win32"))
+            } else if (target.family == Family.LINUX) {
+              includeDirs(project.file("src/include"))
+              includeDirs(project.file("src/include/linux"))
+            }
           }
         }
         
