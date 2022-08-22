@@ -11,11 +11,8 @@ import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
-  `maven-publish`
+ `maven-publish`
 }
-
-group = ProjectProperties.projectGroup
-version = ProjectProperties.buildVersionName
 
 
 val opensslGitDir = project.file("src/openssl.git")
@@ -145,14 +142,7 @@ tasks.create("nativeTargets") {
 }
 
 
-publishing {
-  publications {
-  }
-  
-  repositories {
-    maven(ProjectProperties.LOCAL_M2)
-  }
-}
+
 
 
 /*

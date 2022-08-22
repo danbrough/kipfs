@@ -3,31 +3,26 @@
 package kipfs.golib.jni
 
 import kipfs.golib.copyToKString
-import kipfs.KCreateShell
 import kotlinx.cinterop.*
 import klog.klog
 import platform.android.*
 
 private object JNIImpl
-
 private val log = JNIImpl.klog()
-
 
 private fun init() {
   initRuntimeIfNeeded()
   Platform.isMemoryLeakCheckerActive = true
 }
 
-
 @CName("Java_kipfs_golib_jni_JNI_getTime")
 fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     init()
 
-    return kipfs.GetTime().let { cs ->
+    return kipfsgo.GetTime().let { cs ->
       env.pointed.pointed!!.NewStringUTF!!.invoke(env, cs!!.getPointer(this))!!
     }
-
   }
 }
 
@@ -35,7 +30,7 @@ fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
 @Suppress("SpellCheckingInspection")
 @CName("Java_kipfs_golib_jni_JNI_disposeGoObject")
 fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
-  kipfs.KDecRef(refnum)
+  kipfsgo.KDecRef(refnum)
 }
 
 
@@ -44,7 +39,7 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   memScoped {
     init()
     val jsonC = env.pointed.pointed!!.GetStringUTFChars!!(env, json, null)
-    val s = kipfs.KCID(jsonC)!!
+    val s = kipfsgo.KCID(jsonC)!!
     env.pointed.pointed!!.ReleaseStringUTFChars!!(env,json,jsonC)
     return env.pointed.pointed!!.NewStringUTF!!.invoke(
       env,
@@ -59,7 +54,7 @@ fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring):
     init()
     val e = env.pointed.pointed!!
     val addrC = e.GetStringUTFChars!!(env, address, null)
-    val s = KCreateShell(addrC).getPointer(this).pointed
+    val s = kipfsgo.KCreateShell(addrC).getPointer(this).pointed
     e.ReleaseStringUTFChars!!(env, address, addrC)
     if (s.r1 != null) {
       log.error("An error occurred")
@@ -87,14 +82,12 @@ fun request(
     val argC = arg?.let {
       e.GetStringUTFChars!!(env, arg, null)
     }
-
-
-    kipfs.KRequest(shellRefID, cmdC, argC).useContents {
+    
+    kipfsgo.KRequest(shellRefID, cmdC, argC).useContents {
       e.ReleaseStringUTFChars!!(env, cmd, cmdC)
 
       if (argC != null) e.ReleaseStringUTFChars!!(env, arg, argC)
-
-
+      
       r2?.copyToKString()?.also {
         init()
         val err = Exception("Request failed: $it")

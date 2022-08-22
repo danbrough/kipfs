@@ -24,7 +24,7 @@ fun CPointer<ByteVar>.copyToKString(): String = toKString().let {
 actual fun initKIPFSLib(): KIPFS = object : KIPFSNativeLib {
 
   override fun createNativeShell(address: String): Int =
-    kipfs.KCreateShell(address.cstr).useContents {
+    kipfsgo.KCreateShell(address.cstr).useContents {
       r1?.copyToKString()?.also {
         throw Exception(it)
       }
@@ -32,10 +32,10 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNativeLib {
     }
 
 
-  override fun disposeGoObject(ref: Int) = kipfs.KDecRef(ref)
+  override fun disposeGoObject(ref: Int) = kipfsgo.KDecRef(ref)
 
   override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray =
-    kipfs.KRequest(shellRefID, cmd.utf8, arg?.utf8).useContents {
+    kipfsgo.KRequest(shellRefID, cmd.utf8, arg?.utf8).useContents {
       r2?.copyToKString()?.also {
         throw Exception("Request failed: $it")
       }
@@ -47,11 +47,10 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNativeLib {
   override fun environment(key: String): String? = platform.posix.getenv(key)?.toKString()
 
 
-  override fun getTime(): String = kipfs.GetTime()!!.copyToKString()
+  override fun getTime(): String = kipfsgo.GetTime()!!.copyToKString()
 
-  override fun dagCID(json: String) = kipfs.KCID(json.cstr)!!.copyToKString()
-
-
+  override fun dagCID(json: String) = kipfsgo.KCID(json.cstr)!!.copyToKString()
+  
 }
 
 

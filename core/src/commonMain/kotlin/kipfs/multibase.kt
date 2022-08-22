@@ -1,4 +1,4 @@
-package kipfs.api
+package kipfs
 
 enum class MultibaseEncoding(val encoding: Char) {
   Identity(0.toChar()),

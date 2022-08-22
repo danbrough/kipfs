@@ -1,7 +1,7 @@
 package kipfs.golib
 
-import kipfs.api.MultibaseDecodeResult
-import kipfs.api.MultibaseEncoding
+import kipfs.MultibaseDecodeResult
+import kipfs.MultibaseEncoding
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.toCValues
@@ -21,7 +21,7 @@ class NativeTests {
   
   
   private fun multibaseEncode(encoding: MultibaseEncoding, data: ByteArray): String =
-    kipfs.KMultiBaseEncode(encoding.encoding.code, data.toCValues(), data.size).useContents {
+    kipfsgo.KMultiBaseEncode(encoding.encoding.code, data.toCValues(), data.size).useContents {
       r1?.also {
         throw Exception(it.copyToKString())
       }
@@ -30,7 +30,7 @@ class NativeTests {
   
   
   private fun multibaseDecode(data: String): MultibaseDecodeResult =
-    kipfs.KMultiBaseDecode(data.cstr, data.length).useContents {
+    kipfsgo.KMultiBaseDecode(data.cstr, data.length).useContents {
       r3?.copyToKString()?.also {
         throw Exception(it)
       }

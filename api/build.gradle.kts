@@ -12,11 +12,9 @@ plugins {
   //id("com.android.library")
   `maven-publish`
   id("org.jetbrains.dokka")
-  signing
 }
 
-group = ProjectProperties.projectGroup
-version = ProjectProperties.buildVersionName
+
 
 kotlin {
   
@@ -79,7 +77,6 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
   val linkTask =
     rootProject.getTasksByName("linkKipfsDebugShared${hostTarget.platformNameCapitalized}", true)
       .first()
-  //println("GOT TASK $linkTask type: ${linkTask::class}")
   dependsOn(linkTask)
   
   environment(
@@ -89,3 +86,4 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
   
   
 }
+

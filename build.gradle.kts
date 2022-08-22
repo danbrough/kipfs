@@ -6,6 +6,8 @@ import org.jetbrains.kotlin.konan.target.KonanTarget
 
 plugins {
   kotlin("multiplatform") apply false
+  id("io.github.gradle-nexus.publish-plugin")
+  
   //kotlin("plugin.serialization") apply false
   //id("com.android.library") apply false
   //id("org.jetbrains.kotlin.jvm") apply false
@@ -13,7 +15,10 @@ plugins {
 //  id("org.jetbrains.kotlin.android")
   `maven-publish`
   id("org.jetbrains.dokka")
+  signing
 }
+
+
 
 buildscript {
   repositories {
@@ -23,6 +28,9 @@ buildscript {
 }
 
 ProjectProperties.init(project)
+
+group = ProjectProperties.projectGroup
+version = ProjectProperties.buildVersionName
 
 allprojects {
   repositories {
@@ -51,14 +59,7 @@ allprojects {
       jvmTarget = ProjectProperties.KOTLIN_JVM_VERSION
     }
   }
-  
-  
 }
-/*
-subprojects {
-  plugins.apply("org.jetbrains.dokka")
-}
-*/
 
 
 tasks.register<Delete>("deleteDocs") {
@@ -80,5 +81,86 @@ tasks.dokkaHtmlMultiModule.configure {
 val javadocJar by tasks.registering(Jar::class) {
   archiveClassifier.set("javadoc")
   from(tasks.dokkaHtml)
+}
+
+
+nexusPublishing {
+  repositories {
+    sonatype {
+      nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+      snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+    }
+  }
+}
+
+
+
+allprojects {
+
+  apply<SigningPlugin>()
+  group = ProjectProperties.projectGroup
+  version = ProjectProperties.buildVersionName
+  
+  afterEvaluate {
+    this.extensions.findByType(PublishingExtension::class) ?: return@afterEvaluate
+
+    
+    this.publishing {
+      
+      repositories {
+        maven(ProjectProperties.LOCAL_M2) {
+          name = "m2"
+        }
+      }
+      
+      publications.all {
+        if (this !is MavenPublication) return@all
+        
+        if (project.hasProperty("publishDocs")) artifact(javadocJar)
+        
+        pom {
+          
+          
+          name.set("KIPFS")
+          description.set("Kotlin IPFS integration")
+          url.set("https://github.com/danbrough/kipfs/")
+          
+          
+          licenses {
+            license {
+              name.set("Apache-2.0")
+              url.set("https://opensource.org/licenses/Apache-2.0")
+            }
+          }
+          
+          scm {
+            connection.set("scm:git:git@github.com:danbrough/kipfs.git")
+            developerConnection.set("scm:git:git@github.com:danbrough/kipfs.git")
+            url.set("https://github.com/danbrough/kipfs/")
+          }
+          
+          issueManagement {
+            system.set("GitHub")
+            url.set("https://github.com/danbrough/kipfs/issues")
+          }
+          
+          developers {
+            developer {
+              id.set("danbrough")
+              name.set("Dan Brough")
+              email.set("dan@danbrough.org")
+              organizationUrl.set("https://danbrough.org")
+            }
+          }
+        }
+        
+      }
+    }
+    
+    
+    signing {
+      sign(publishing.publications)
+    }
+  }
 }
 

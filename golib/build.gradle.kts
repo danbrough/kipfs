@@ -15,20 +15,17 @@ plugins {
   kotlin("multiplatform")
   `maven-publish`
   id("org.jetbrains.dokka")
-  signing
 }
 
 
-group = ProjectProperties.projectGroup
-version = ProjectProperties.buildVersionName
+
 
 
 kotlin {
+  
   jvm {
     withJava()
   }
-  
-  
   
   
   val commonMain by sourceSets.getting {
@@ -111,9 +108,9 @@ kotlin {
       
       compilations["main"].apply {
         
-        cinterops.create("kipfs") {
-          packageName("kipfs")
-          defFile = project.file("src/interop/kipfs.def")
+        cinterops.create("kipfsgo") {
+          packageName("kipfsgo")
+          defFile = project.file("src/interop/kipfsgo.def")
           includeDirs(
             kipfsLibDir,
             project.file("src/include"),
@@ -137,7 +134,7 @@ kotlin {
             includeDirs(project.file("src/include"))
             if (target.family.isAppleFamily) {
               includeDirs(project.file("src/include/darwin"))
-            } else if (target.family == org.jetbrains.kotlin.konan.target.Family.MINGW) {
+            } else if (target.family == Family.MINGW) {
               includeDirs(project.file("src/include/win32"))
             } else {
               includeDirs(project.file("src/include/linux"))
@@ -189,7 +186,6 @@ tasks.withType(KotlinJvmTest::class) {
   val linkTask =
     tasks.getByName("linkKipfsDebugShared${BuildEnvironment.hostTarget.platformNameCapitalized}")
   dependsOn(linkTask)
-  
   
   environment(
     if (BuildEnvironment.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH",

@@ -12,12 +12,9 @@ plugins {
   //id("com.android.library")
   `maven-publish`
   id("org.jetbrains.dokka")
-  signing
-  
 }
 
-group = ProjectProperties.projectGroup
-version = ProjectProperties.buildVersionName
+
 
 kotlin {
   
