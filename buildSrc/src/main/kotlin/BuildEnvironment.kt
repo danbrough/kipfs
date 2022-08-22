@@ -152,9 +152,9 @@ object BuildEnvironment {
   
   val nativeTargets: List<KonanTarget>
     get() =
-      if (ProjectProperties.IDE_ACTIVE)
+/*      if (ProjectProperties.IDE_ACTIVE)
         listOf(hostTarget)
-      else
+      else*/
         listOf(
           KonanTarget.LINUX_X64,
 /*          KonanTarget.LINUX_ARM64,
@@ -164,8 +164,11 @@ object BuildEnvironment {
           KonanTarget.MACOS_ARM64,
           KonanTarget.ANDROID_ARM64,
           KonanTarget.ANDROID_ARM32,
-          KonanTarget.ANDROID_X86,*/
+         
           KonanTarget.ANDROID_X64
+         
+ */
+          KonanTarget.ANDROID_X86,
         ).filter {
           if (hostIsMac) it.family.isAppleFamily
           else !it.family.isAppleFamily

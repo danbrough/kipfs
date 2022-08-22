@@ -7,6 +7,7 @@ import kotlinx.cinterop.*
 import klog.klog
 import platform.android.*
 
+
 private object JNIImpl
 private val log = JNIImpl.klog()
 

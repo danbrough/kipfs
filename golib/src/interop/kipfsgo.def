@@ -8,4 +8,9 @@ linkerOpts.linux_arm32_hfp = -Lgolib/build/goib/linuxArm32Hfp -Lopenssl/lib/linu
 linkerOpts.macos_x64 = -Lgolib/build/golib/macosX64 -Lopenssl/lib/macosX64/lib
 linkerOpts.macos_arm64 = -Lgolib/build/golib/macosArm64 -Lopenssl/lib/macosArm64/lib
 linkerOpts.mingw_x64 = -Lgolib/build/golib/mingwX64 -Lopenssl/lib/mingwX64/lib
+linkerOpts.android_x64 = -Lgolib/build/golib/androidNativeX64 -Lopenssl/lib/androidNativeX64/lib
+linkerOpts.android_x86 = -Lgolib/build/golib/androidNativeX86 -Lopenssl/lib/androidNativeX86/lib
+linkerOpts.android_arm32 = -Lgolib/build/golib/androidNativeArm32 -Lopenssl/lib/androidNativeArm32/lib
+linkerOpts.android_arm64 = -Lgolib/build/golib/androidNativeArm64 -Lopenssl/lib/androidNativeArm64/lib
+
 compilerOpts.mingw_x64 = -pthread

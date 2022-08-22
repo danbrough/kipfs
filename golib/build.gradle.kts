@@ -51,6 +51,16 @@ kotlin {
     dependsOn(commonMain)
   }
   
+  
+  val posixMain by sourceSets.creating {
+    dependsOn(nativeMain)
+  }
+  
+  val androidNativeMain by sourceSets.creating {
+    dependsOn(nativeMain)
+    kotlin.srcDir(file("src/posixMain/kotlin"))
+  }
+  
   val nativeTest by sourceSets.creating {
     dependsOn(commonTest)
   }
@@ -61,6 +71,8 @@ kotlin {
   BuildEnvironment.nativeTargets.forEach { target ->
     
     registerTarget(target) {
+      
+      println("REGISTERED: $name")
       
       
       val kipfsLibDir = target.goLibsDir(project)
@@ -127,23 +139,29 @@ kotlin {
         }
         
         
-        if (target.family != Family.ANDROID) {
-          cinterops.create("jni") {
-            packageName("platform.android")
-            defFile = project.file("src/interop/jni.def")
+        cinterops.create("jni_headers") {
+          packageName("platform.android")
+          defFile = project.file("src/interop/jni.def")
+          if (target.family.isAppleFamily) {
             includeDirs(project.file("src/include"))
-            if (target.family.isAppleFamily) {
-              includeDirs(project.file("src/include/darwin"))
-            } else if (target.family == Family.MINGW) {
-              includeDirs(project.file("src/include/win32"))
-            } else {
-              includeDirs(project.file("src/include/linux"))
-            }
+            includeDirs(project.file("src/include/darwin"))
+          } else if (target.family == Family.MINGW) {
+            includeDirs(project.file("src/include"))
+            includeDirs(project.file("src/include/win32"))
+          } else if (target.family == Family.LINUX) {
+            includeDirs(project.file("src/include"))
+            includeDirs(project.file("src/include/linux"))
+          } else if (target.family == Family.ANDROID) {
+            includeDirs("/mnt/files/sdk/android/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include")
           }
         }
         
+        
         defaultSourceSet {
-          dependsOn(nativeMain)
+          if (target.family == Family.ANDROID)
+            dependsOn(androidNativeMain)
+          else
+            dependsOn(posixMain)
         }
       }
       
@@ -163,7 +181,7 @@ kotlin {
         
         sharedLib("kipfs") {
           
- 
+        
         }
       }
     }
