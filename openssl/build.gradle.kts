@@ -52,12 +52,9 @@ fun configureTask(target: KonanTarget): Exec {
   
   val srcPrepare = srcPrepare(target)
   
-  return tasks.create(
-    "configure${target.platformName.capitalize()}", Exec::class
-  ) {
+  return tasks.create("configure${target.platformName.capitalize()}", Exec::class) {
     dependsOn(srcPrepare)
     workingDir(target.opensslSrcDir(project))
-    println("configuring with platform: ${target.opensslPlatform}")
     environment(target.buildEnvironment())
     val args = mutableListOf(
       "./Configure", target.opensslPlatform,
@@ -141,7 +138,7 @@ kotlin {
   }
 }
 
-tasks.create("nativeTargets"){
+tasks.create("nativeTargets") {
   doLast {
     println("nativeTargets: ${BuildEnvironment.nativeTargets}")
   }

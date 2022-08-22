@@ -1,5 +1,6 @@
 package kipfs.serialization
 
+import kipfs.KByteResponse
 import kipfs.KResponse
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -40,7 +41,11 @@ inline fun <reified T> ByteArray.decodeJson(serializer: KSerializer<T> = seriali
 
 
 inline fun <reified T> KResponse<T>.decodeJson(serializer: KSerializer<T> = serializer()): T =
-  TODO()
+  when (this) {
+    is KByteResponse<T> ->
+      decodeJson(data.decodeToString(), serializer)
+    else -> TODO()
+  }
 
 /*
 fun <T> decodeCbor(
