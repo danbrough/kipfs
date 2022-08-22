@@ -157,10 +157,11 @@ object BuildEnvironment {
       else*/
         listOf(
           KonanTarget.LINUX_X64,
+          KonanTarget.MACOS_X64,
 /*          KonanTarget.LINUX_ARM64,
           KonanTarget.LINUX_ARM32_HFP,
           KonanTarget.MINGW_X64,
-          KonanTarget.MACOS_X64,
+    
           KonanTarget.MACOS_ARM64,
           KonanTarget.ANDROID_ARM64,
           KonanTarget.ANDROID_ARM32,
