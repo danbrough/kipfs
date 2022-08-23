@@ -162,9 +162,7 @@ allprojects {
 
 tasks.create("publishMacTargets") {
   BuildEnvironment.nativeTargets.filter { it.family.isAppleFamily }.forEach {
-    dependsOn(tasks.findByPath("publish${it.platformNameCapitalized}ToSonatypeRepository").also {
-      println("TASK: $it")
-    })
+    dependsOn("publish${it.platformNameCapitalized}ToSonatypeRepository")
   }
 }
 
