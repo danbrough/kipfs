@@ -1,4 +1,6 @@
+import BuildEnvironment.nativeTargets
 import BuildEnvironment.platformName
+import BuildEnvironment.platformNameCapitalized
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -91,7 +93,7 @@ nexusPublishing {
 }
 
 allprojects {
-
+  
   apply<SigningPlugin>()
   group = ProjectProperties.projectGroup
   version = ProjectProperties.buildVersionName
@@ -154,6 +156,13 @@ allprojects {
     signing {
       sign(publishing.publications)
     }
+  }
+}
+
+
+tasks.create("publishMacTargets") {
+  BuildEnvironment.nativeTargets.filter { it.family.isAppleFamily }.forEach {
+    dependsOn(tasks.findByPath("publish${it.platformNameCapitalized}ToSonatypeRepository"))
   }
 }
 
