@@ -17,16 +17,11 @@ plugins {
   id("org.jetbrains.dokka")
 }
 
-
-
-
-
 kotlin {
   
   jvm {
     withJava()
   }
-  
   
   val commonMain by sourceSets.getting {
     dependencies {
@@ -34,18 +29,15 @@ kotlin {
     }
   }
   
-  
   val commonTest by sourceSets.getting {
     dependencies {
       implementation(kotlin("test"))
     }
   }
   
-  
   val jvmMain by sourceSets.getting {
     dependsOn(commonMain)
   }
-  
   
   val nativeMain by sourceSets.creating {
     dependsOn(commonMain)
@@ -66,14 +58,12 @@ kotlin {
   }
   
   val goDir = project.file("src/go")
+  
   val buildAll by tasks.creating
   
   BuildEnvironment.nativeTargets.forEach { target ->
     
     registerTarget(target) {
-      
-      println("REGISTERED: $name")
-      
       
       val kipfsLibDir = target.goLibsDir(project)
       
@@ -85,7 +75,6 @@ kotlin {
           "kipfsgo",
           "libs/libkipfs.go"
         )
-      
       
       golibBuild {
         
@@ -114,10 +103,6 @@ kotlin {
       
       val kipfsLibBuildTask = golibBuild.get()
       
-      
-      //println("TARGET: ${this.konanTarget.family} PRESET_NAME: $name")
-      
-      
       compilations["main"].apply {
         
         cinterops.create("kipfsgo") {
@@ -138,7 +123,6 @@ kotlin {
           //extraOpts("-libraryPath",opensslPrefix(platform).resolve("lib"))
         }
         
-        
         if (target.family != Family.ANDROID) {
           cinterops.create("jni_headers") {
             packageName("platform.android")
@@ -156,7 +140,6 @@ kotlin {
           }
         }
         
-        
         defaultSourceSet {
           if (target.family == Family.ANDROID)
             dependsOn(androidNativeMain)
@@ -169,24 +152,10 @@ kotlin {
         defaultSourceSet.dependsOn(nativeTest)
       }
       
-      
       binaries {
-        /*       executable("demo") {
-                 if (konanTarget.family == Family.ANDROID) {
-                   binaryOptions["androidProgramType"] = "nativeActivity"
-                 }
-
-                 runTask?.environment("LD_LIBRARY_PATH", kipfsLibDir)
-               }*/
-        
-        sharedLib("kipfs") {
-          
-        
-        }
+        sharedLib("kipfs")
       }
     }
-    
-    
   }
 }
 

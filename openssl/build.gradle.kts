@@ -11,9 +11,8 @@ import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
- `maven-publish`
+// `maven-publish`
 }
-
 
 val opensslGitDir = project.file("src/openssl.git")
 
@@ -92,7 +91,6 @@ fun buildTask(target: KonanTarget): TaskProvider<*> {
   }
 }
 
-
 kotlin {
   
   val commonTest by sourceSets.getting {
@@ -140,37 +138,4 @@ tasks.create("nativeTargets") {
     println("nativeTargets: ${BuildEnvironment.nativeTargets}")
   }
 }
-
-
-
-
-
-/*
-echo OPENSSL is $OPENSSL
-CRYPTO_LIB=$OPENSSL/lib/libcrypto.a
-
-if [ -f $CRYPTO_LIB ]; then
-  echo not building openssl as $CRYPTO_LIB exists
-else
-  echo OPENSSL_PLATFORM $OPENSSL_PLATFORM
-  echo OPENSSL $OPENSSL
-  echo CC $CC CXX: $CXX
-  echo CFLAGS $CFLAGS
-  echo SYSROOT $SYSROOT
-  echo CROSS_PREFIX $CROSS_PREFIX
-  echo ANDROID_API $ANDROID_API
-  sleep 2
-
-  clean_src
-  cd $SRC
-
-  if [ "$GOOS" == "android" ]; then
-    ./Configure $OPENSSL_PLATFORM no-shared -D__ANDROID_API__=$ANDROID_API --prefix="$OPENSSL" $EXTRAS || exit 1
-  else
-    ./Configure --prefix="$OPENSSL" $OPENSSL_PLATFORM   $EXTRAS || exit 1
-  fi
-  make install_sw || exit 1
-fi
- */
-
 

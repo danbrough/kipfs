@@ -1,4 +1,4 @@
-# KIPFS - Kotlin IPFS API and embedded node
+# KIPFS - Kotlin IPFS client api and embedded node
 
 
 

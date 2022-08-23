@@ -7,14 +7,13 @@ import org.jetbrains.kotlin.konan.target.KonanTarget
 plugins {
   kotlin("multiplatform") apply false
   id("io.github.gradle-nexus.publish-plugin")
-  
+  id("org.jetbrains.dokka")
   //kotlin("plugin.serialization") apply false
   //id("com.android.library") apply false
   //id("org.jetbrains.kotlin.jvm") apply false
   //id("com.android.application") apply false
 //  id("org.jetbrains.kotlin.android")
   `maven-publish`
-  id("org.jetbrains.dokka")
   signing
 }
 
@@ -72,7 +71,6 @@ tasks.register<Copy>("copyDocs") {
   destinationDir = file("docs/api")
 }
 
-
 tasks.dokkaHtmlMultiModule.configure {
   outputDirectory.set(buildDir.resolve("dokka"))
   finalizedBy("copyDocs")
@@ -83,7 +81,6 @@ val javadocJar by tasks.registering(Jar::class) {
   from(tasks.dokkaHtml)
 }
 
-
 nexusPublishing {
   repositories {
     sonatype {
@@ -93,8 +90,6 @@ nexusPublishing {
   }
 }
 
-
-
 allprojects {
 
   apply<SigningPlugin>()
@@ -102,10 +97,9 @@ allprojects {
   version = ProjectProperties.buildVersionName
   
   afterEvaluate {
-    this.extensions.findByType(PublishingExtension::class) ?: return@afterEvaluate
-
+    extensions.findByType(PublishingExtension::class) ?: return@afterEvaluate
     
-    this.publishing {
+    publishing {
       
       repositories {
         maven(ProjectProperties.LOCAL_M2) {
@@ -122,7 +116,7 @@ allprojects {
           
           
           name.set("KIPFS")
-          description.set("Kotlin IPFS integration")
+          description.set("Kotlin IPFS client api and embedded node")
           url.set("https://github.com/danbrough/kipfs/")
           
           
@@ -156,7 +150,6 @@ allprojects {
         
       }
     }
-    
     
     signing {
       sign(publishing.publications)

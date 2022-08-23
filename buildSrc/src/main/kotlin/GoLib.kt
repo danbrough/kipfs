@@ -59,7 +59,6 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
   
   init {
     group = BasePlugin.BUILD_GROUP
-    // println("PLATFORM $platform  godir: $goDir: libDir: ${libDir.orNull}")
     
     environment("PLATFORM", target.name)
     

@@ -29,6 +29,7 @@ private object KIPFSJvmLib : KIPFSNativeLib {
   override fun createNativeShell(address: String): Int = JNI.createNativeShell(address)
   
   override fun disposeGoObject(ref: Int) = JNI.disposeGoObject(ref)
+  
   override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray =
     JNI.request(shellRefID, cmd, arg)
   
@@ -37,8 +38,8 @@ private object KIPFSJvmLib : KIPFSNativeLib {
   override fun environment(key: String): String? = System.getenv(key)
   
   override fun getTime(): String = JNI.getTime()
-  override fun dagCID(json: String): String = JNI.dagCID(json)
   
+  override fun dagCID(json: String): String = JNI.dagCID(json)
   
 }
 
