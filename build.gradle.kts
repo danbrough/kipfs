@@ -164,6 +164,7 @@ tasks.create("publishMacTargets") {
     val taskName = "publish${it.platformNameCapitalized}PublicationToSonatypeRepository"
     getTasksByName(taskName, true)
   }.flatMap { it.toList() }.distinct().forEach {
+    println("DEPENDENT $it")
     dependsOn(it)
   }
 }
