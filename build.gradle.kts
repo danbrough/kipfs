@@ -159,4 +159,11 @@ allprojects {
   }
 }
 
-
+tasks.create("publishMacTargets") {
+  BuildEnvironment.nativeTargets.filter { it.family.isAppleFamily }.map {
+    val taskName = "publish${it.platformNameCapitalized}PublicationToSonatypeRepository"
+    getTasksByName(taskName, true)
+  }.flatMap { it.toList() }.distinct().forEach {
+    dependsOn(it)
+  }
+}
