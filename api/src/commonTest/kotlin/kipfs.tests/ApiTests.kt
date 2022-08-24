@@ -54,5 +54,11 @@ class ApiTests {
     }
   }
   
-  
+  @Test
+  fun testMultibase() {
+    log.warn("running testMultibase()")
+    
+    runBlocking {
+    }
+  }
 }

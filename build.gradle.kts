@@ -160,9 +160,3 @@ allprojects {
 }
 
 
-tasks.create("publishMacTargets") {
-  BuildEnvironment.nativeTargets.filter { it.family.isAppleFamily }.forEach {
-    dependsOn("publish${it.platformNameCapitalized}PublicationToSonatypeRepository")
-  }
-}
-

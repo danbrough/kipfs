@@ -152,9 +152,9 @@ object BuildEnvironment {
   
   val nativeTargets: List<KonanTarget>
     get() =
-/*      if (ProjectProperties.IDE_ACTIVE)
-        listOf(hostTarget)
-      else*/
+      if (ProjectProperties.IDE_ACTIVE)
+        listOf(hostTarget, KonanTarget.ANDROID_X86)
+      else
         listOf(
           KonanTarget.LINUX_X64,
           KonanTarget.LINUX_ARM64,
@@ -233,7 +233,7 @@ object BuildEnvironment {
       Architecture.WASM32 -> "wasm"
     }
   
-  fun KonanTarget.buildEnvironment(): Map<String, Any?> = mutableMapOf(
+  fun KonanTarget.buildEnvironment(): MutableMap<String, *> = mutableMapOf(
     "CGO_ENABLED" to 1, "GOARM" to 7, "GOOS" to goOS, "GOARCH" to goArch,
     "GOBIN" to buildCacheDir.resolve("$name/bin"),
     "GOCACHE" to buildCacheDir.resolve("$name/gobuild"),

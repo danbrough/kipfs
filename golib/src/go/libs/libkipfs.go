@@ -6,6 +6,8 @@ package main
 /*
 #cgo CFLAGS: -fPIC
 #include "defs.h"
+
+
 */
 import "C"
 import (
@@ -23,6 +25,18 @@ import (
 func GetTime() *C.char {
 	return C.CString(misc.GetTime())
 }
+
+//export KCallbackTest
+func KCallbackTest(callback C.DataCallbackFunc) {
+	println("KCallbackTest()")
+	C.bridgeDataCallback(callback, unsafe.Pointer(C.CString("Hello from here")), 1234, nil)
+}
+
+//export KTest
+func KTest() unsafe.Pointer {
+	return C.CBytes([]byte("123abc$"))
+}
+
 
 //export KCID
 func KCID(json *C.char) *C.char {
@@ -108,5 +122,7 @@ func KMultiBaseDecode(cData *C.char, dataLength C.int32_t) (C.int32_t, *C.char, 
 	}
 	return C.int32_t(encoding), C.CString(string(data)), C.int32_t(len(data)), nil
 }
+
+
 
 func main() {}

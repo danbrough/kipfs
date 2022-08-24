@@ -48,8 +48,7 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNativeLib {
   override fun createShell(ipfsAddress: String): KShell = KNativeShell(this, ipfsAddress)
 
   override fun environment(key: String): String? = platform.posix.getenv(key)?.toKString()
-
-
+  
   override fun getTime(): String = kipfsgo.GetTime()!!.copyToKString()
 
   override fun dagCID(json: String) = kipfsgo.KCID(json.cstr)!!.copyToKString()

@@ -17,4 +17,14 @@ func main() {
 
 	println("BaseEmoji", multibase.Base256Emoji)
 
+	rb := s.NewRequest("multibase")
+	rb.Argument("encode")
+	rb.StringOptions("b","base64urld")
+	rb.BodyString("111111111111111111111111")
+	req,err = rb.Send()
+	if err != nil {
+		panic(err.Error())
+	}
+	println("REceived",string(req),"length:",len(req))
+
 }

@@ -1,5 +1,9 @@
 #include "defs.h"
 
+void pass_string(char* str) {
+    printf("pass_string received: %s\n",str);
+}
+
 void testCallback(void *data,int len,const char* err){
     printf("The data is %s with length:%d\n",(char*)data,len);
     if (err != 0)
@@ -10,13 +14,12 @@ void testCallback(void *data,int len,const char* err){
 	callback(data,len,err);
 }
 
-void pass_string(char* str) {
-    printf("pass_string received: %s\n",str);
-}
+
 
 char* return_string() {
   return "C string";
 }
+
 
 void StructTest(MyStruct s){
     printf("MyStruct: %d %f\n",s.a,s.b);

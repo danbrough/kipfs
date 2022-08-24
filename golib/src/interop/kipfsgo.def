@@ -1,7 +1,7 @@
 headers = libkipfsgo.h defs.h
 
-linkerOpts =  -lkipfsgo -lssl -lcrypto
-
+#linkerOpts =  -lkipfsgo -lssl -lcrypto -lc
+linkerOpts = -Bsymbolic -lc -lm -ldl -lssl -lcrypto -lkipfsgo
 linkerOpts.linux_x64 = -Lgolib/build/golib/linuxX64 -Lopenssl/lib/linuxX64/lib
 linkerOpts.linux_arm64 = -Lgolib/build/golib/linuxArm64 -Lopenssl/lib/linuxArm64/lib
 linkerOpts.linux_arm32_hfp = -Lgolib/build/goib/linuxArm32Hfp -Lopenssl/lib/linuxArm32Hfp/lib
@@ -14,3 +14,28 @@ linkerOpts.android_arm32 = -Lgolib/build/golib/androidNativeArm32 -Lopenssl/lib/
 linkerOpts.android_arm64 = -Lgolib/build/golib/androidNativeArm64 -Lopenssl/lib/androidNativeArm64/lib
 
 compilerOpts.mingw_x64 = -pthread
+
+---
+
+#include <stdio.h>
+
+
+void print_test(const char *msg){
+    printf("The message is %s\n",msg);
+    //doSomething();
+    printf("The other message is %s\n",KGetMessage());
+}
+
+int myFun(int i) {
+  return i+1;
+}
+
+typedef int  (*MyFun)(int);
+
+void accept_fun(MyFun f) {
+  f(42);
+}
+
+MyFun supply_fun() {
+  return myFun;
+}

@@ -14,7 +14,6 @@ class Tests {
       level = Level.TRACE
       writer = KLogWriters.stdOut
       messageFormatter = KMessageFormatters.verbose.colored
-      
     }
   }
   

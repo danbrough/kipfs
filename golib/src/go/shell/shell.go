@@ -32,6 +32,13 @@ func NewShell(url string) *Shell {
 	}
 }
 
+func NewLocalShell() *Shell {
+	return &Shell{
+		ishell: ipfsapi.NewLocalShell(),
+		url:    "",
+	}
+}
+
 func (s *Shell) DagPut(data string) string {
 	put, err := s.ishell.DagPut(data, "dag-json", "dag-cbor")
 	if err != nil {

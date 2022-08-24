@@ -43,7 +43,6 @@ kotlin {
     dependsOn(commonMain)
   }
   
-  
   val posixMain by sourceSets.creating {
     dependsOn(nativeMain)
   }
@@ -73,22 +72,21 @@ kotlin {
           goDir,
           kipfsLibDir,
           "kipfsgo",
-          "libs/libkipfs.go"
+          "github.com/danbrough/kipfs/libs"
         )
       
       golibBuild {
         
         buildAll.dependsOn(this)
         
-        doFirst {
-          println("STARTING KIPFS LIB BUILD... ${commandLine.joinToString(" ")}")
-          println("CGO_CFLAGS: ${environment["CGO_CFLAGS"]}")
-          println("CGO_LDFLAGS: ${environment["CGO_LDLAGS"]}")
-        }
         
         appendToEnvironment(
           "CGO_CFLAGS",
-          "-I${rootProject.file("openssl/lib/${target.platformName}/include")}"
+          "-I${rootProject.file("openssl/lib/${target.platformName}/include")} -I${
+            rootProject.file(
+              "golib/src/go/libs"
+            )
+          }"
         )
         appendToEnvironment(
           "CGO_LDFLAGS",
@@ -99,6 +97,14 @@ kotlin {
         commandLine(commandLine.toMutableList().also {
           it.add(3, "-tags=openssl")
         })
+        
+        
+        doFirst {
+          println("STARTING KIPFS LIB BUILD... ${commandLine.joinToString(" ")}")
+          println("CGO_CFLAGS: ${environment["CGO_CFLAGS"]}")
+          println("CGO_LDFLAGS: ${environment["CGO_LDLAGS"]}")
+        }
+        
       }
       
       val kipfsLibBuildTask = golibBuild.get()
@@ -110,9 +116,17 @@ kotlin {
           defFile = project.file("src/interop/kipfsgo.def")
           includeDirs(
             kipfsLibDir,
-            project.file("src/include"),
+            rootProject.file("openssl/lib/${target.platformName}/include"),
             project.file("src/go/libs"),
           )
+          
+          /*
+                includeDirs(
+          project.buildDir.resolve("native/$platform"),
+          rootProject.file("openssl/libs/$platform/include"),
+          rootProject.file("go/libs")
+        )
+           */
           tasks.getAt(interopProcessingTaskName).apply {
             inputs.files(kipfsLibBuildTask.outputs)
             dependsOn(kipfsLibBuildTask.name)
