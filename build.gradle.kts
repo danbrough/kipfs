@@ -160,12 +160,12 @@ allprojects {
 }
 
 afterEvaluate {
-  tasks.create("publishMacTargets") {
-    BuildEnvironment.nativeTargets.filter { it.family.isAppleFamily }
+  tasks.create("publishMac") {
+    nativeTargets.filter { it.family.isAppleFamily }
       .map {
         getTasksByName("publish${it.platformNameCapitalized}PublicationToSonatypeRepository", true)
-      }.flatMap { it.toList() }.distinct().forEach {
-        dependsOn(it.path)
+      }.flatMap { it.toList() }.map { it.path }.distinct().also {
+        dependsOn(it)
       }
   }
 }
