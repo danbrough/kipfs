@@ -6,25 +6,26 @@ import (
 )
 
 func main() {
-	s := shell.NewShell("/ip4/127.0.0.1/tcp/5001")
-	req, err := s.NewRequest("id").Send()
-	if err != nil {
-		panic(err.Error())
-	}
-	println("Received: ", string(req))
+	println("running test1")
+
 
 	println(multibase.Encode(multibase.Base64url, []byte("testing")))
 
 	println("BaseEmoji", multibase.Base256Emoji)
 
-	rb := s.NewRequest("multibase")
-	rb.Argument("encode")
-	rb.StringOptions("b","base64urld")
-	rb.BodyString("111111111111111111111111")
-	req,err = rb.Send()
+	var ipfsURL = "/ip4/127.0.0.1/tcp/5001"
+	s := shell.NewShell(ipfsURL)
+
+	rb := s.NewRequest("multibase/encode")
+	
+	rb.StringOptions("b", "base64url")
+	
+	rb.PostString2("123")
+
+	req, err := rb.Send()
 	if err != nil {
 		panic(err.Error())
 	}
-	println("REceived",string(req),"length:",len(req))
+	println("REceived", string(req), "length:", len(req))
 
 }
