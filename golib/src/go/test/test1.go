@@ -20,9 +20,8 @@ func main() {
 	
 	rb.StringOptions("b", "base64url")
 	
-	rb.PostString2("123")
+	req, err := rb.PostString2("123")
 
-	req, err := rb.Send()
 	if err != nil {
 		panic(err.Error())
 	}

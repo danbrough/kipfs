@@ -5,9 +5,9 @@ plugins {
 }
 
 repositories {
-  maven(Dependencies.SONA_STAGING)
+  maven(Dependencies.SONA_SNAPSHOTS)
   //or for release version
-  //mavenCentral()
+  mavenCentral()
 }
 
 kotlin {

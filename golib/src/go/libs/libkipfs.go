@@ -8,6 +8,13 @@ package main
 #include "defs.h"
 
 
+enum PostDataType {
+  Raw,
+  StringFile,
+  BytesFile
+};
+
+
 */
 import "C"
 import (
@@ -73,6 +80,17 @@ func KCreateShell(cUrl *C.char) (C.int32_t, *C.char) {
 	}
 
 	return ptr, nil
+}
+
+//export KEnumTest
+func KEnumTest(dataType C.enum_PostDataType) {
+	println("DATATYPE",dataType)
+}
+
+//export KPostRequest
+func KPostRequest(refnum C.int32_t, command *C.char, arg *C.char,data *C.char,dataType C.enum_PostDataType) (unsafe.Pointer, int, *C.char) {
+	println("DataType",dataType)
+	return nil,-1,nil 
 }
 
 //export KRequest

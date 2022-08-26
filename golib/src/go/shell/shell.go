@@ -137,18 +137,6 @@ func (req *RequestBuilder) Send() ([]byte, error) {
 	return ioutil.ReadAll(res.Output)
 }
 
-func (req *RequestBuilder) Send2() (*ipfsapi.Response, error) {
-	res, err := req.rb.Send(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	if res.Error != nil {
-		return nil, res.Error
-	}
-
-	return res, nil
-}
 
 func (req *RequestBuilder) Argument(arg string) {
 	req.rb.Arguments(arg)
@@ -201,6 +189,14 @@ func (req *RequestBuilder) PostString2(data string) ([]byte, error) {
 func (req *RequestBuilder) PostString3(data string) (*Response, error) {
 	return req.post3("", files.NewReaderFile(strings.NewReader(data)))
 }
+
+// func (req *RequestBuilder) PostString3(data string) (*Response, error) {
+// 	fr := files.NewReaderFile(strings.NewReader(data))
+// 	slf := files.NewSliceDirectory([]files.DirEntry{files.FileEntry("", fr)})
+// 	fileReader := files.NewMultiFileReader(slf, true)
+// 	rb.Body(fileReader)
+
+// }
 
 func (req *RequestBuilder) PostReader(name string, data misc.KReader, callback misc.Callback) {
 	req.post(name, files.NewReaderFile(data), callback)
@@ -274,6 +270,8 @@ func (req *RequestBuilder) Post2(name string, file files.Node) ([]byte, error) {
 	   }
 	*/
 	//fr := files.NewReaderFile(data)
+
+
 	slf := files.NewSliceDirectory([]files.DirEntry{files.FileEntry(name, file)})
 	fileReader := files.NewMultiFileReader(slf, true)
 	req.rb.Body(fileReader)
