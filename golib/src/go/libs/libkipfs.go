@@ -44,7 +44,6 @@ func KTest() unsafe.Pointer {
 	return C.CBytes([]byte("123abc$"))
 }
 
-
 //export KCID
 func KCID(json *C.char) *C.char {
 	return C.CString(cids.DagCid(C.GoString(json)))
@@ -82,15 +81,66 @@ func KCreateShell(cUrl *C.char) (C.int32_t, *C.char) {
 	return ptr, nil
 }
 
-//export KEnumTest
-func KEnumTest(dataType C.enum_PostDataType) {
-	println("DATATYPE",dataType)
+
+//export KCreateRequest
+func KCreateRequest(refnum C.int32_t, command *C.char,arg *C.char) (C.int32_t, *C.char) {
+	_seq.Inc(int32(refnum))
+	ref := _seq.FromRefNum(int32(refnum))
+	kShell := ref.Get().(*shell.Shell)
+
+	//println("KCreateShell():", url)
+	var ptr C.int32_t = _seq.NullRefNum
+	//println("_seq.NullRefNum is", ptr)
+
+	rb := kShell.NewRequest(C.GoString(command))
+
+
+	if rb != nil {
+		refnum := _seq.ToRefNum(rb)
+		_seq.Inc(refnum)
+		ptr = C.int32_t(refnum)
+		//println("returning refnum", ptr)
+	} else {
+		return ptr, C.CString("Failed to created shell ")
+	}
+
+	if arg != nil {
+		goArg := C.GoString(arg)
+		println("Adding Argument:", goArg)
+		rb.Argument(goArg)
+	}
+
+	return ptr, nil
 }
 
-//export KPostRequest
-func KPostRequest(refnum C.int32_t, command *C.char, arg *C.char,data *C.char,dataType C.enum_PostDataType) (unsafe.Pointer, int, *C.char) {
-	println("DataType",dataType)
-	return nil,-1,nil 
+
+//export KRequestSend
+func KRequestSend(refnum C.int32_t) (unsafe.Pointer, int, *C.char){
+	_seq.Inc(int32(refnum))
+	ref := _seq.FromRefNum(int32(refnum))
+	rb := ref.Get().(*shell.RequestBuilder)
+	data, err := rb.Send()
+	
+	if err != nil {
+		return nil, -1, C.CString(err.Error())
+	}
+
+	return C.CBytes(data), len(data), nil
+}
+
+//export KRequestPostString
+func KRequestPostString(refnum C.int32_t,data *C.char) (unsafe.Pointer, int, *C.char){
+	_seq.Inc(int32(refnum))
+	ref := _seq.FromRefNum(int32(refnum))
+	rb := ref.Get().(*shell.RequestBuilder)
+	
+	respData, err := rb.PostString2(C.GoString(data))
+	
+	if err != nil {
+		return nil, -1, C.CString(err.Error())
+	}
+
+	return C.CBytes(respData), len(respData), nil
 }
 
 //export KRequest
@@ -117,9 +167,16 @@ func KRequest(refnum C.int32_t, command *C.char, arg *C.char) (unsafe.Pointer, i
 	return C.CBytes(data), len(data), nil
 }
 
+//export KRequestOption
+func KRequestOption(refnum C.int32_t, name *C.char, value *C.char) {
+	_seq.Inc(int32(refnum))
+	ref := _seq.FromRefNum(int32(refnum))
+	rb := ref.Get().(*shell.RequestBuilder)
+	rb.StringOptions(C.GoString(name),C.GoString(value))
+}
+
 //export KMultiBaseEncode
 func KMultiBaseEncode(encoding C.int32_t, cData *C.char, dataLength C.int32_t) (*C.char, *C.char) {
-	//	multibase.Encode(encoding, C.B)
 
 	data := C.GoBytes(unsafe.Pointer(cData), dataLength)
 
@@ -127,7 +184,6 @@ func KMultiBaseEncode(encoding C.int32_t, cData *C.char, dataLength C.int32_t) (
 	if err != nil {
 		return nil, C.CString(err.Error())
 	}
-	println("GOT DATA: ", string(data))
 	return C.CString(encoded), nil
 }
 
@@ -140,7 +196,5 @@ func KMultiBaseDecode(cData *C.char, dataLength C.int32_t) (C.int32_t, *C.char, 
 	}
 	return C.int32_t(encoding), C.CString(string(data)), C.int32_t(len(data)), nil
 }
-
-
 
 func main() {}

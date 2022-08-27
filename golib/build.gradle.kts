@@ -32,6 +32,7 @@ kotlin {
   val commonTest by sourceSets.getting {
     dependencies {
       implementation(kotlin("test"))
+      implementation(Dependencies.coroutines_core)
     }
   }
   

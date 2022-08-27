@@ -31,6 +31,7 @@ peerIdBase [string]: Encoding used for peer IDs: Can either be a multibase encod
  
  **/
 
-suspend inline fun KShell.id(peerID: String? = null): KResponse<ResponseID> = request("id")
+suspend inline fun KShell.id(peerID: String? = null): KResponse<ResponseID>
+ = request<ResponseID>("id").send()
 
 

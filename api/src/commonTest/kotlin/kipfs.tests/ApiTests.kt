@@ -4,6 +4,7 @@ import kipfs.DEFAULT_KIPFS_ADDRESS
 import kipfs.ENV_KIPFS_ADDRESS
 import kipfs.api.dagGet
 import kipfs.api.id
+import kipfs.api.multibaseEncode
 import kipfs.golib.initKIPFSLib
 import kipfs.serialization.decodeJson
 import klog.*
@@ -59,6 +60,9 @@ class ApiTests {
     log.warn("running testMultibase()")
     
     runBlocking {
+      shell.multibaseEncode("123").readAll().decodeToString().also {
+        log.info("response: $it")
+      }
     }
   }
 }

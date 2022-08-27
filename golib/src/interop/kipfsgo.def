@@ -14,6 +14,7 @@ linkerOpts.android_arm32 = -Lgolib/build/golib/androidNativeArm32 -Lopenssl/lib/
 linkerOpts.android_arm64 = -Lgolib/build/golib/androidNativeArm64 -Lopenssl/lib/androidNativeArm64/lib
 
 compilerOpts.mingw_x64 = -pthread
+nonStrictEnums = PostDataType
 
 ---
 

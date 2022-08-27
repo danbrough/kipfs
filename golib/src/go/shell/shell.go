@@ -64,15 +64,16 @@ func (s *Shell) AddDir(path string) (string, error) {
 	return s.ishell.AddDir(path)
 }
 
-/**
+/*
+*
 Fileswrite
 
 	fr := files.NewReaderFile(data)
 	slf := files.NewSliceDirectory([]files.DirEntry{files.FileEntry("", fr)})
 	fileReader := files.NewMultiFileReader(slf, true)
 
-
 AddDir
+
 	sf, err := files.NewSerialFile(dir, false, stat)
 	if err != nil {
 		return "", err
@@ -80,12 +81,11 @@ AddDir
 	slf := files.NewSliceDirectory([]files.DirEntry{files.FileEntry(filepath.Base(dir), sf)})
 	reader := files.NewMultiFileReader(slf, true)
 
-
 DagPut
+
 	fr := files.NewReaderFile(r)
 	slf := files.NewSliceDirectory([]files.DirEntry{files.FileEntry("", fr)})
 	fileReader := files.NewMultiFileReader(slf, true)
-
 */
 func (s *Shell) NewRequest(command string) *RequestBuilder {
 	return &RequestBuilder{
@@ -136,7 +136,6 @@ func (req *RequestBuilder) Send() ([]byte, error) {
 
 	return ioutil.ReadAll(res.Output)
 }
-
 
 func (req *RequestBuilder) Argument(arg string) {
 	req.rb.Arguments(arg)
@@ -271,22 +270,31 @@ func (req *RequestBuilder) Post2(name string, file files.Node) ([]byte, error) {
 	*/
 	//fr := files.NewReaderFile(data)
 
-
 	slf := files.NewSliceDirectory([]files.DirEntry{files.FileEntry(name, file)})
 	fileReader := files.NewMultiFileReader(slf, true)
 	req.rb.Body(fileReader)
 	res, err := req.rb.Send(context.Background())
+
+	var doClose = func() {
+		// testing.TestLog.Warn("Closing res")
+		err := res.Close()
+		if err != nil {
+			log.Errorf("Error closing res: %s", err)
+		}
+	}
+
+	defer doClose()
+
 	if err != nil {
 		log.Errorf("Error: %s", err.Error())
 		return nil, err
-	} else {
-		respData, err := ioutil.ReadAll(res.Output)
-		//testing.TestLog.Info("Response: %s", string(respData))
-		if err != nil {
-			return nil, err
-		}
-		return respData, nil
 	}
+	respData, err := ioutil.ReadAll(res.Output)
+	//testing.TestLog.Info("Response: %s", string(respData))
+	if err != nil {
+		return nil, err
+	}
+	return respData, nil
 
 	//testing.TestLog.Debug("queued response")
 }

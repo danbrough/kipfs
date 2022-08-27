@@ -10,7 +10,7 @@ import kipfs.KShell
 
 
 suspend inline fun <reified T> KShell.dagGet(arg: String): KResponse<T> =
-  request("dag/get", arg)
+  request<T>("dag/get",arg).send()
 
 
 

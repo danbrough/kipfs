@@ -1,20 +1,28 @@
 package kipfs.golib
 
 import kipfs.KByteResponse
+import kipfs.KRequest
 import kipfs.KResponse
 import kipfs.KShell
 import klog.klog
 
-class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: String) : KShell {
-  
+class KNativeShell(kipfs: KIPFSNative, private val ipfsAddress: String) : KNativeObject(kipfs),
+  KShell {
   
   private val log = klog()
   
-  private var ref = 0
-  
-  protected fun finalize() {
-    //log.warn("finalize() $ref")
-    close()
+  inner class KNativeRequest<T>(ref: Int) : KNativeObject(kipfs, ref), KRequest<T> {
+    
+    override fun send(): KResponse<T> = KByteResponse(kipfs.sendRequest(ref))
+    
+    
+    override fun post(data: String, fileName: String): KResponse<T>
+     = kipfs.postString<T>(ref,data)
+    
+    override fun option(name: String, value: Any): KRequest<T> {
+      kipfs.requestOption(ref, name, value.toString())
+      return this
+    }
   }
   
   override fun connect() {
@@ -23,18 +31,11 @@ class KNativeShell(private val kipfs: KIPFSNativeLib, private val ipfsAddress: S
     ref = kipfs.createNativeShell(ipfsAddress)
   }
   
-  override fun close() {
-    log.info("close() $ref")
-    if (ref != 0) {
-      kipfs.disposeGoObject(ref)
-      ref = 0
-    }
+  override suspend fun <T> request(command: String, arg: String?): KRequest<T> {
+    connect()
+    return KNativeRequest(kipfs.createRequest(ref, command, arg))
   }
   
-  override suspend fun <T> request(command: String, arg: String?): KResponse<T> {
-    connect()
-    return KByteResponse(kipfs.request(ref, command, arg))
-  }
   
   override fun toString(): String = "KShell[$ipfsAddress]"
 }

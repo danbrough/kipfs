@@ -16,4 +16,6 @@ public class JNI {
 
   @NotNull
   public static native byte[] request(int shellRefID, @NotNull String cmd, @Nullable String arg);
+
+  public static native int createRequest(int shellRef, @NotNull String command,String arg);
 }

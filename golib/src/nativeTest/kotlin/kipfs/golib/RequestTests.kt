@@ -1,5 +1,6 @@
 package kipfs.golib
 
+import kipfsgo.PostDataType
 import klog.klog
 import kotlinx.cinterop.*
 import kotlin.test.Test
@@ -27,7 +28,7 @@ class RequestTests : NativeTests() {
           r2?.copyToKString()?.also {
             throw Exception("Request failed: $it")
           } ?: run {
-            r0!!.readBytes(r1).decodeToString().also {
+            r0!!.readBytes(r1.toInt()).decodeToString().also {
               log.info("RESULT: $it")
             }
           }
@@ -44,11 +45,29 @@ class RequestTests : NativeTests() {
     memScoped {
       
       
-      
-      kipfsgo.KEnumTest(kipfsgo.PostDataType.BytesFile)
-      
       log.trace("calling multibase/encode at $IPFS_ADDRESS")
       
+      val requestRefId = kipfsgo.KCreateRequest(shellID, "id".utf8, null).useContents {
+        r1?.copyToKString()?.also {
+          throw Exception("Create request failed: $it")
+        }
+        r0
+      }
+      println("Got request id $requestRefId")
+      kipfsgo.KRequestSend(requestRefId).useContents {
+        kipfsgo.KDecRef(requestRefId)
+  
+        r2?.copyToKString()?.also {
+          throw Exception("Send request failed: $it")
+        } ?: r0!!.readBytes(r1.toInt()).decodeToString().also {
+          log.info("RESULT: $it")
+        }
+        
+      }
+  
+
+      println("dec ref done")
+
 /*
       kipfsgo.KPostRequest(
         shellID,
@@ -67,5 +86,6 @@ class RequestTests : NativeTests() {
       }*/
       
     }
+    
   }
 }

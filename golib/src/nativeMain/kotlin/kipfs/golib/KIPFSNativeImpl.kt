@@ -1,6 +1,10 @@
+@file:Suppress("RemoveRedundantCallsOfConversionMethods")
+
 package kipfs.golib
 
+import kipfs.KByteResponse
 import kipfs.KIPFS
+import kipfs.KResponse
 import kipfs.KShell
 import kotlinx.cinterop.*
 import platform.posix.free
@@ -24,7 +28,8 @@ fun CPointer<ByteVar>.copyToKString(): String = toKString().let {
 }
 
 
-actual fun initKIPFSLib(): KIPFS = object : KIPFSNativeLib {
+@OptIn(UnsafeNumber::class)
+actual fun initKIPFSLib(): KIPFS = object : KIPFSNative {
 
   override fun createNativeShell(address: String): Int =
     kipfsgo.KCreateShell(address.cstr).useContents {
@@ -33,8 +38,37 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNativeLib {
       }
       r0
     }
-
-
+  
+  override fun createRequest(shellRef: Int,command:String,arg:String?): Int =
+    kipfsgo.KCreateRequest(shellRef,command.utf8,arg?.utf8).useContents {
+      r1?.copyToKString()?.also {
+        throw Exception("Create request failed: $it")
+      }
+      r0
+    }
+  
+  
+  override fun requestOption(requestRefID: Int, name: String, value: String) =
+    kipfsgo.KRequestOption(requestRefID,name.utf8,value.utf8)
+  
+  
+  override fun sendRequest(requestRefID: Int): ByteArray =
+    kipfsgo.KRequestSend(requestRefID).useContents {
+      r2?.copyToKString()?.also {
+        throw Exception("Request failed: $it")
+      }
+      r0!!.readBytes(r1.toInt())
+    }
+  
+  override fun <T> postString(shellRefID: Int, data: String): KResponse<T> =
+    kipfsgo.KRequestPostString(shellRefID,data.utf8).useContents {
+      r2?.copyToKString()?.also {
+        throw Exception("Request failed: $it")
+      }
+      KByteResponse<T>(r0!!.readBytes(r1.toInt()))
+    }
+  
+  
   override fun disposeGoObject(ref: Int) = kipfsgo.KDecRef(ref)
 
   override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray =
@@ -44,6 +78,7 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNativeLib {
       }
       r0!!.readBytes(r1.toInt())
     }
+  
 
   override fun createShell(ipfsAddress: String): KShell = KNativeShell(this, ipfsAddress)
 
