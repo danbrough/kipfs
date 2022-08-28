@@ -17,7 +17,10 @@ class KNativeShell(kipfs: KIPFSNative, private val ipfsAddress: String) : KNativ
     
     
     override fun post(data: String, fileName: String): KResponse<T>
-     = kipfs.postString<T>(ref,data)
+     = kipfs.postString(ref,data)
+  
+    override fun post(data: ByteArray): KResponse<T>  =
+      kipfs.postData(ref,data)
     
     override fun option(name: String, value: Any): KRequest<T> {
       kipfs.requestOption(ref, name, value.toString())

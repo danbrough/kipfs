@@ -10,4 +10,5 @@ interface KIPFSNative : KIPFS {
   fun requestOption(requestRefID:Int,name:String,value:String)
   fun sendRequest(requestRefID: Int): ByteArray
   fun <T> postString(shellRefID: Int,data:String): KResponse<T>
+  fun <T> postData(shellRefID: Int,data:ByteArray): KResponse<T>
 }

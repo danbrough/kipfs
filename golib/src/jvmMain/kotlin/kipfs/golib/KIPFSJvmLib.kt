@@ -1,6 +1,7 @@
 package kipfs.golib
 
 import kipfs.KIPFS
+import kipfs.KResponse
 import kipfs.KShell
 import kipfs.golib.jni.JNI
 import klog.klog
@@ -24,6 +25,14 @@ private object KIPFSJvmLib : KIPFSNative {
     }.exceptionOrNull()?.also {
       log.error(it.message, it)
     }
+  }
+  
+  override fun <T> postData(shellRefID: Int, data: ByteArray): KResponse<T> {
+    TODO("Not yet implemented")
+  }
+  
+  override fun <T> postString(shellRefID: Int, data: String): KResponse<T> {
+    TODO("Not yet implemented")
   }
   
   override fun createNativeShell(address: String): Int = JNI.createNativeShell(address)

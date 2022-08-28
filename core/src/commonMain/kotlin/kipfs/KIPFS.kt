@@ -11,6 +11,7 @@ interface KResponse<T>{
 interface KRequest<T>{
   fun option(name:String,value:Any): KRequest<T>
   fun post(data:String,fileName:String = ""): KResponse<T>
+  fun post(data:ByteArray): KResponse<T>
   fun send(): KResponse<T>
 }
 

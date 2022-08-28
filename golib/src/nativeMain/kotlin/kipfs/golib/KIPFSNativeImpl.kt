@@ -69,6 +69,14 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNative {
     }
   
   
+  override fun <T> postData(shellRefID: Int, data: ByteArray): KResponse<T> =
+    kipfsgo.KRequestPostBytes(shellRefID,data.toCValues(),data.size).useContents {
+      r2?.copyToKString()?.also {
+        throw Exception("Request failed: $it")
+      }
+      KByteResponse<T>(r0!!.readBytes(r1.toInt()))
+    }
+  
   override fun disposeGoObject(ref: Int) = kipfsgo.KDecRef(ref)
 
   override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray =

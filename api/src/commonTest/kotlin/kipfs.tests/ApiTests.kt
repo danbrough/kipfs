@@ -2,14 +2,14 @@ package kipfs.tests
 
 import kipfs.DEFAULT_KIPFS_ADDRESS
 import kipfs.ENV_KIPFS_ADDRESS
-import kipfs.api.dagGet
-import kipfs.api.id
-import kipfs.api.multibaseEncode
+import kipfs.api.*
 import kipfs.golib.initKIPFSLib
 import kipfs.serialization.decodeJson
 import klog.*
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ApiTests {
   
@@ -52,6 +52,18 @@ class ApiTests {
     
     runBlocking {
       log.trace("DAG_HELLO_WORLD = ${shell.dagGet<String>(DAG_HELLO_WORLD)}")
+    }
+  }
+  
+  @Test
+  fun testDagPut() {
+    log.info("testDagPut()")
+    
+    runBlocking {
+      shell.dagPut("\"Hello World\"".encodeToByteArray()).readAll().decodeJson<ResponseDagPut>().also {
+        log.info("response: $it")
+       assertEquals(DAG_HELLO_WORLD,it.cid.value,"DAG_HELLO_WORLD != ${it.cid.value}")
+      }
     }
   }
   
