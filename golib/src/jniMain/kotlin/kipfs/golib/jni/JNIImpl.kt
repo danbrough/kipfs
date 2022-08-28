@@ -9,6 +9,7 @@ import platform.android.*
 
 
 private object JNIImpl
+
 private val log = JNIImpl.klog()
 
 private fun init() {
@@ -20,7 +21,7 @@ private fun init() {
 fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     init()
-
+    
     return kipfsgo.GetTime().let { cs ->
       env.pointed.pointed!!.NewStringUTF!!.invoke(env, cs!!.getPointer(this))!!
     }
@@ -41,13 +42,25 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
     init()
     val jsonC = env.pointed.pointed!!.GetStringUTFChars!!(env, json, null)
     val s = kipfsgo.KCID(jsonC)!!
-    env.pointed.pointed!!.ReleaseStringUTFChars!!(env,json,jsonC)
+    env.pointed.pointed!!.ReleaseStringUTFChars!!(env, json, jsonC)
     return env.pointed.pointed!!.NewStringUTF!!.invoke(
       env,
       s.getPointer(this)
     )!!
   }
 }
+
+
+/*JNIEXPORT jbyteArray JNICALL Java_kipfs_golib_jni_JNI_sendRequest
+  (JNIEnv *, jclass, jint);*/
+@CName("Java_kipfs_golib_jni_JNI_sendRequest")
+fun sendRequest(env: CPointer<JNIEnvVar>, thiz: jclass, requestRefID: jint): jbyteArray? =
+  memScoped {
+    init()
+    val e = env.pointed.pointed!!
+    TODO()
+  }
+
 
 @CName("Java_kipfs_golib_jni_JNI_createNativeShell")
 fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): jint {
@@ -75,18 +88,18 @@ fun request(
 ): jbyteArray? {
   memScoped {
     init()
-
+    
     log.debug("Java_kipfs_golib_jni_JNI_request()")
     val e = env.pointed.pointed!!
     val cmdC = e.GetStringUTFChars!!(env, cmd, null)
-
+    
     val argC = arg?.let {
       e.GetStringUTFChars!!(env, arg, null)
     }
     
     kipfsgo.KRequest(shellRefID, cmdC, argC).useContents {
       e.ReleaseStringUTFChars!!(env, cmd, cmdC)
-
+      
       if (argC != null) e.ReleaseStringUTFChars!!(env, arg, argC)
       
       r2?.copyToKString()?.also {
@@ -95,15 +108,15 @@ fun request(
         log.error(err.message, err)
         throw err
       }
-
+      
       r0!!.readBytes(r1.toInt()).also { bytes ->
         //  log.warn("RESULT: ${bytes.decodeToString()}")
         val jbytes = e.NewByteArray!!(env, r1.toInt())!!
-
+        
         bytes.usePinned {
           e.SetByteArrayRegion!!(env, jbytes, 0, r1.toInt(), it.addressOf(0))
         }
-
+        
         return jbytes
       }
     }

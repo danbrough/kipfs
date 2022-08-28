@@ -44,13 +44,13 @@ kotlin {
     dependsOn(commonMain)
   }
   
-  val posixMain by sourceSets.creating {
+  val jniMain by sourceSets.creating {
     dependsOn(nativeMain)
   }
   
   val androidNativeMain by sourceSets.creating {
     dependsOn(nativeMain)
-    kotlin.srcDir(file("src/posixMain/kotlin"))
+    kotlin.srcDir(file("src/jniMain/kotlin"))
   }
   
   val nativeTest by sourceSets.creating {
@@ -159,7 +159,7 @@ kotlin {
           if (target.family == Family.ANDROID)
             dependsOn(androidNativeMain)
           else
-            dependsOn(posixMain)
+            dependsOn(jniMain)
         }
       }
       
