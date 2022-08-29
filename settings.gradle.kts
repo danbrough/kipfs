@@ -30,5 +30,5 @@ include(":openssl")
 include(":core")
 include(":api")
 include(":golib")
-//include(":demo")
+include(":demo")
 

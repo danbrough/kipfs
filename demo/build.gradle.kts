@@ -11,16 +11,23 @@ repositories {
 }
 
 kotlin {
-  linuxX64()
-  macosX64()
+  
+  
+  if (BuildEnvironment.hostIsMac)
+    macosX64()
+  else
+    linuxX64()
+  
   jvm()
   
   sourceSets {
     val commonMain by getting {
       dependencies {
-        implementation("org.danbrough.kipfs:api:0.0.1-SNAPSHOT")
+        implementation("org.danbrough.kipfs:api:_")
       }
     }
+    
+    val appMain by creating
   }
   
   val commonTest by sourceSets.getting {

@@ -15,7 +15,7 @@ import kipfs.MultibaseEncoding
 
 
 suspend inline fun KShell.multibaseEncode(data: String, encoding: MultibaseEncoding = MultibaseEncoding.Base64url): KResponse<String> =
-  request<String>("multibase/encode").option("b","base64").post(data)
+  request<String>("multibase/encode").option("b",encoding.name.lowercase()).post(data.encodeToByteArray())
 
 
 
