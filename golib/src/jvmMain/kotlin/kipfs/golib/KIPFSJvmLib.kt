@@ -1,5 +1,6 @@
 package kipfs.golib
 
+import kipfs.KByteResponse
 import kipfs.KIPFS
 import kipfs.KResponse
 import kipfs.KShell
@@ -28,9 +29,8 @@ private object KIPFSJvmLib : KIPFSNative {
     }
   }
   
-  override fun <T> postData(shellRefID: Int, data: ByteArray): KResponse<T> {
-    TODO("Not yet implemented")
-  }
+  override fun <T> postData(shellRefID: Int, data: ByteArray): KResponse<T>
+   = KByteResponse<T>(JNI.postData(shellRefID,data))
   
   override fun <T> postString(shellRefID: Int, data: String): KResponse<T> {
     TODO("Not yet implemented")
@@ -44,9 +44,6 @@ private object KIPFSJvmLib : KIPFSNative {
     JNI.createRequest(shellRef, command, arg)
   
   override fun disposeGoObject(ref: Int) = JNI.disposeGoObject(ref)
-  
-  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray =
-    JNI.request(shellRefID, cmd, arg)
   
   override fun requestOption(requestRefID: Int, name: String, value: String) =
     JNI.requestOption(requestRefID, name, value)

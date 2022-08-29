@@ -10,9 +10,9 @@ import platform.android.*
 
 private object JNIImpl
 
-private val log = JNIImpl.klog()
+ val log = JNIImpl.klog()
 
-private fun init() {
+internal fun jniInit() {
   initRuntimeIfNeeded()
   Platform.isMemoryLeakCheckerActive = true
 }
@@ -20,7 +20,7 @@ private fun init() {
 @CName("Java_kipfs_golib_jni_JNI_getTime")
 fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
-    init()
+    jniInit()
     
     return kipfsgo.GetTime().let { cs ->
       env.pointed.pointed!!.NewStringUTF!!.invoke(env, cs!!.getPointer(this))!!
@@ -39,7 +39,7 @@ fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
 @CName("Java_kipfs_golib_jni_JNI_dagCID")
 fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   memScoped {
-    init()
+    jniInit()
     val jsonC = env.pointed.pointed!!.GetStringUTFChars!!(env, json, null)
     val s = kipfsgo.KCID(jsonC)!!
     env.pointed.pointed!!.ReleaseStringUTFChars!!(env, json, jsonC)
@@ -51,21 +51,13 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
 }
 
 
-/*JNIEXPORT jbyteArray JNICALL Java_kipfs_golib_jni_JNI_sendRequest
-  (JNIEnv *, jclass, jint);*/
-@CName("Java_kipfs_golib_jni_JNI_sendRequest")
-fun sendRequest(env: CPointer<JNIEnvVar>, thiz: jclass, requestRefID: jint): jbyteArray? =
-  memScoped {
-    init()
-    val e = env.pointed.pointed!!
-    TODO()
-  }
+
 
 
 @CName("Java_kipfs_golib_jni_JNI_createNativeShell")
 fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): jint {
   memScoped {
-    init()
+    jniInit()
     val e = env.pointed.pointed!!
     val addrC = e.GetStringUTFChars!!(env, address, null)
     val s = kipfsgo.KCreateShell(addrC).getPointer(this).pointed
@@ -87,7 +79,7 @@ fun request(
   arg: jstring?
 ): jbyteArray? {
   memScoped {
-    init()
+    jniInit()
     
     log.debug("Java_kipfs_golib_jni_JNI_request()")
     val e = env.pointed.pointed!!
@@ -103,7 +95,6 @@ fun request(
       if (argC != null) e.ReleaseStringUTFChars!!(env, arg, argC)
       
       r2?.copyToKString()?.also {
-        init()
         val err = Exception("Request failed: $it")
         log.error(err.message, err)
         throw err

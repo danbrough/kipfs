@@ -51,7 +51,7 @@ class ApiTests {
     log.debug("testDAG()")
     
     runBlocking {
-      log.trace("DAG_HELLO_WORLD = ${shell.dagGet<String>(DAG_HELLO_WORLD)}")
+      log.trace("DAG_HELLO_WORLD = ${shell.dagGet<String>(DAG_HELLO_WORLD).readAll().decodeToString()}")
     }
   }
   

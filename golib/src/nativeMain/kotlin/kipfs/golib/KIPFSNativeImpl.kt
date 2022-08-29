@@ -79,14 +79,14 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNative {
   
   override fun disposeGoObject(ref: Int) = kipfsgo.KDecRef(ref)
 
-  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray =
+/*  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray =
     kipfsgo.KRequest(shellRefID, cmd.utf8, arg?.utf8).useContents {
       r2?.copyToKString()?.also {
         throw Exception("Request failed: $it")
       }
       r0!!.readBytes(r1.toInt())
     }
-  
+  */
 
   override fun createShell(ipfsAddress: String): KShell = KNativeShell(this, ipfsAddress)
 

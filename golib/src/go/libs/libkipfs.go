@@ -159,6 +159,21 @@ func KRequestPostBytes(refnum C.int32_t,data *C.char,dataLength C.int32_t) (unsa
 	return C.CBytes(respData), len(respData), nil
 }
 
+//export KRequestPostBytes2
+func KRequestPostBytes2(refnum C.int32_t,data *C.char,dataLength C.int32_t) (unsafe.Pointer, int, *C.char){
+	_seq.Inc(int32(refnum))
+	ref := _seq.FromRefNum(int32(refnum))
+	rb := ref.Get().(*shell.RequestBuilder)
+
+	respData, err := rb.PostData2(C.GoBytes(unsafe.Pointer(data),dataLength))
+
+	if err != nil {
+		return nil, -1, C.CString(err.Error())
+	}
+
+	return C.CBytes(respData), len(respData), nil
+}
+
 //export KRequest
 func KRequest(refnum C.int32_t, command *C.char, arg *C.char) (unsafe.Pointer, int, *C.char) {
 	_seq.Inc(int32(refnum))

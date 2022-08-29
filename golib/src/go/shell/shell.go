@@ -299,6 +299,54 @@ func (req *RequestBuilder) Post2(name string, file files.Node) ([]byte, error) {
 	//testing.TestLog.Debug("queued response")
 }
 
+func (req *RequestBuilder) PostBlocking(name string, file files.Node) ([]byte, error) {
+	/*
+	   var r io.Reader
+	   switch data := data.(type) {
+	   case string:
+	     r = strings.NewReader(data)
+	   case []byte:
+	     println("data is byte[] of length", len(data))
+	     r = bytes.NewReader(data)
+	   case []int8:
+	     println("in8 array length: ", len(data))
+	     r = NewTestReader(data)
+
+	   case io.Reader:
+	     r = data
+	   }
+	*/
+	//fr := files.NewReaderFile(data)
+
+	slf := files.NewSliceDirectory([]files.DirEntry{files.FileEntry(name, file)})
+	fileReader := files.NewMultiFileReader(slf, true)
+	req.rb.Body(fileReader)
+	res, err := req.rb.Send(context.Background())
+
+	var doClose = func() {
+		// testing.TestLog.Warn("Closing res")
+		err := res.Close()
+		if err != nil {
+			log.Errorf("Error closing res: %s", err)
+		}
+	}
+
+	defer doClose()
+
+	if err != nil {
+		log.Errorf("Error: %s", err.Error())
+		return nil, err
+	}
+	respData, err := ioutil.ReadAll(res.Output)
+	//testing.TestLog.Info("Response: %s", string(respData))
+	if err != nil {
+		return nil, err
+	}
+	return respData, nil
+
+	//testing.TestLog.Debug("queued response")
+}
+
 func (req *RequestBuilder) post3(name string, file files.Node) (*Response, error) {
 	/*
 	   var r io.Reader
