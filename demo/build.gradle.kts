@@ -9,7 +9,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
   mavenCentral()
-  maven(Dependencies.SONA_SNAPSHOTS)
+  maven(Dependencies.SONA_STAGING)
 }
 
 kotlin {
@@ -18,9 +18,11 @@ kotlin {
   //linuxArm64()
   macosX64()
 
+  val kipfsVersion = "0.0.1-alpha06"
+
   val nativeMain by sourceSets.creating {
     dependencies {
-      implementation("org.danbrough.kipfs:openssl:0.0.1-SNAPSHOT")
+      implementation("org.danbrough.kipfs:openssl:$kipfsVersion")
     }
   }
 
