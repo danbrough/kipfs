@@ -18,16 +18,5 @@ pluginManagement {
 }
 
 
-
-plugins {
-  id("de.fayard.refreshVersions") version "0.40.2"
-}
-
-
-rootProject.name = "kipfs"
-
-include(":openssl")
-include(":core")
-include(":api")
-include(":golib")
+rootProject.name = "kipfs_demo"
 

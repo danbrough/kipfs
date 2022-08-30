@@ -1,48 +1,41 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
 plugins {
-  kotlin("multiplatform")
+  kotlin("multiplatform") version Dependencies.kotlin
 }
 
+group = "danbroid.demo"
+version = "1.0-SNAPSHOT"
+
 repositories {
-  maven(Dependencies.SONA_SNAPSHOTS)
-  //or for release version
   mavenCentral()
+  maven(Dependencies.SONA_SNAPSHOTS)
 }
 
 kotlin {
-  
-  
-  if (BuildEnvironment.hostIsMac)
-    macosX64()
-  else
-    linuxX64()
-  
-  jvm()
-  
+  val hostOs = System.getProperty("os.name")
+  val isMingwX64 = hostOs.startsWith("Windows")
+  val nativeTarget = when {
+    hostOs == "Mac OS X" -> macosX64("native")
+    hostOs == "Linux" -> linuxX64("native")
+    isMingwX64 -> mingwX64("native")
+    else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+  }
+
+  nativeTarget.apply {
+    binaries {
+      executable {
+        entryPoint = "main"
+      }
+    }
+  }
   sourceSets {
     val commonMain by getting {
       dependencies {
-        implementation("org.danbrough.kipfs:api:_")
+        implementation("org.danbrough.kipfs:api:0.0.1-SNAPSHOT")
+        implementation("org.danbrough.kipfs:golib:0.0.1-SNAPSHOT")
+
       }
     }
-    
-    val appMain by creating
-  }
-  
-  val commonTest by sourceSets.getting {
-    dependencies {
-      implementation(kotlin("test"))
-    }
-  }
-  
-  val nativeTest by sourceSets.creating {
-    dependsOn(commonTest)
-  }
-  
-  targets.withType(KotlinNativeTarget::class).all {
-    compilations["test"].apply {
-      defaultSourceSet.dependsOn(nativeTest)
-    }
+    val nativeMain by getting
+    val nativeTest by getting
   }
 }
