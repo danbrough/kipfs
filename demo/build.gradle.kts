@@ -18,6 +18,8 @@ kotlin {
   //linuxArm64()
   macosX64()
 
+  androidNativeX86()
+
   val kipfsVersion = "0.0.1-alpha07"
 
   val nativeMain by sourceSets.creating {
