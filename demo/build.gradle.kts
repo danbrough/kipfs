@@ -1,8 +1,10 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
   kotlin("multiplatform") version Dependencies.kotlin
 }
 
-group = "danbroid.demo"
+group = "org.danbrough.kipfsdemo"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -11,31 +13,31 @@ repositories {
 }
 
 kotlin {
-  val hostOs = System.getProperty("os.name")
-  val isMingwX64 = hostOs.startsWith("Windows")
-  val nativeTarget = when {
-    hostOs == "Mac OS X" -> macosX64("native")
-    hostOs == "Linux" -> linuxX64("native")
-    isMingwX64 -> mingwX64("native")
-    else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+
+  linuxX64()
+  //linuxArm64()
+
+  val nativeMain by sourceSets.creating {
+    dependencies {
+      implementation("org.danbrough.kipfs:openssl:0.0.1-SNAPSHOT")
+    }
   }
 
-  nativeTarget.apply {
+  val commonMain by sourceSets.getting {
+    dependencies {
+      implementation("org.danbrough:klog:0.0.1-beta06")
+    }
+  }
+
+  targets.withType(KotlinNativeTarget::class).all {
+    compilations["main"].apply {
+      defaultSourceSet.dependsOn(nativeMain)
+    }
+
     binaries {
-      executable {
-        entryPoint = "main"
+      executable("openSSLDemo") {
+        entryPoint = "kipfs.demo.openssl.main"
       }
     }
-  }
-  sourceSets {
-    val commonMain by getting {
-      dependencies {
-        implementation("org.danbrough.kipfs:api:0.0.1-SNAPSHOT")
-        implementation("org.danbrough.kipfs:golib:0.0.1-SNAPSHOT")
-
-      }
-    }
-    val nativeMain by getting
-    val nativeTest by getting
   }
 }

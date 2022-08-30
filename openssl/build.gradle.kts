@@ -15,9 +15,6 @@ plugins {
  `maven-publish`
 }
 
-
-
-
 val opensslGitDir = project.file("src/openssl.git")
 
 val srcClone by tasks.registering(Exec::class) {
@@ -32,7 +29,6 @@ val srcClone by tasks.registering(Exec::class) {
   onlyIf {
     !opensslGitDir.exists()
   }
-  
 }
 
 fun srcPrepare(target: KonanTarget): Exec =
