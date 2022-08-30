@@ -1,3 +1,7 @@
-staticLibraries.linux = libssl.a libcrypto.a
+staticLibraries.linux =  libcrypto.a libssl.a
+staticLibraries.android = libssl.a libcrypto.a
+staticLibraries.osx = libssl.a libcrypto.a
+headers = openssl/ssl.h openssl/err.h openssl/bio.h openssl/evp.h
+
 #libraryPaths.linux_x64 = build/openssl/linuxX64/lib
 #linkerOpts.linux_x64 = -Lbuild/openssl/linuxX64/lib

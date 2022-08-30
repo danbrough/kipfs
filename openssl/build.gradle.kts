@@ -6,13 +6,17 @@ import OpenSSL.opensslPlatform
 import OpenSSL.opensslPrefix
 import OpenSSL.opensslSrcDir
 import org.gradle.configurationcache.extensions.capitalized
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
-// `maven-publish`
+ `maven-publish`
 }
+
+
+
 
 val opensslGitDir = project.file("src/openssl.git")
 
@@ -96,10 +100,15 @@ kotlin {
   val commonTest by sourceSets.getting {
     dependencies {
       implementation(kotlin("test"))
+      implementation(Dependencies.klog)
     }
   }
   
-  val nativeTest by sourceSets.creating
+  
+  val nativeTest by sourceSets.creating{
+    dependsOn(commonTest)
+  }
+  
   val nativeMain by sourceSets.creating
   
   val buildAll by tasks.creating
@@ -112,6 +121,7 @@ kotlin {
         cinterops.create("openssl") {
           packageName("libopenssl")
           defFile = project.file("src/openssl.def")
+          includeDirs( konanTarget.opensslPrefix(project).resolve("include"))
           extraOpts(listOf("-libraryPath", konanTarget.opensslPrefix(project).resolve("lib")))
         }
         
@@ -124,6 +134,12 @@ kotlin {
       compilations["test"].apply {
         defaultSourceSet {
           dependsOn(nativeTest)
+        }
+      }
+      
+      binaries {
+        staticLib("kipfsopenssl",buildTypes = setOf(NativeBuildType.DEBUG)){
+        
         }
       }
     }
