@@ -22,7 +22,7 @@ class Tests {
     val cctx = SSL_CONF_CTX_new()
     SSL_CONF_CTX_set_flags(cctx, SSL_CONF_FLAG_CLIENT);
     SSL_CONF_CTX_set_flags(cctx, SSL_CONF_FLAG_CLIENT)
-    SSL_CONF_CTX_set_ssl_ctx(cctx, ctx)
+    SSL_CONF_CTX_set_ssl_ctx(cctx, ctx) 
     
     val sbio = BIO_new_ssl_connect(ctx)
     //BIO_ctrl(b,BIO_C_GET_SSL,0,(char *)(sslp))
