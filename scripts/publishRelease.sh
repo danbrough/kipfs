@@ -22,7 +22,7 @@ fi
 sed -i README.md  -e 's|kipfs:.*"|kipfs:'$VERSION_NAME'"|g'
 
 ./gradlew -q buildVersionIncrement
-./gradlew publishAllPublicationsToRepository
+./gradlew publishAllPublicationsToSonatypeRepository
 
 git add .
 git commit -am "$VERSION_NAME"
