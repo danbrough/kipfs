@@ -7,20 +7,28 @@ plugins {
 group = "org.danbrough.kipfsdemo"
 version = "1.0-SNAPSHOT"
 
+val kipfsVersion = "0.0.1-SNAPSHOT"
+
+
 repositories {
   mavenCentral()
-  maven(Dependencies.SONA_STAGING)
+  maven(if (kipfsVersion.contains("-SNAPSHOT")) Dependencies.SONA_SNAPSHOTS else Dependencies.SONA_STAGING)
 }
 
+val osName = System.getProperty("os.name")
+println("OSNAME: $osName")
 kotlin {
 
   linuxX64()
+
+
   //linuxArm64()
-  macosX64()
+
+  if (osName == "Darwin")
+    macosX64()
 
   androidNativeX86()
 
-  val kipfsVersion = "0.0.1-alpha07"
 
   val nativeMain by sourceSets.creating {
     dependencies {

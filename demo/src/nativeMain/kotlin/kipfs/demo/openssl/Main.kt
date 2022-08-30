@@ -27,7 +27,7 @@ fun main(){
   BIO_ctrl(sbio, BIO_C_GET_SSL, 0, connectString.utf8)
 
   //SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY); = //SSL_CTX_ctrl((ctx),SSL_CTRL_MODE,(op),NULL)
-  SSL_CTX_ctrl(ctx, SSL_CTRL_MODE,SSL_MODE_AUTO_RETRY.toLong(),null)
+  SSL_CTX_ctrl(ctx, SSL_CTRL_MODE,SSL_MODE_AUTO_RETRY.toInt(),null)
 
   //BIO_set_conn_hostname(sbio, connect_str);
   /*#  define BIO_set_conn_hostname(b,name) BIO_ctrl(b,BIO_C_SET_CONNECT,0, \
