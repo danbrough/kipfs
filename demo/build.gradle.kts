@@ -24,7 +24,7 @@ kotlin {
 
   //linuxArm64()
 
-  if (osName == "Darwin")
+  if (osName == "Mac OS X")
     macosX64()
 
   androidNativeX86()
