@@ -166,10 +166,7 @@ object BuildEnvironment {
           KonanTarget.ANDROID_ARM32,
           KonanTarget.ANDROID_X64,
           KonanTarget.ANDROID_X86,
-        ).filter {
-          if (hostIsMac) it.family.isAppleFamily
-          else !it.family.isAppleFamily
-        }
+        )
   
   
   fun KotlinMultiplatformExtension.registerTarget(
