@@ -5,7 +5,7 @@ import kotlinx.cinterop.*
 import kotlin.test.Test
 import libopenssl.*
 
-val log = klog("kipfs.demo.openssl") {
+val log = klog("kipfs.demo.kipfs.demo.openssl") {
   messageFormatter = KMessageFormatters.verbose.colored
   level = Level.TRACE
   writer = KLogWriters.stdOut

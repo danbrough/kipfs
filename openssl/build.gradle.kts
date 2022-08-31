@@ -54,10 +54,10 @@ fun configureTask(target: KonanTarget): Exec {
     environment(target.buildEnvironment())
     val args = mutableListOf(
       "./Configure", target.opensslPlatform,
-      //"no-shared",
-      "no-tests", "--prefix=${target.opensslPrefix(project)}"
+       "--prefix=${target.opensslPrefix(project)}"
+      //"no-tests","no-ui-console", "--prefix=${target.opensslPrefix(project)}"
     )
-    if (target.family == Family.ANDROID) args += "-D__ANDROID_API__=${BuildEnvironment.androidNdkApiVersion} "
+    if (target.family == Family.ANDROID) args += "-D__ANDROID_API__=24 "
     else if (target.family == Family.MINGW) args += "--cross-compile-prefix=${target.hostTriplet}-"
     commandLine(args)
   }
