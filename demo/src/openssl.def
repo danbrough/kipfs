@@ -1,0 +1,13 @@
+
+
+headers = openssl/ssl.h openssl/err.h openssl/bio.h openssl/evp.h
+#linkerOpts =   -lpthread -ldl -lgcc  -lssl -lcrypto
+linkerOpts =   -ldl -lgcc  -lssl -lcrypto
+linkerOpts.linux_x64 = -L/home/dan/workspace/kipfs/openssl/lib/linuxX64/lib/
+linkerOpts.android_x86 = -L/home/dan/workspace/kipfs/openssl/lib/androidNativeX86/lib/
+linkerOpts.android_x64 = -L/home/dan/workspace/kipfs/openssl/lib/androidNativeX64/lib/
+compilerOpts.linux_x64 =  -pthread -I /home/dan/workspace/kipfs/openssl/lib/linuxX64/include/
+compilerOpts.android_x86 = -I/home/dan/workspace/kipfs/openssl/lib/androidNativeX86/include/ -fPIC
+compilerOpts.android_x64 = -I/home/dan/workspace/kipfs/openssl/lib/androidNativeX64/include/
+libraryPaths = /home/dan/workspace/kipfs/openssl/lib/androidNativeX86/lib/
+#linkerOpts.linux_x64 = -Lbuild/openssl/linuxX64/lib

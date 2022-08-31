@@ -2,7 +2,8 @@ object Dependencies {
   const val SONA_STAGING = "https://s01.oss.sonatype.org/content/groups/staging/"
   const val SONA_SNAPSHOTS = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
 
-  const val kotlin = "1.7.10"
+  const val kotlin = "1.7.20-Beta"
+  const val android = "7.2.0"
   const val klog = "org.danbrough:klog:0.0.1-beta06"
   const val kipfs = "org.danbrough:kipfs:0.0.1-SNAPSHOT"
 

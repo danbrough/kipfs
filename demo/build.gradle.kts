@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
   kotlin("multiplatform") version Dependencies.kotlin
+ // id("com.android.library") version "7.2.0"
 }
 
 group = "org.danbrough.kipfsdemo"
@@ -27,12 +28,22 @@ kotlin {
   if (osName == "Mac OS X")
     macosX64()
 
-  androidNativeX86()
+  androidNativeX86(){
+    println("FRAMEWORK $this")
+    println("RELEASE ${this.RELEASE}")
+    println("apiElementsConfigurationName ${this.apiElementsConfigurationName}")
 
+  }
+  androidNativeX64(){
+    println("FRAMEWORK $this")
+    println("RELEASE ${this.RELEASE}")
+    println("apiElementsConfigurationName ${this.apiElementsConfigurationName}")
+
+  }
 
   val nativeMain by sourceSets.creating {
     dependencies {
-      implementation("org.danbrough.kipfs:openssl:$kipfsVersion")
+     // implementation("org.danbrough.kipfs:openssl:$kipfsVersion")
     }
   }
 
@@ -45,6 +56,22 @@ kotlin {
   targets.withType(KotlinNativeTarget::class).all {
     compilations["main"].apply {
       defaultSourceSet.dependsOn(nativeMain)
+      
+      cinterops{
+
+        cinterops.create("openssl") {
+
+          packageName("libopenssl")
+          defFile = project.file("src/openssl.def")
+          extraOpts("-verbose")
+
+
+//          includeDirs( konanTarget.opensslPrefix(project).resolve("include"))
+//          extraOpts(listOf("-libraryPath", konanTarget.opensslPrefix(project).resolve("lib")))
+        }
+
+
+      }
     }
 
     binaries {
@@ -54,3 +81,4 @@ kotlin {
     }
   }
 }
+
