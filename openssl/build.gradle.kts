@@ -52,6 +52,9 @@ fun configureTask(target: KonanTarget): Exec {
     dependsOn(srcPrepare)
     workingDir(target.opensslSrcDir(project))
     environment(target.buildEnvironment())
+    doFirst {
+      println("ENVIRONMENT: ${environment}")
+    }
     val args = mutableListOf(
       "./Configure", target.opensslPlatform,
        "--prefix=${target.opensslPrefix(project)}"
