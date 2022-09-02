@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
   kotlin("multiplatform") version Dependencies.kotlin
- // id("com.android.library") version "7.2.0"
+ // id("com.android.library")
 }
 
 group = "org.danbrough.kipfsdemo"
@@ -43,13 +43,13 @@ kotlin {
 
   val nativeMain by sourceSets.creating {
     dependencies {
-     // implementation("org.danbrough.kipfs:openssl:$kipfsVersion")
+     // implementation("org.danbrough.kipfs:openssl:_")
     }
   }
 
   val commonMain by sourceSets.getting {
     dependencies {
-      implementation("org.danbrough:klog:0.0.1-beta06")
+      implementation("org.danbrough:klog:_")
     }
   }
 

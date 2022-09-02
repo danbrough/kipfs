@@ -57,10 +57,10 @@ fun configureTask(target: KonanTarget): Exec {
     }
     val args = mutableListOf(
       "./Configure", target.opensslPlatform,
-       "--prefix=${target.opensslPrefix(project)}"
+       "--prefix=${target.opensslPrefix(project)}","no-tests",
       //"no-tests","no-ui-console", "--prefix=${target.opensslPrefix(project)}"
     )
-    if (target.family == Family.ANDROID) args += "-D__ANDROID_API__=21 "
+    if (target.family == Family.ANDROID) args += "-D__ANDROID_API__=23 "
     else if (target.family == Family.MINGW) args += "--cross-compile-prefix=${target.hostTriplet}-"
     commandLine(args)
   }

@@ -13,6 +13,7 @@ import  org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
+  //id("com.android.library")
   `maven-publish`
   id("org.jetbrains.dokka")
 }
@@ -22,6 +23,7 @@ kotlin {
   jvm {
     withJava()
   }
+  
   
   val commonMain by sourceSets.getting {
     dependencies {
@@ -201,3 +203,14 @@ tasks.register("printPresets") {
     println(name)
   }
 }
+
+/*
+android {
+  compileSdk = ProjectProperties.SDK_VERSION
+  sourceSets["main"].manifest.srcFile("src/AndroidManifest.xml")
+
+  defaultConfig {
+    minSdk = ProjectProperties.MIN_SDK_VERSION
+    targetSdk = ProjectProperties.SDK_VERSION
+  }
+}*/
