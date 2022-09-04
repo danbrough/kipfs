@@ -60,7 +60,6 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
   init {
     group = BasePlugin.BUILD_GROUP
     
-    environment("PLATFORM", target.name)
     
     
     inputs.files(project.fileTree(goDir) {
@@ -81,7 +80,8 @@ abstract class GoLibBuildTask<T : KotlinNativeTarget> @Inject constructor(
     
     val commandEnvironment = target.buildEnvironment()
     environment(commandEnvironment)
-    
+    //environment("PLATFORM", target.name)
+  
     commandLine(
       listOf(
         BuildEnvironment.goBinary, "build", "-v",//"-x",

@@ -7,12 +7,13 @@ import OpenSSL.opensslPrefix
 import OpenSSL.opensslSrcDir
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
- `maven-publish`
+  `maven-publish`
 }
 
 val opensslGitDir = project.file("src/openssl.git")
@@ -57,10 +58,10 @@ fun configureTask(target: KonanTarget): Exec {
     }
     val args = mutableListOf(
       "./Configure", target.opensslPlatform,
-       "--prefix=${target.opensslPrefix(project)}","no-tests",
+      "--prefix=${target.opensslPrefix(project)}", "no-tests", "no-posix-io",
       //"no-tests","no-ui-console", "--prefix=${target.opensslPrefix(project)}"
     )
-    if (target.family == Family.ANDROID) args += "-D__ANDROID_API__=23 "
+    if (target.family == Family.ANDROID) args += "-D__ANDROID_API__=${BuildEnvironment.androidNdkApiVersion} "
     else if (target.family == Family.MINGW) args += "--cross-compile-prefix=${target.hostTriplet}-"
     commandLine(args)
   }
@@ -88,6 +89,7 @@ fun buildTask(target: KonanTarget): TaskProvider<*> {
     group = BasePlugin.BUILD_GROUP
     commandLine("make", "install_sw")
     doLast {
+      println("STATUS: $status")
       target.opensslSrcDir(project).deleteRecursively()
     }
     
@@ -104,7 +106,7 @@ kotlin {
   }
   
   
-  val nativeTest by sourceSets.creating{
+  val nativeTest by sourceSets.creating {
     dependsOn(commonTest)
   }
   
@@ -116,12 +118,18 @@ kotlin {
   BuildEnvironment.nativeTargets.forEach { target ->
     
     registerTarget(target) {
+      
+      val buildTask = buildTask(target)
+      buildAll.dependsOn(buildTask)
+      
+      
       compilations["main"].apply {
+        
         cinterops.create("openssl") {
           packageName("libopenssl")
           defFile = project.file("src/openssl.def")
-          includeDirs( konanTarget.opensslPrefix(project).resolve("include"))
-          extraOpts(listOf("-libraryPath", konanTarget.opensslPrefix(project).resolve("lib")))
+          includeDirs(konanTarget.opensslPrefix(project).resolve("include"))
+          extraOpts(listOf("-libraryPath", konanTarget.opensslPrefix(project).resolve("lib"),"-verbose"))
         }
         
         defaultSourceSet {
@@ -137,14 +145,12 @@ kotlin {
       }
       
       binaries {
-        staticLib("kipfsopenssl",buildTypes = setOf(NativeBuildType.DEBUG)){
+        sharedLib("kipfsopenssl", buildTypes = setOf(NativeBuildType.DEBUG)) {
         
         }
       }
     }
-    buildTask(target).also {
-      buildAll.dependsOn(it)
-    }
+    
   }
 }
 

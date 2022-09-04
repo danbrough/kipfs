@@ -1,3 +1,4 @@
+import BuildEnvironment.buildEnvironment
 import BuildEnvironment.platformName
 import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
@@ -82,6 +83,8 @@ kotlin {
         
         buildAll.dependsOn(this)
         
+        environment(target.buildEnvironment())
+        
         
         appendToEnvironment(
           "CGO_CFLAGS",
@@ -104,6 +107,7 @@ kotlin {
         
         doFirst {
           println("STARTING KIPFS LIB BUILD... ${commandLine.joinToString(" ")}")
+          println("enviroment: $environment")
           println("CGO_CFLAGS: ${environment["CGO_CFLAGS"]}")
           println("CGO_LDFLAGS: ${environment["CGO_LDLAGS"]}")
         }

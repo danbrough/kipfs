@@ -157,8 +157,8 @@ object BuildEnvironment {
       else
         listOf(
           KonanTarget.LINUX_X64,
-//          KonanTarget.LINUX_ARM64,
-//          KonanTarget.LINUX_ARM32_HFP,
+          KonanTarget.LINUX_ARM64,
+          KonanTarget.LINUX_ARM32_HFP,
 //          KonanTarget.MINGW_X64,
 //          KonanTarget.MACOS_ARM64,
 //          KonanTarget.MACOS_X64,
@@ -179,7 +179,8 @@ object BuildEnvironment {
   }
   
   val androidToolchainDir by lazy {
-    androidNdkDir.resolve("toolchains/llvm/prebuilt/linux-x86_64").also {
+    //androidNdkDir.resolve("toolchains/llvm/prebuilt/linux-x86_64").also {
+    androidNdkDir.also {
       assert(it.exists()) {
         "Failed to locate ${it.absolutePath}"
       }

@@ -3,4 +3,5 @@ staticLibraries =  libcrypto.a libssl.a
 headers = openssl/ssl.h openssl/err.h openssl/bio.h openssl/evp.h
 linkerOpts = -lc -lm -ldl
 compilerOpts = -static
+
 #linkerOpts.linux_x64 = -Lbuild/openssl/linuxX64/lib

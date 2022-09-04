@@ -27,6 +27,7 @@ plugins {
 rootProject.name = "kipfs"
 
 include(":openssl")
+include(":curl")
 include(":core")
 include(":api")
 include(":golib")
