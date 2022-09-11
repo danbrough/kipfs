@@ -239,32 +239,33 @@ object BuildEnvironment {
     "GOMODCACHE" to buildCacheDir.resolve("gomodcache"),
     "GOPATH" to buildCacheDir.resolve(name),
     "KONAN_DATA_DIR" to konanDir,
-    "CFLAGS" to "-O3  -Wno-macro-redefined -Wno-deprecated-declarations -DOPENSSL_SMALL_FOOTPRINT=1",
+    "CFLAGS" to "-O3 -pthread -Wno-macro-redefined -Wno-deprecated-declarations ",//-DOPENSSL_SMALL_FOOTPRINT=1",
     "MAKE" to "make -j4",
   ).apply {
     val path = buildPath.toMutableList()
+  
     
     when (this@buildEnvironment) {
       
       KonanTarget.LINUX_ARM32_HFP -> {
         val clangArgs =
           "--target=$hostTriplet --gcc-toolchain=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2 --sysroot=$konanDir/dependencies/arm-unknown-linux-gnueabihf-gcc-8.3.0-glibc-2.19-kernel-4.9-2/arm-unknown-linux-gnueabihf/sysroot "
-        this["CC"] = "$clangBinDir/clang $clangArgs"
-        this["CXX"] = "$clangBinDir/clang++ $clangArgs"
+        this["CC"] = "clang $clangArgs"
+        this["CXX"] = "clang++ $clangArgs"
       }
       
       KonanTarget.LINUX_ARM64 -> {
         val clangArgs =
           "--target=$hostTriplet --gcc-toolchain=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2 --sysroot=$konanDir/dependencies/aarch64-unknown-linux-gnu-gcc-8.3.0-glibc-2.25-kernel-4.9-2/aarch64-unknown-linux-gnu/sysroot"
-        this["CC"] = "$clangBinDir/clang $clangArgs"
-        this["CXX"] = "$clangBinDir/clang++ $clangArgs"
+        this["CC"] = "clang $clangArgs"
+        this["CXX"] = "clang++ $clangArgs"
       }
       
       KonanTarget.LINUX_X64 -> {
         val clangArgs =
           "--target=$hostTriplet --gcc-toolchain=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2 --sysroot=$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot"
-        this["CC"] = "$clangBinDir/clang $clangArgs"
-        this["CXX"] = "$clangBinDir/clang++ $clangArgs"
+        this["CC"] = "clang $clangArgs"
+        this["CXX"] = "clang++ $clangArgs"
 /*        this["RANLIB"] =
           "$konanDir/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/bin/ranlib"*/
       }
@@ -315,6 +316,7 @@ object BuildEnvironment {
       }
     }
     
+    path.add(0, konanDir.resolve("dependencies/llvm-11.1.0-linux-x64-essentials/bin").absolutePath)
     this["PATH"] = path.joinToString(File.pathSeparator)
   }
 }

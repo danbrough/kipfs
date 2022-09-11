@@ -1,6 +1,7 @@
 import BuildEnvironment.buildEnvironment
 import BuildEnvironment.hostTriplet
 import BuildEnvironment.platformName
+import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
 import OpenSSL.opensslPlatform
 import OpenSSL.opensslPrefix
@@ -58,7 +59,8 @@ fun configureTask(target: KonanTarget): Exec {
     }
     val args = mutableListOf(
       "./Configure", target.opensslPlatform,
-      "--prefix=${target.opensslPrefix(project)}", "no-tests", "no-posix-io",
+      "no-tests", "threads",
+      "--prefix=${target.opensslPrefix(project)}",
       //"no-tests","no-ui-console", "--prefix=${target.opensslPrefix(project)}"
     )
     if (target.family == Family.ANDROID) args += "-D__ANDROID_API__=${BuildEnvironment.androidNdkApiVersion} "
@@ -129,7 +131,13 @@ kotlin {
           packageName("libopenssl")
           defFile = project.file("src/openssl.def")
           includeDirs(konanTarget.opensslPrefix(project).resolve("include"))
-          extraOpts(listOf("-libraryPath", konanTarget.opensslPrefix(project).resolve("lib"),"-verbose"))
+          extraOpts(
+            listOf(
+              "-libraryPath",
+              konanTarget.opensslPrefix(project).resolve("lib"),
+              "-verbose"
+            )
+          )
         }
         
         defaultSourceSet {

@@ -25,6 +25,7 @@ dependencies {
   //implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
   implementation(kotlin("gradle-plugin", kotlinVersion))
   implementation(kotlin("serialization"))
+  implementation(kotlin("stdlib-common",kotlinVersion))
   implementation(gradleApi())
   implementation(gradleKotlinDsl())
   
