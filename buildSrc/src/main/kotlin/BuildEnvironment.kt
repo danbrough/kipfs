@@ -15,7 +15,7 @@ object BuildEnvironment {
   
   val gitBinary: String by ProjectProperties.createProperty("git.binary", "/usr/bin/git")
   
-  val buildCacheDir: File by ProjectProperties.createProperty("build.cache")
+  val buildCacheDir: File by ProjectProperties.createProperty("build.cache","/tmp/kipfscache")
   
   val goCacheDir: File by lazy {
     buildCacheDir.resolve("go")

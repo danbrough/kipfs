@@ -49,7 +49,7 @@ kotlin {
 
   val commonMain by sourceSets.getting {
     dependencies {
-      implementation("org.danbrough:klog:_")
+      implementation(libs.klog)
     }
   }
 

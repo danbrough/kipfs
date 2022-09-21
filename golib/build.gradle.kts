@@ -5,6 +5,7 @@ import BuildEnvironment.registerTarget
 import GoLib.goLibsDir
 import GoLib.registerGoLibBuild
 import OpenSSL.opensslPrefix
+import org.danbrough.kotlinxtras.configurePrecompiledBinaries
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
@@ -17,7 +18,10 @@ plugins {
   //id("com.android.library")
   `maven-publish`
   id("org.jetbrains.dokka")
+  id("org.danbrough.kotlinxtras.xtras")
+  
 }
+
 
 kotlin {
   
@@ -82,24 +86,22 @@ kotlin {
       golibBuild {
         
         buildAll.dependsOn(this)
+        //dependsOn("extractOpen${target.platformName}")
         
         environment(target.buildEnvironment())
         
         
         appendToEnvironment(
           "CGO_CFLAGS",
-          "-I${rootProject.file("openssl/lib/${target.platformName}/include")} -I${
-            rootProject.file(
-              "golib/src/go/libs"
-            )
-          }"
+          "-I${project.rootProject.buildDir.resolve("kotlinxtras/openssl/${target.platformName}/include")} -I${rootProject.file("golib/src/go/libs")}"
         )
         appendToEnvironment(
           "CGO_LDFLAGS",
-          "-L${rootProject.file("openssl/lib/${target.platformName}/lib")}"
+          "-L${project.rootProject.buildDir.resolve("kotlinxtras/openssl/${target.platformName}/lib")}"
         )
         
-        dependsOn(":openssl:build${target.platformNameCapitalized}")
+        
+     //   dependsOn(":openssl:build${target.platformNameCapitalized}")
         commandLine(commandLine.toMutableList().also {
           it.add(3, "-tags=openssl")
         })
@@ -109,7 +111,7 @@ kotlin {
           println("STARTING KIPFS LIB BUILD... ${commandLine.joinToString(" ")}")
           println("enviroment: $environment")
           println("CGO_CFLAGS: ${environment["CGO_CFLAGS"]}")
-          println("CGO_LDFLAGS: ${environment["CGO_LDLAGS"]}")
+          println("CGO_LDFLAGS: ${environment["CGO_LDFLAGS"]}")
         }
         
       }
@@ -123,7 +125,7 @@ kotlin {
           defFile = project.file("src/interop/kipfsgo.def")
           includeDirs(
             kipfsLibDir,
-            rootProject.file("openssl/lib/${target.platformName}/include"),
+            rootProject.buildDir.resolve("kotlinxtras/openssl/${target.platformName}/include"),
             project.file("src/go/libs"),
           )
           
@@ -207,6 +209,19 @@ tasks.register("printPresets") {
     println(name)
   }
 }
+
+xtras{
+  enableOpenSSL()
+}
+
+afterEvaluate {
+  configurePrecompiledBinaries()
+}
+
+
+
+
+
 
 /*
 android {
