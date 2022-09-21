@@ -1,5 +1,0 @@
-package openssl
-
-fun testOpenssl(){
-
-}

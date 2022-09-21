@@ -1,41 +1,84 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
   kotlin("multiplatform") version Dependencies.kotlin
+ // id("com.android.library")
 }
 
-group = "danbroid.demo"
+group = "org.danbrough.kipfsdemo"
 version = "1.0-SNAPSHOT"
+
+val kipfsVersion = "0.0.1-SNAPSHOT"
+
 
 repositories {
   mavenCentral()
-  maven(Dependencies.SONA_SNAPSHOTS)
+  maven(if (kipfsVersion.contains("-SNAPSHOT")) Dependencies.SONA_SNAPSHOTS else Dependencies.SONA_STAGING)
 }
 
+val osName = System.getProperty("os.name")
+println("OSNAME: $osName")
 kotlin {
-  val hostOs = System.getProperty("os.name")
-  val isMingwX64 = hostOs.startsWith("Windows")
-  val nativeTarget = when {
-    hostOs == "Mac OS X" -> macosX64("native")
-    hostOs == "Linux" -> linuxX64("native")
-    isMingwX64 -> mingwX64("native")
-    else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+
+  linuxX64()
+
+
+  //linuxArm64()
+
+  if (osName == "Mac OS X")
+    macosX64()
+
+  androidNativeX86(){
+    println("FRAMEWORK $this")
+    println("RELEASE ${this.RELEASE}")
+    println("apiElementsConfigurationName ${this.apiElementsConfigurationName}")
+
+  }
+  androidNativeX64(){
+    println("FRAMEWORK $this")
+    println("RELEASE ${this.RELEASE}")
+    println("apiElementsConfigurationName ${this.apiElementsConfigurationName}")
+
   }
 
-  nativeTarget.apply {
+  val nativeMain by sourceSets.creating {
+    dependencies {
+     // implementation("org.danbrough.kipfs:openssl:_")
+    }
+  }
+
+  val commonMain by sourceSets.getting {
+    dependencies {
+      implementation(libs.klog)
+    }
+  }
+
+  targets.withType(KotlinNativeTarget::class).all {
+    compilations["main"].apply {
+      defaultSourceSet.dependsOn(nativeMain)
+      
+      cinterops{
+
+        cinterops.create("openssl") {
+
+          packageName("libopenssl")
+          defFile = project.file("src/openssl.def")
+          extraOpts("-verbose")
+
+
+//          includeDirs( konanTarget.opensslPrefix(project).resolve("include"))
+//          extraOpts(listOf("-libraryPath", konanTarget.opensslPrefix(project).resolve("lib")))
+        }
+
+
+      }
+    }
+
     binaries {
-      executable {
-        entryPoint = "main"
+      executable("openSSLDemo") {
+        entryPoint = "kipfs.demo.openssl.main"
       }
     }
-  }
-  sourceSets {
-    val commonMain by getting {
-      dependencies {
-        implementation("org.danbrough.kipfs:api:0.0.1-SNAPSHOT")
-        implementation("org.danbrough.kipfs:golib:0.0.1-SNAPSHOT")
-
-      }
-    }
-    val nativeMain by getting
-    val nativeTest by getting
   }
 }
+

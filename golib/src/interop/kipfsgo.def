@@ -1,17 +1,17 @@
 headers = libkipfsgo.h defs.h
 
-#linkerOpts =  -lkipfsgo -lssl -lcrypto -lc
+linkerOpts =  -lkipfsgo -lssl -lcrypto -lc
 linkerOpts = -Bsymbolic -lc -lm -ldl -lssl -lcrypto -lkipfsgo
-linkerOpts.linux_x64 = -Lgolib/build/golib/linuxX64 -Lopenssl/lib/linuxX64/lib
-linkerOpts.linux_arm64 = -Lgolib/build/golib/linuxArm64 -Lopenssl/lib/linuxArm64/lib
-linkerOpts.linux_arm32_hfp = -Lgolib/build/goib/linuxArm32Hfp -Lopenssl/lib/linuxArm32Hfp/lib
-linkerOpts.macos_x64 = -Lgolib/build/golib/macosX64 -Lopenssl/lib/macosX64/lib
-linkerOpts.macos_arm64 = -Lgolib/build/golib/macosArm64 -Lopenssl/lib/macosArm64/lib
-linkerOpts.mingw_x64 = -Lgolib/build/golib/mingwX64 -Lopenssl/lib/mingwX64/lib
-linkerOpts.android_x64 = -Lgolib/build/golib/androidNativeX64 -Lopenssl/lib/androidNativeX64/lib
-linkerOpts.android_x86 = -Lgolib/build/golib/androidNativeX86 -Lopenssl/lib/androidNativeX86/lib
-linkerOpts.android_arm32 = -Lgolib/build/golib/androidNativeArm32 -Lopenssl/lib/androidNativeArm32/lib
-linkerOpts.android_arm64 = -Lgolib/build/golib/androidNativeArm64 -Lopenssl/lib/androidNativeArm64/lib
+linkerOpts.linux_x64 = -Lgolib/build/golib/linuxX64 -Lbuild/kotlinxtras/openssl/linuxX64/lib
+linkerOpts.linux_arm64 = -Lgolib/build/golib/linuxArm64 -Lbuild/openssl/linuxArm64/lib
+linkerOpts.linux_arm32_hfp = -Lgolib/build/goib/linuxArm32Hfp -Lbuild/openssl/linuxArm32Hfp/lib
+linkerOpts.macos_x64 = -Lgolib/build/golib/macosX64 -Lbuild/openssl/macosX64/lib
+linkerOpts.macos_arm64 = -Lgolib/build/golib/macosArm64 -Lbuild/openssl/macosArm64/lib
+linkerOpts.mingw_x64 = -Lgolib/build/golib/mingwX64 -Lbuild/openssl/mingwX64/lib
+linkerOpts.android_x64 = -Lgolib/build/golib/androidNativeX64 -Lbuild/openssl/androidNativeX64/lib
+linkerOpts.android_x86 = -Lgolib/build/golib/androidNativeX86 -Lbuild/openssl/androidNativeX86/lib
+linkerOpts.android_arm32 = -Lgolib/build/golib/androidNativeArm32 -Lbuild/openssl/androidNativeArm32/lib
+linkerOpts.android_arm64 = -Lgolib/build/golib/androidNativeArm64 -LLbuild/openssl/androidNativeArm64/lib
 
 compilerOpts.mingw_x64 = -pthread
 nonStrictEnums = PostDataType

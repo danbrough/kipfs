@@ -8,13 +8,15 @@ import org.jetbrains.kotlin.konan.target.KonanTarget
 
 plugins {
   kotlin("multiplatform") apply false
-  id("io.github.gradle-nexus.publish-plugin")
+  //id("io.github.gradle-nexus.publish-plugin")
   id("org.jetbrains.dokka")
   //kotlin("plugin.serialization") apply false
-  //id("com.android.library") apply false
+  id("com.android.library") apply false
+  id("org.jetbrains.kotlin.android") apply false
   //id("org.jetbrains.kotlin.jvm") apply false
   //id("com.android.application") apply false
 //  id("org.jetbrains.kotlin.android")
+  id("org.danbrough.kotlinxtras.xtras") apply false
   `maven-publish`
   signing
 }
@@ -33,8 +35,12 @@ ProjectProperties.init(project)
 group = ProjectProperties.projectGroup
 version = ProjectProperties.buildVersionName
 
+println("GROUP: $group")
+
 allprojects {
   repositories {
+        maven("https://s01.oss.sonatype.org/content/groups/staging/")
+
     mavenCentral()
     google()
     // maven("https://s01.oss.sonatype.org/content/repositories/releases/")
@@ -83,14 +89,14 @@ val javadocJar by tasks.registering(Jar::class) {
   from(tasks.dokkaHtml)
 }
 
-nexusPublishing {
-  repositories {
-    sonatype {
-      nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-      snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-    }
-  }
-}
+//nexusPublishing {
+//  repositories {
+//    sonatype {
+//      nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+//      snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+//    }
+//  }
+//}
 
 allprojects {
   
@@ -102,12 +108,6 @@ allprojects {
     extensions.findByType(PublishingExtension::class) ?: return@afterEvaluate
     
     publishing {
-      
-      repositories {
-        maven(ProjectProperties.LOCAL_M2) {
-          name = "m2"
-        }
-      }
       
       publications.all {
         if (this !is MavenPublication) return@all

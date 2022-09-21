@@ -1,16 +1,8 @@
 pluginManagement {
-
-/*  resolutionStrategy {
-    eachPlugin {
-      println("PLUGIN ID: ${requested.id.id}")
-      if (requested.id.id == "org.jetbrains.kotlin.multiplatform") {
-        println("USING THIS ONE!")
-        useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0")
-      }
-    }
-  }*/
   
   repositories {
+  //  maven("https://s01.oss.sonatype.org/content/groups/staging/")
+    
     gradlePluginPortal()
     mavenCentral()
     google()
@@ -20,13 +12,12 @@ pluginManagement {
 
 
 plugins {
-  id("de.fayard.refreshVersions") version "0.40.2"
+  id("de.fayard.refreshVersions") version "0.50.1"
 }
 
 
 rootProject.name = "kipfs"
 
-include(":openssl")
 include(":core")
 include(":api")
 include(":golib")

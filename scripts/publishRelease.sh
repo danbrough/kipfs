@@ -6,7 +6,7 @@ source scripts/common.sh
 
 if is_mac; then
   git reset --hard && git pull
-  ./gradlew -PpublishDocs publishMacTargetsToSonatypeRepository
+  ./gradlew -PpublishDocs publishMac
   exit 0
 fi
 
@@ -22,7 +22,7 @@ fi
 sed -i README.md  -e 's|kipfs:.*"|kipfs:'$VERSION_NAME'"|g'
 
 ./gradlew -q buildVersionIncrement
-./gradlew publishAllPublicationsToRepository
+./gradlew -PpublishDocs publishAllPublicationsToSonatypeRepository
 
 git add .
 git commit -am "$VERSION_NAME"
