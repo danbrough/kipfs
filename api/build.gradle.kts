@@ -1,9 +1,5 @@
-import BuildEnvironment.hostIsMac
-import BuildEnvironment.hostTarget
-import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
 import GoLib.goLibsDir
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
@@ -70,6 +66,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
   )
 }
 
+/*
 tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::class) {
   
   val hostTarget = BuildEnvironment.hostTarget
@@ -86,4 +83,5 @@ tasks.withType(org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest::clas
   
   
 }
+*/
 

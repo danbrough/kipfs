@@ -4,14 +4,12 @@ import BuildEnvironment.platformNameCapitalized
 import BuildEnvironment.registerTarget
 import GoLib.goLibsDir
 import GoLib.registerGoLibBuild
-import OpenSSL.opensslPrefix
 import org.danbrough.kotlinxtras.configurePrecompiledBinaries
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
-import  org.jetbrains.kotlin.konan.target.Family
+import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
   kotlin("multiplatform")
@@ -19,7 +17,7 @@ plugins {
   `maven-publish`
   id("org.jetbrains.dokka")
   id("org.danbrough.kotlinxtras.xtras")
-  
+
 }
 
 
@@ -86,7 +84,8 @@ kotlin {
       golibBuild {
         
         buildAll.dependsOn(this)
-        //dependsOn("extractOpen${target.platformName}")
+        dependsOn("extractOpenssl${target.platformName.capitalized()}Binaries")
+        
         
         environment(target.buildEnvironment())
         

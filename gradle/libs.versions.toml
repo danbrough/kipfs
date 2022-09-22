@@ -35,6 +35,8 @@ com-android-tools-build-gradle = "com.android.tools.build:gradle:7.3.0"
 ##                                                           ⬆ :7.4.0-alpha08"
 ##                                                           ⬆ :7.4.0-alpha09"
 ##                                                           ⬆ :7.4.0-alpha10"
+##                                                           ⬆ :7.4.0-beta01"
+##                                                           ⬆ :8.0.0-alpha01"
 
 dokka-analysis = "org.jetbrains.dokka:dokka-analysis:1.7.10"
 

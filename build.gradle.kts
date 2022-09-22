@@ -1,10 +1,9 @@
 import BuildEnvironment.nativeTargets
-import BuildEnvironment.platformName
 import BuildEnvironment.platformNameCapitalized
+import org.danbrough.kotlinxtras.SonatypeExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.konan.target.KonanTarget
 
 plugins {
   kotlin("multiplatform") apply false
@@ -17,6 +16,8 @@ plugins {
   //id("com.android.application") apply false
 //  id("org.jetbrains.kotlin.android")
   id("org.danbrough.kotlinxtras.xtras") apply false
+  id("org.danbrough.kotlinxtras.sonatype")
+  
   `maven-publish`
   signing
 }
@@ -36,6 +37,7 @@ group = ProjectProperties.projectGroup
 version = ProjectProperties.buildVersionName
 
 println("GROUP: $group")
+
 
 allprojects {
   repositories {
@@ -66,6 +68,13 @@ allprojects {
       jvmTarget = ProjectProperties.KOTLIN_JVM_VERSION
     }
   }
+  
+  tasks.withType<JavaCompile>().all {
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
+  }
+  
+  
 }
 
 
@@ -98,6 +107,12 @@ val javadocJar by tasks.registering(Jar::class) {
 //  }
 //}
 
+sonatype{
+}
+
+val sonatypeExtension = extensions.findByType(SonatypeExtension::class)
+println("SonaType extension user: ${sonatypeExtension?.username}")
+
 allprojects {
   
   apply<SigningPlugin>()
@@ -106,6 +121,7 @@ allprojects {
   
   afterEvaluate {
     extensions.findByType(PublishingExtension::class) ?: return@afterEvaluate
+    
     
     publishing {
       
