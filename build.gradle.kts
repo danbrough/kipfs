@@ -1,34 +1,21 @@
 import BuildEnvironment.nativeTargets
 import BuildEnvironment.platformNameCapitalized
-import org.danbrough.kotlinxtras.SonatypeExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   kotlin("multiplatform") apply false
-  //id("io.github.gradle-nexus.publish-plugin")
   id("org.jetbrains.dokka")
-  //kotlin("plugin.serialization") apply false
   id("com.android.library") apply false
   id("org.jetbrains.kotlin.android") apply false
   //id("org.jetbrains.kotlin.jvm") apply false
   //id("com.android.application") apply false
 //  id("org.jetbrains.kotlin.android")
-  id("org.danbrough.kotlinxtras.xtras") apply false
+  id("org.danbrough.kotlinxtras.binaries")
   id("org.danbrough.kotlinxtras.sonatype")
-  
   `maven-publish`
   signing
-}
-
-
-
-buildscript {
-  repositories {
-    mavenCentral()
-    gradlePluginPortal()
-  }
 }
 
 ProjectProperties.init(project)
@@ -41,8 +28,8 @@ println("GROUP: $group")
 
 allprojects {
   repositories {
-        maven("https://s01.oss.sonatype.org/content/groups/staging/")
-
+    maven("https://s01.oss.sonatype.org/content/groups/staging/")
+    
     mavenCentral()
     google()
     // maven("https://s01.oss.sonatype.org/content/repositories/releases/")
@@ -107,20 +94,20 @@ val javadocJar by tasks.registering(Jar::class) {
 //  }
 //}
 
-sonatype{
+sonatype {
 }
 
-val sonatypeExtension = extensions.findByType(SonatypeExtension::class)
+val sonatypeExtension = extensions.findByType(org.danbrough.kotlinxtras.sonatype.SonatypeExtension::class)
 println("SonaType extension user: ${sonatypeExtension?.username}")
 
 allprojects {
   
-  apply<SigningPlugin>()
   group = ProjectProperties.projectGroup
   version = ProjectProperties.buildVersionName
   
   afterEvaluate {
     extensions.findByType(PublishingExtension::class) ?: return@afterEvaluate
+    apply<SigningPlugin>()
     
     
     publishing {
@@ -132,11 +119,9 @@ allprojects {
         
         pom {
           
-          
           name.set("KIPFS")
           description.set("Kotlin IPFS client api and embedded node")
           url.set("https://github.com/danbrough/kipfs/")
-          
           
           licenses {
             license {

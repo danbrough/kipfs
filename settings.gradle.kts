@@ -2,7 +2,7 @@ pluginManagement {
   
   repositories {
   //  maven("https://s01.oss.sonatype.org/content/groups/staging/")
-    maven("/usr/local/kotlinxtras/build/m2")
+   maven("/usr/local/kotlinxtras/build/m2")
     gradlePluginPortal()
     mavenCentral()
     google()
@@ -12,7 +12,7 @@ pluginManagement {
 
 
 plugins {
-  id("de.fayard.refreshVersions") version "0.50.1"
+  id("de.fayard.refreshVersions") version "0.50.2"
 }
 
 

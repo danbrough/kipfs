@@ -24,18 +24,7 @@ kotlin = "1.7.10"
 
 [libraries]
 
-com-android-tools-build-gradle = "com.android.tools.build:gradle:7.3.0"
-##                                                           ⬆ :7.4.0-alpha01"
-##                                                           ⬆ :7.4.0-alpha02"
-##                                                           ⬆ :7.4.0-alpha03"
-##                                                           ⬆ :7.4.0-alpha04"
-##                                                           ⬆ :7.4.0-alpha05"
-##                                                           ⬆ :7.4.0-alpha06"
-##                                                           ⬆ :7.4.0-alpha07"
-##                                                           ⬆ :7.4.0-alpha08"
-##                                                           ⬆ :7.4.0-alpha09"
-##                                                           ⬆ :7.4.0-alpha10"
-##                                                           ⬆ :7.4.0-beta01"
+com-android-tools-build-gradle = "com.android.tools.build:gradle:7.4.0-beta01"
 ##                                                           ⬆ :8.0.0-alpha01"
 
 dokka-analysis = "org.jetbrains.dokka:dokka-analysis:1.7.10"

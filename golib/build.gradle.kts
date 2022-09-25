@@ -16,7 +16,7 @@ plugins {
   //id("com.android.library")
   `maven-publish`
   id("org.jetbrains.dokka")
-  id("org.danbrough.kotlinxtras.xtras")
+  id("org.danbrough.kotlinxtras.binaries")
 
 }
 
@@ -208,8 +208,9 @@ tasks.register("printPresets") {
     println(name)
   }
 }
+/*
 
-xtras{
+binaries {
   enableOpenSSL()
 }
 
@@ -217,6 +218,7 @@ afterEvaluate {
   configurePrecompiledBinaries()
 }
 
+*/
 
 
 
