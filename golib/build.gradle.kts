@@ -16,8 +16,6 @@ plugins {
   //id("com.android.library")
   `maven-publish`
   id("org.jetbrains.dokka")
-  id("org.danbrough.kotlinxtras.binaries")
-
 }
 
 
@@ -84,7 +82,7 @@ kotlin {
       golibBuild {
         
         buildAll.dependsOn(this)
-        dependsOn("extractOpenssl${target.platformName.capitalized()}Binaries")
+      //TODO  dependsOn("extractOpenssl${target.platformName.capitalized()}Binaries")
         
         
         environment(target.buildEnvironment())

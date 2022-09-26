@@ -25,7 +25,6 @@ kotlin = "1.7.10"
 [libraries]
 
 com-android-tools-build-gradle = "com.android.tools.build:gradle:7.4.0-beta01"
-##                                                           ⬆ :8.0.0-alpha01"
 
 dokka-analysis = "org.jetbrains.dokka:dokka-analysis:1.7.10"
 
