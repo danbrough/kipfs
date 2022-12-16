@@ -16,6 +16,8 @@ plugins {
   //id("com.android.library")
   `maven-publish`
   id("org.jetbrains.dokka")
+  id("org.danbrough.kotlinxtras.xtras")
+
 }
 
 
@@ -82,7 +84,7 @@ kotlin {
       golibBuild {
         
         buildAll.dependsOn(this)
-      //TODO  dependsOn("extractOpenssl${target.platformName.capitalized()}Binaries")
+        dependsOn("extractOpenssl${target.platformName.capitalized()}Binaries")
         
         
         environment(target.buildEnvironment())
@@ -206,9 +208,8 @@ tasks.register("printPresets") {
     println(name)
   }
 }
-/*
 
-binaries {
+xtras{
   enableOpenSSL()
 }
 
@@ -216,7 +217,6 @@ afterEvaluate {
   configurePrecompiledBinaries()
 }
 
-*/
 
 
 

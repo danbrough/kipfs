@@ -23,7 +23,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.1.1 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/libp2p/go-flow-metrics v0.1.0 // indirect
-	github.com/libp2p/go-libp2p v0.23.2 // indirect
+	github.com/libp2p/go-libp2p v0.23.1 // indirect
 	github.com/libp2p/go-libp2p-core v0.20.1 // indirect
 	github.com/libp2p/go-openssl v0.1.0 // indirect
 	github.com/mattn/go-pointer v0.0.1 // indirect
@@ -40,7 +40,7 @@ require (
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/whyrusleeping/tar-utils v0.0.0-20201201191210-20a61371de5b // indirect
-	golang.org/x/crypto v0.0.0-20220924013350-4ba4fb4dd9e7 // indirect
+	golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0 // indirect
 	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
 )
