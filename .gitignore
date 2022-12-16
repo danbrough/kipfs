@@ -1,0 +1,16 @@
+**/.gradle
+**/build
+**.hprof
+/.idea
+/.vscode
+/*.hprof
+**/_obj
+/tmp
+**/*.log
+**/*.o
+**/*.so
+**/*.class
+/ndk
+/lint.xml
+/local.properties
+
