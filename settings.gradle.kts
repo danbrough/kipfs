@@ -17,7 +17,5 @@ plugins {
 
 rootProject.name = "kipfs"
 
-//include(":core")
-//include(":api")
-//include(":golib")
+include(":golib")
 
