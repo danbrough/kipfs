@@ -2,7 +2,7 @@ package kipfs
 
 
 const val ENV_KIPFS_ADDRESS = "KIPFS_ADDRESS"
-const val DEFAULT_KIPFS_ADDRESS = "/ip4/192.168.1.2/tcp/5001"
+const val DEFAULT_KIPFS_ADDRESS = "/ip4/127.0.0.1/tcp/5001"
 
 interface KResponse<T>{
   fun readAll(): ByteArray
