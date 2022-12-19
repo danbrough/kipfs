@@ -7,7 +7,9 @@ plugins {
 
 
 group = "org.danbrough.kipfs"
+
 val javaLangVersion = 11
+
 val versionProps = Properties().also{
   it.load(file("../versions.properties").bufferedReader())
 }
@@ -18,33 +20,40 @@ repositories {
   mavenCentral()
 }
 
-java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(javaLangVersion))
-}
 
 
 dependencies {
   compileOnly(kotlin("gradle-plugin",kotlinVersion))
   compileOnly(kotlin("gradle-plugin-api"))
+  implementation(gradleApi())
+  implementation(gradleKotlinDsl())
+  implementation(kotlin("stdlib-common",kotlinVersion))
+
   //compileOnly("org.jetbrains.dokka:dokka-gradle-plugin:_")
 }
 
+/*
+  implementation(kotlin("gradle-plugin", kotlinVersion))
+  implementation(kotlin("serialization"))
+  implementation(kotlin("stdlib-common",kotlinVersion))
+  implementation(gradleApi())
+  implementation(gradleKotlinDsl())
+
+ */
+
+java {
+  toolchain.languageVersion.set(JavaLanguageVersion.of(javaLangVersion))
+}
 
 kotlin {
-
   jvmToolchain {
-    check(this is JavaToolchainSpec)
     languageVersion.set(JavaLanguageVersion.of(javaLangVersion))
   }
 }
 
-tasks.withType<KotlinJvmCompile> {
-  kotlinOptions {
-    jvmTarget = javaLangVersion.toString()
-  }
-}
 
 
+/*
 gradlePlugin {
   plugins {
 
@@ -59,4 +68,5 @@ gradlePlugin {
 }
 
 
+*/
 

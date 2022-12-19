@@ -19,6 +19,6 @@ refreshVersions { // Optional: configure the plugin
 }
 
 rootProject.name = "kipfs"
-
+include(":core")
 include(":golib")
 
