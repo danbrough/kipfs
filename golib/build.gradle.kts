@@ -20,10 +20,9 @@ plugins {
   id("org.danbrough.kotlinxtras.sonatype")
 }
 
+
+group = KIPFS_GROUP
 val openSSL = enableOpenssl()
-
-
-group = "org.danbrough.kipfs"
 
 val golib = registerLibraryExtension("golib") {
 
@@ -87,8 +86,7 @@ val golib = registerLibraryExtension("golib") {
 
 kotlin {
 
-
-  linuxX64()
+  declareTargets()
 
   val commonMain by sourceSets.getting {
     dependencies {
@@ -113,9 +111,7 @@ kotlin {
 
   targets.withType<KotlinNativeTarget> {
 
-    binaries.all {
-      println("NATIVE BINARY:$this $name: $konanTarget")
-
+/*    binaries.all {
       if (this is Executable) {
         runTask?.apply {
           val ldLibKey = if (HostManager.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH"
@@ -123,13 +119,11 @@ kotlin {
           val newLibPath =
             (libPath?.let { "$it${File.pathSeparator}" }
               ?: "") + "${golib.libsDir(konanTarget)}/lib"
-          println("----------------------ADDING: $ldLibKey:$newLibPath")
+          //println("----------------------ADDING: $ldLibKey:$newLibPath")
           environment(ldLibKey, newLibPath)
         } ?: println("no run task")
-      } else {
-        println("Not an executable")
       }
-    }
+    }*/
 
     compilations["main"].apply {
 

@@ -1,6 +1,7 @@
 pluginManagement {
   
   repositories {
+    maven(file("build/xtras/maven"))
     maven("/usr/local/kotlinxtras/build/xtras/maven")
     maven("https://s01.oss.sonatype.org/content/groups/staging/")
     gradlePluginPortal()
@@ -19,6 +20,17 @@ refreshVersions { // Optional: configure the plugin
 }
 
 rootProject.name = "kipfs"
-include(":core")
-include(":golib")
-include(":demo")
+
+val pluginsOnly: String? by settings
+
+//-PpluginsOnly=true or not specified
+if (pluginsOnly == null || pluginsOnly.toBoolean()) {
+  include(":plugin")
+}
+
+if (!pluginsOnly.toBoolean()) {
+  include(":core")
+  include(":golib")
+  include(":demo")
+}
+

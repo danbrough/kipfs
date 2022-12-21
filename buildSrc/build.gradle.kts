@@ -23,11 +23,13 @@ repositories {
 
 
 dependencies {
-  compileOnly(kotlin("gradle-plugin",kotlinVersion))
+  //compileOnly(kotlin("gradle-plugin",kotlinVersion))
+  implementation(kotlin("gradle-plugin"))
   compileOnly(kotlin("gradle-plugin-api"))
-  implementation(gradleApi())
-  implementation(gradleKotlinDsl())
-  implementation(kotlin("stdlib-common",kotlinVersion))
+  compileOnly(gradleApi())
+  compileOnly(gradleKotlinDsl())
+  //implementation(kotlin("stdlib-common",kotlinVersion))
+  implementation(kotlin("stdlib-common"))
 
   //compileOnly("org.jetbrains.dokka:dokka-gradle-plugin:_")
 }
