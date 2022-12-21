@@ -17,6 +17,7 @@ import java.util.Date
 plugins {
   kotlin("multiplatform")
   id("org.danbrough.kotlinxtras.core")
+  id("org.danbrough.kotlinxtras.sonatype")
 }
 
 val openSSL = enableOpenssl()
@@ -26,8 +27,6 @@ group = "org.danbrough.kipfs"
 
 val golib = registerLibraryExtension("golib") {
 
-
-  isPublishingEnabled = true
 
   version = "0.0.1-beta01"
 
@@ -42,7 +41,8 @@ val golib = registerLibraryExtension("golib") {
 
   build { target ->
 
-    dependsOn(openSSL.provideBinariesTaskName(target))
+
+    dependsOn(openSSL.resolveArchiveTaskName(target))
 
     inputs.files(project.fileTree(workingDir) {
       include("**/*.go")
@@ -129,23 +129,12 @@ kotlin {
       } else {
         println("Not an executable")
       }
-
-/*      if (this is TestExecutable){
-        println("test exec bin options: $binaryOptions")
-        linkTask.apply {
-
-        }
-        this.linkerOpts.add("-l")
-      }*/
     }
 
     compilations["main"].apply {
+
       defaultSourceSet {
         dependsOn(jniMain)
-        /*if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.ANDROID)
-          dependsOn(androidNativeMain)
-        else
-          dependsOn(jniMain)*/
       }
 
       if (konanTarget.family != org.jetbrains.kotlin.konan.target.Family.ANDROID) {
@@ -175,33 +164,7 @@ tasks.withType(KotlinNativeTest::class).all {
   val libPath = environment[ldLibKey]
   val newLibPath =
     (libPath?.let { "$it${File.pathSeparator}" } ?: "") + "${golib.libsDir(konanTarget)}/lib" + File.pathSeparatorChar + "${openSSL.libsDir(konanTarget)}/lib"
-  println("----------------------ADDING: $ldLibKey: $newLibPath")
   environment(ldLibKey, newLibPath)
 }
 
-tasks.withType(KotlinNativeLink::class){
-  println("NATIVE LINK: $this:$name linker opts:$linkerOpts")
-  println("compiler opts: ${NativeLinkOptions().freeCompilerArgs}")
-}
 
-
-
-
-
-/*
-tasks.withType(KotlinNativeTest::class.java) {
-  println("KOTLIN NATIVE TEST: $this: $name : $targetName")
-  val konanTarget =
-    org.jetbrains.kotlin.konan.target.KonanTarget.Companion.predefinedTargets[targetName]
-
-  this.
-  println("KOnan Target: $konanTarget")
-
-  val ldLibKey = if (HostManager.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH"
-  val libPath = environment[ldLibKey]
-  val newLibPath =
-    (libPath?.let { "$it${File.pathSeparator}" } ?: "") + "${golib.libsDir(konanTarget)}/lib"
-  println("----------------------ADDING: $ldLibKey:$newLibPath")
-  environment(ldLibKey, newLibPath)
-}
-*/
