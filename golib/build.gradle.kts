@@ -13,76 +13,20 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import org.jetbrains.kotlin.konan.target.HostManager
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.util.Date
+import org.danbrough.kipfs.enableGo
 
 plugins {
   kotlin("multiplatform")
-  id("org.danbrough.kotlinxtras.core")
+  id("org.danbrough.kipfs.go")
   id("org.danbrough.kotlinxtras.sonatype")
 }
 
 
-group = KIPFS_GROUP
-val openSSL = enableOpenssl()
+val golib = enableGo {
 
-val golib = registerLibraryExtension("golib") {
-
-
-  version = "0.0.1-beta01"
-
-  sourceDir(project.file("src/go"))
-
-  cinterops {
-    headers = """
-          |headers = libkipfsgo.h
-          |linkerOpts = -lkipfsgo 
-          |""".trimMargin()
-  }
-
-  build { target ->
-
-
-    dependsOn(openSSL.resolveArchiveTaskName(target))
-
-    inputs.files(project.fileTree(workingDir) {
-      include("**/*.go")
-      include("**/*.c")
-      include("**/*.h")
-      include("**/*.mod")
-    })
-
-    openSSL.addBuildFlags(target, environment)
-    environment["CGO_CFLAGS"] = environment["CFLAGS"]
-    environment["CGO_LDFLAGS"] = environment["LDFLAGS"]
-
-
-    val buildDir = buildDir(target)
-    val libFile = buildDir.resolve("lib/libkipfsgo.${target.sharedLibExtn}")
-    val modules = "github.com/danbrough/kipfs/libs"
-
-    doLast {
-      val headersDir = buildDir.resolve("include")
-      if (!headersDir.exists()) headersDir.mkdirs()
-      workingDir.resolve("libs/defs.h").copyTo(headersDir.resolve("defs.h"), true)
-      buildDir.resolve("lib/libkipfsgo.h").also {
-        it.copyTo(headersDir.resolve("libkipfsgo.h"), true)
-        it.delete()
-      }
-    }
-
-    commandLine(
-      binaries.goBinary,
-      "build",
-      "-v",
-      "-trimpath",
-      "-buildmode=c-shared",
-      "-tags=shell,openssl",
-      "-o",
-      libFile,
-      modules
-    )
-  }
 }
 
+val openSSL = enableOpenssl()
 
 kotlin {
 
@@ -152,13 +96,20 @@ kotlin {
 }
 
 
+
 tasks.withType(KotlinNativeTest::class).all {
   val ldLibKey = if (HostManager.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH"
   val konanTarget = if (HostManager.hostIsMac) KonanTarget.MACOS_X64 else KonanTarget.LINUX_X64
   val libPath = environment[ldLibKey]
   val newLibPath =
-    (libPath?.let { "$it${File.pathSeparator}" } ?: "") + "${golib.libsDir(konanTarget)}/lib" + File.pathSeparatorChar + "${openSSL.libsDir(konanTarget)}/lib"
+    (libPath?.let { "$it${File.pathSeparator}" }
+      ?: "") + "${golib.libsDir(konanTarget)}/lib" + File.pathSeparatorChar + "${
+      openSSL.libsDir(
+        konanTarget
+      )
+    }/lib"
   environment(ldLibKey, newLibPath)
 }
+
 
 
