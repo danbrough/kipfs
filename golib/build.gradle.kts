@@ -97,19 +97,12 @@ kotlin {
 
 
 
-tasks.withType(KotlinNativeTest::class).all {
-  val ldLibKey = if (HostManager.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH"
-  val konanTarget = if (HostManager.hostIsMac) KonanTarget.MACOS_X64 else KonanTarget.LINUX_X64
-  val libPath = environment[ldLibKey]
-  val newLibPath =
-    (libPath?.let { "$it${File.pathSeparator}" }
-      ?: "") + "${golib.libsDir(konanTarget)}/lib" + File.pathSeparatorChar + "${
-      openSSL.libsDir(
-        konanTarget
-      )
-    }/lib"
-  environment(ldLibKey, newLibPath)
-}
+
+
+
+
+
+
 
 
 
