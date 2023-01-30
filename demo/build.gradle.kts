@@ -5,7 +5,7 @@ plugins {
   kotlin("multiplatform")
 
   id("org.danbrough.kotlinxtras.core")
-  id("org.danbrough.kipfs.go")
+  id("org.danbrough.kipfs.go") version KIPFS_VERSION
 }
 
 

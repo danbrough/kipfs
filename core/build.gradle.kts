@@ -1,5 +1,3 @@
-
-
 plugins {
   kotlin("multiplatform")
   kotlin("plugin.serialization")
@@ -13,18 +11,16 @@ plugins {
 kotlin {
 
 
-  androidNativeX86()
-  linuxX64()
-  linuxArm64()
+  declareTargets()
   jvm()
 
-  
+
   sourceSets {
-    
+
     all {
       listOf(
         "kotlin.RequiresOptIn",
-      //  "kotlinx.serialization.ExperimentalSerializationApi",
+        //  "kotlinx.serialization.ExperimentalSerializationApi",
         "kotlin.ExperimentalMultiplatform",
         // "kotlinx.coroutines.ExperimentalCoroutinesApi",
         // "kotlin.time.ExperimentalTime",
@@ -32,14 +28,14 @@ kotlin {
         languageSettings.optIn(it)
       }
     }
-    
+
     val commonMain by getting {
       dependencies {
         api("org.danbrough:klog:_")
       }
     }
 
-    
+
     val jvmMain by getting {
       dependencies {
         //dependsOn(baseMain)
@@ -47,7 +43,7 @@ kotlin {
       }
     }
   }
-  
+
 }
 
 

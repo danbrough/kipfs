@@ -6,7 +6,6 @@ plugins {
   id("org.danbrough.kotlinxtras.sonatype") apply false
   id("org.danbrough.kotlinxtras.core") apply false
   id("org.jetbrains.dokka") apply false
-  id("org.danbrough.kipfs.go") version KIPFS_VERSION apply false
 }
 
 println("Using Kotlin compiler version: ${org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION}")
@@ -22,6 +21,7 @@ allprojects {
     mavenCentral()
     google()
   }
+
   tasks.withType<AbstractTestTask> {
     testLogging {
       events = setOf(

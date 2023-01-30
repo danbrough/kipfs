@@ -31,6 +31,6 @@ if (pluginsOnly == null || pluginsOnly.toBoolean()) {
 if (!pluginsOnly.toBoolean()) {
   include(":core")
   include(":golib")
-  include(":demo")
+  //include(":demo")
 }
 

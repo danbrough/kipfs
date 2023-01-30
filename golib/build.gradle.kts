@@ -17,8 +17,11 @@ import org.danbrough.kipfs.enableGo
 
 plugins {
   kotlin("multiplatform")
-  id("org.danbrough.kipfs.go")
+  id("org.danbrough.kipfs.go") version KIPFS_VERSION
   id("org.danbrough.kotlinxtras.sonatype")
+
+
+  `maven-publish`
 }
 
 
@@ -96,7 +99,16 @@ kotlin {
 }
 
 
+tasks.create("stuff") {
+  doFirst {
 
+    project.tasks.withType(org.gradle.api.publish.maven.tasks.PublishToMavenRepository::class.java).all{
+
+      println("publishing task: $this")
+    }
+
+  }
+}
 
 
 
