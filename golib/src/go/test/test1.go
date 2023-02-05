@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/danbrough/kipfs/misc"
 	"github.com/danbrough/kipfs/shell"
 	"github.com/multiformats/go-multibase"
 )
@@ -8,6 +9,8 @@ import (
 func main() {
 	println("running test1")
 
+
+	println("The time is: " +misc.GetTime())
 
 	println(multibase.Encode(multibase.Base64url, []byte("testing")))
 

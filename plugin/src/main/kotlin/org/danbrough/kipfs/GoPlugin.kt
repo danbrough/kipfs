@@ -25,7 +25,7 @@ fun Project.enableGo(
 
       version = "0.0.1-beta01"
 
-      sourceDir(project.rootProject.file("golib/src/go"))
+      sourceDir(project.file("src/go"))
 
       cinterops {
         headers = """
@@ -36,6 +36,7 @@ fun Project.enableGo(
 
       build { target ->
 
+        println("CONFIGURING GOBUILD: $target")
         dependsOn(openSSL.resolveArchiveTaskName(target))
 
         inputs.files(project.fileTree(workingDir) {
@@ -92,3 +93,7 @@ class GoPlugin : Plugin<Project> {
   override fun apply(target: Project) {
   }
 }
+
+
+
+

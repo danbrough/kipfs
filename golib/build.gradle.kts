@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.konan.target.HostManager
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.util.Date
 import org.danbrough.kipfs.enableGo
+import org.danbrough.kotlinxtras.platformName
 
 plugins {
   kotlin("multiplatform")
@@ -103,7 +104,6 @@ tasks.create("stuff") {
   doFirst {
 
     project.tasks.withType(org.gradle.api.publish.maven.tasks.PublishToMavenRepository::class.java).all{
-
       println("publishing task: $this")
     }
 
