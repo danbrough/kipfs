@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
   //compileOnly(kotlin("gradle-plugin",kotlinVersion))
-  implementation(kotlin("gradle-plugin"))
+  implementation(kotlin("gradle-plugin",kotlinVersion))
   compileOnly(kotlin("gradle-plugin-api"))
   compileOnly(gradleApi())
   compileOnly(gradleKotlinDsl())
