@@ -22,7 +22,7 @@ fun Project.enableGo(
   return extensions.findByName(extnName) as? LibraryExtension
     ?: registerLibraryExtension(extnName) {
 
-      version = "0.0.1-beta01"
+      version = project.version.toString()
 
       sourceDir(project.file("src/go"))
 

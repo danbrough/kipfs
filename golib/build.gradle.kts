@@ -11,7 +11,7 @@ plugins {
 }
 
 
-val golib = enableGo {
+enableGo {
 
 }
 
