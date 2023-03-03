@@ -5,6 +5,7 @@ plugins {
   kotlin("multiplatform") apply false
   id("org.danbrough.kotlinxtras.sonatype") apply false
   id("org.danbrough.kotlinxtras.core") apply false
+  id("org.danbrough.kotlinxtras.binaries") apply false
   id("org.jetbrains.dokka") apply false
 }
 

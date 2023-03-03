@@ -28,9 +28,11 @@ if (pluginsOnly == null || pluginsOnly.toBoolean()) {
   include(":plugin")
 }
 
+
 if (!pluginsOnly.toBoolean()) {
   include(":core")
   include(":golib")
   //include(":demo")
 }
+
 

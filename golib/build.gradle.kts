@@ -1,20 +1,5 @@
-import org.danbrough.kotlinxtras.binaries.registerLibraryExtension
-import org.danbrough.kotlinxtras.binaries.sourceDir
-import org.danbrough.kotlinxtras.enableOpenssl
-import org.danbrough.kotlinxtras.sharedLibExtn
-import org.jetbrains.kotlin.builtins.konan.KonanBuiltIns
-import org.jetbrains.kotlin.commonizer.KonanDistribution
-import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractExecutable
-import org.jetbrains.kotlin.gradle.plugin.mpp.Executable
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
-import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
-import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
-import org.jetbrains.kotlin.konan.target.HostManager
-import org.jetbrains.kotlin.konan.target.KonanTarget
-import java.util.Date
 import org.danbrough.kipfs.enableGo
-import org.danbrough.kotlinxtras.platformName
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
   kotlin("multiplatform")
@@ -30,7 +15,6 @@ val golib = enableGo {
 
 }
 
-val openSSL = enableOpenssl()
 
 kotlin {
 

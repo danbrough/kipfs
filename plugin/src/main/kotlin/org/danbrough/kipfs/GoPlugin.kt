@@ -4,7 +4,7 @@ import org.danbrough.kotlinxtras.binaries.LibraryExtension
 import org.danbrough.kotlinxtras.binaries.binariesExtension
 import org.danbrough.kotlinxtras.binaries.registerLibraryExtension
 import org.danbrough.kotlinxtras.binaries.sourceDir
-import org.danbrough.kotlinxtras.enableOpenssl
+import org.danbrough.kotlinxtras.core.enableOpenssl
 import org.danbrough.kotlinxtras.goArch
 import org.danbrough.kotlinxtras.goOS
 import org.danbrough.kotlinxtras.sharedLibExtn
@@ -15,7 +15,6 @@ import org.gradle.api.Project
 fun Project.enableGo(
   extnName: String = "golib",
   modules: String = "github.com/danbrough/kipfs/libs",
-
   config: LibraryExtension.() -> Unit = {}
 ): LibraryExtension {
   val openSSL = enableOpenssl()
@@ -37,7 +36,7 @@ fun Project.enableGo(
       build { target ->
 
         println("CONFIGURING GOBUILD: $target")
-        dependsOn(openSSL.resolveArchiveTaskName(target))
+        dependsOn(openSSL.extractArchiveTaskName(target))
 
         inputs.files(project.fileTree(workingDir) {
           include("**/*.go")
@@ -53,11 +52,11 @@ fun Project.enableGo(
         environment["CGO_CFLAGS"] = environment["CFLAGS"]
         environment["CGO_LDFLAGS"] = environment["LDFLAGS"]
         environment["CGO_ENABLED"] = 1
-        environment.also { env ->
+/*        environment.also { env ->
           env.keys.sorted().forEach {
             println("ENV: $it\t${env[it]}")
           }
-        }
+        }*/
 
         val buildDir = buildDir(target)
         val libFile = buildDir.resolve("lib/libkipfsgo.${target.sharedLibExtn}")
