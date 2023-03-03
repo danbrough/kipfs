@@ -56,12 +56,13 @@ func TestPrinter(printer Printer) {
 	printer.Print("Printing message: " + msg)
 }
 
+
 func GetTime() string {
 	//location, _ := time.LoadLocation("NZ")
 
 	t := time.Now()
 	msg := t.Local().Format("15:04:05 2006/01/02")
-	return "The time is: " + msg
+	return "The time is:: " + msg
 }
 
 func GetMessage2() string {

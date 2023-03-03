@@ -24,7 +24,11 @@ fun Project.enableGo(
 
       version = project.version.toString()
 
-      sourceDir(project.file("src/go"))
+      //sourceDir(project.file("src/go"))
+
+      sourcesDir {
+        project.file("src/go")
+      }
 
       cinterops {
         headers = """
@@ -35,7 +39,7 @@ fun Project.enableGo(
 
       build { target ->
 
-        println("CONFIGURING GOBUILD: $target")
+        println("CONFIGURING GOBUILD: $target workingDir: $workingDir")
         dependsOn(openSSL.extractArchiveTaskName(target))
 
         inputs.files(project.fileTree(workingDir) {

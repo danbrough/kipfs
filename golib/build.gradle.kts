@@ -43,9 +43,11 @@ kotlin {
     dependsOn(commonMain)
   }
 
+/*
   val jniMain by sourceSets.creating {
     dependsOn(nativeMain)
   }
+*/
 
   targets.withType<KotlinNativeTarget> {
 
@@ -65,9 +67,11 @@ kotlin {
 
     compilations["main"].apply {
 
+
       defaultSourceSet {
-        dependsOn(jniMain)
+        dependsOn(nativeMain)
       }
+
 
       if (konanTarget.family != org.jetbrains.kotlin.konan.target.Family.ANDROID) {
         cinterops.create("jni_headers") {
