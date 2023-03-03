@@ -7,6 +7,7 @@ fun KotlinMultiplatformExtension.declareTargets() {
   linuxX64()
   linuxArm64()
   linuxArm32Hfp()
+  jvm()
   /*
   androidNativeX86()
   androidNativeX64()

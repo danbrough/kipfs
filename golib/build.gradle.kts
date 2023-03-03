@@ -20,6 +20,7 @@ kotlin {
 
   declareTargets()
 
+
   val commonMain by sourceSets.getting {
     dependencies {
       implementation("org.danbrough:klog:_")
@@ -29,11 +30,16 @@ kotlin {
 
   val commonTest by sourceSets.getting {
     dependencies {
+      implementation(kotlin("test"))
       implementation("org.danbrough.kotlinx:kotlinx-coroutines-core:_")
     }
   }
 
   val nativeMain by sourceSets.creating {
+    dependsOn(commonMain)
+  }
+
+  val jvmMain by sourceSets.getting {
     dependsOn(commonMain)
   }
 
@@ -80,17 +86,6 @@ kotlin {
         }
       }
     }
-  }
-}
-
-
-tasks.create("stuff") {
-  doFirst {
-
-    project.tasks.withType(org.gradle.api.publish.maven.tasks.PublishToMavenRepository::class.java).all{
-      println("publishing task: $this")
-    }
-
   }
 }
 
