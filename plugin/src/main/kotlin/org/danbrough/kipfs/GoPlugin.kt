@@ -7,6 +7,7 @@ import org.danbrough.kotlinxtras.binaries.sourceDir
 import org.danbrough.kotlinxtras.core.enableOpenssl
 import org.danbrough.kotlinxtras.goArch
 import org.danbrough.kotlinxtras.goOS
+import org.danbrough.kotlinxtras.log
 import org.danbrough.kotlinxtras.sharedLibExtn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -26,9 +27,6 @@ fun Project.enableGo(
 
       //sourceDir(project.file("src/go"))
 
-      sourcesDir {
-        project.file("src/go")
-      }
 
       cinterops {
         headers = """
@@ -38,16 +36,20 @@ fun Project.enableGo(
       }
 
       build { target ->
-
-        println("CONFIGURING GOBUILD: $target workingDir: $workingDir")
+        val goDir = project.file("src/go")
+        project.log("build{: CONFIGURING GOBUILD: $target workingDir: $workingDir goSrc: $goDir")
         dependsOn(openSSL.extractArchiveTaskName(target))
+        workingDir(goDir)
 
-        inputs.files(project.fileTree(workingDir) {
-          include("**/*.go")
-          include("**/*.c")
-          include("**/*.h")
-          include("**/*.mod")
-        })
+
+        inputs.dir(goDir)
+//        inputs.files(fileTree(goDir) {
+//          include("**/*.go")
+//          include("**/*.c")
+//          include("**/*.h")
+//          include("**/*.mod")
+//        })
+
 
         openSSL.addBuildFlags(target, environment)
         environment["GOARCH"] = target.goArch
@@ -64,6 +66,10 @@ fun Project.enableGo(
 
         val buildDir = buildDir(target)
         val libFile = buildDir.resolve("lib/libkipfsgo.${target.sharedLibExtn}")
+
+        doFirst {
+          println("Running go build command in $workingDir")
+        }
 
         doLast {
           val headersDir = buildDir.resolve("include")
