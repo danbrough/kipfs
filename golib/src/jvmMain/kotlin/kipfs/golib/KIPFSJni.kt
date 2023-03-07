@@ -8,6 +8,17 @@ import java.util.Date
 actual fun initKIPFSLib(): KIPFS = KIPFSJni
 
 object KIPFSJni: KIPFS {
+
+  private val log = klog.klog(KIPFSJni::class)
+  init {
+    log.info("INIT KIPFSJni")
+    runCatching {
+      log.debug("loading kipfsgo ..")
+      System.loadLibrary("kipfsgo")
+    }
+    log.debug("finished loading native libraries")
+  }
+
   override fun createShell(ipfsAddress: String): KShell {
     TODO("Not yet implemented")
   }
@@ -16,9 +27,7 @@ object KIPFSJni: KIPFS {
     TODO("Not yet implemented")
   }
 
-  override fun getTime(): String {
-    TODO("Not yet implemented")
-  }
+  external override fun getTime(): String
 
   external fun getMessage(): String
 

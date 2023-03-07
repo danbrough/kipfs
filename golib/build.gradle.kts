@@ -5,21 +5,17 @@ plugins {
   kotlin("multiplatform")
   id("org.danbrough.kipfs.go") version KIPFS_VERSION
   id("org.danbrough.kotlinxtras.sonatype")
-
-
   `maven-publish`
 }
 
 
 enableGo {
-
+  deferToPrebuiltPackages = false
 }
-
 
 kotlin {
 
   declareTargets()
-
 
   val commonMain by sourceSets.getting {
     dependencies {

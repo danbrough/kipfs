@@ -18,11 +18,12 @@ internal fun jniInit() {
   Platform.isMemoryLeakCheckerActive = true
 }
 
-@CName("Java_kipfs_golib_jni_JNI_getTime")
+
+
+@CName("Java_kipfs_golib_KIPFSJni_getTime")
 fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     jniInit()
-    
     return org.danbrough.kipfs.golib.GetTime().let { cs ->
       env.pointed.pointed!!.NewStringUTF!!.invoke(env, cs!!.getPointer(this))!!
     }

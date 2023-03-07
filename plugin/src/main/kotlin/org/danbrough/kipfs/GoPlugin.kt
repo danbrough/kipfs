@@ -5,20 +5,23 @@ import org.danbrough.kotlinxtras.binaries.binariesExtension
 import org.danbrough.kotlinxtras.binaries.registerLibraryExtension
 import org.danbrough.kotlinxtras.binaries.sourceDir
 import org.danbrough.kotlinxtras.core.enableOpenssl
+import org.danbrough.kotlinxtras.core.enableOpenssl3
 import org.danbrough.kotlinxtras.goArch
 import org.danbrough.kotlinxtras.goOS
 import org.danbrough.kotlinxtras.log
 import org.danbrough.kotlinxtras.sharedLibExtn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
+import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 
 
 fun Project.enableGo(
   extnName: String = "golib",
-  modules: String = "github.com/danbrough/kipfs/libs",
+  modules: String = "./libs/",
   config: LibraryExtension.() -> Unit = {}
 ): LibraryExtension {
-  val openSSL = enableOpenssl()
+  val openSSL = enableOpenssl3()
 
   return extensions.findByName(extnName) as? LibraryExtension
     ?: registerLibraryExtension(extnName) {
@@ -37,12 +40,17 @@ fun Project.enableGo(
 
       build { target ->
         val goDir = project.file("src/go")
+        val buildDir = buildDir(target)
+
+        inputs.dir(goDir)
+
+
         project.log("build{: CONFIGURING GOBUILD: $target workingDir: $workingDir goSrc: $goDir")
         dependsOn(openSSL.extractArchiveTaskName(target))
         workingDir(goDir)
 
 
-        inputs.dir(goDir)
+
 //        inputs.files(fileTree(goDir) {
 //          include("**/*.go")
 //          include("**/*.c")
@@ -64,11 +72,11 @@ fun Project.enableGo(
           }
         }*/
 
-        val buildDir = buildDir(target)
+
         val libFile = buildDir.resolve("lib/libkipfsgo.${target.sharedLibExtn}")
 
         doFirst {
-          println("Running go build command in $workingDir")
+          println("Running go build command <${commandLine.joinToString(" ")}> in $workingDir")
         }
 
         doLast {
@@ -99,7 +107,13 @@ fun Project.enableGo(
 }
 
 class GoPlugin : Plugin<Project> {
-  override fun apply(target: Project) {
+  override fun apply(project: Project) {
+    project.afterEvaluate {
+      tasks.withType(KotlinJvmTest::class.java){
+        log("KotlinJvmTest: $name: $environment")
+
+      }
+    }
   }
 }
 

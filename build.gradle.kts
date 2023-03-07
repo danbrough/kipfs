@@ -7,6 +7,7 @@ plugins {
   id("org.danbrough.kotlinxtras.core") apply false
   id("org.danbrough.kotlinxtras.binaries") apply false
   id("org.jetbrains.dokka") apply false
+
 }
 
 println("Using Kotlin compiler version: ${org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION}")
