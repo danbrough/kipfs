@@ -2,21 +2,33 @@ package kipfs.golib
 
 import kipfs.KIPFS
 import kipfs.KShell
-import java.util.Date
 
 
-actual fun initKIPFSLib(): KIPFS = KIPFSJni
+actual fun initKIPFSLib(): KIPFS = Instance
 
-object KIPFSJni: KIPFS {
+object Instance: KIPFSJni()
 
-  private val log = klog.klog(KIPFSJni::class)
+open class KIPFSJni : KIPFS {
+
+  //private val log = klog.klog(KIPFSJni::class)
   init {
-    log.info("INIT KIPFSJni")
+    println("INIT KIPFSJni")
     runCatching {
-      log.debug("loading kipfsgo ..")
+      println("loading kipfsgo ..")
       System.loadLibrary("kipfsgo")
+    }.exceptionOrNull()?.also {
+      println("ERROR: ${it.message}")
+      throw it
     }
-    log.debug("finished loading native libraries")
+
+    runCatching {
+      println("loading kipfs ..")
+      System.loadLibrary("kipfs")
+    }.exceptionOrNull()?.also {
+      println("ERROR: ${it.message}")
+      throw it
+    }
+    println("finished loading native libraries")
   }
 
   override fun createShell(ipfsAddress: String): KShell {
@@ -26,6 +38,8 @@ object KIPFSJni: KIPFS {
   override fun environment(key: String): String? {
     TODO("Not yet implemented")
   }
+
+
 
   external override fun getTime(): String
 
@@ -41,7 +55,6 @@ object KIPFSJni: KIPFS {
 /*
 
  */
-
 
 
 /*

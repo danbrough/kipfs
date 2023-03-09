@@ -31,6 +31,7 @@ fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
 }
 
 
+
 @Suppress("SpellCheckingInspection")
 @CName("Java_kipfs_golib_jni_JNI_disposeGoObject")
 fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {

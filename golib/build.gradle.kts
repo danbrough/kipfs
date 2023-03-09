@@ -1,15 +1,25 @@
 import org.danbrough.kipfs.enableGo
+import org.danbrough.kotlinxtras.SHARED_LIBRARY_PATH_NAME
+import org.danbrough.kotlinxtras.binaries.LibraryExtension
+import org.danbrough.kotlinxtras.capitalize
+import org.danbrough.kotlinxtras.core.enableOpenssl3
+import org.danbrough.kotlinxtras.platformName
+import org.danbrough.kotlinxtras.sharedLibraryPath
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
+import org.jetbrains.kotlin.konan.target.KonanTarget
 
 plugins {
   kotlin("multiplatform")
   id("org.danbrough.kipfs.go") version KIPFS_VERSION
   id("org.danbrough.kotlinxtras.sonatype")
+//  id("org.danbrough.kotlinxtras.core")
+
   `maven-publish`
 }
 
 
-enableGo {
+val golib = enableGo {
   deferToPrebuiltPackages = false
 }
 
@@ -39,27 +49,13 @@ kotlin {
     dependsOn(commonMain)
   }
 
-/*
-  val jniMain by sourceSets.creating {
-    dependsOn(nativeMain)
-  }
-*/
-
   targets.withType<KotlinNativeTarget> {
 
-/*    binaries.all {
-      if (this is Executable) {
-        runTask?.apply {
-          val ldLibKey = if (HostManager.hostIsMac) "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH"
-          val libPath = environment[ldLibKey]
-          val newLibPath =
-            (libPath?.let { "$it${File.pathSeparator}" }
-              ?: "") + "${golib.libsDir(konanTarget)}/lib"
-          //println("----------------------ADDING: $ldLibKey:$newLibPath")
-          environment(ldLibKey, newLibPath)
-        } ?: println("no run task")
+    binaries {
+      sharedLib("kipfs") {
+        linkTask.dependsOn(golib.extractArchiveTaskName(konanTarget))
       }
-    }*/
+    }
 
     compilations["main"].apply {
 
