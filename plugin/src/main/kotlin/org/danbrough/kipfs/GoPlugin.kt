@@ -5,6 +5,7 @@ import org.danbrough.kotlinxtras.binaries.LibraryExtension
 import org.danbrough.kotlinxtras.binaries.binariesExtension
 import org.danbrough.kotlinxtras.binaries.registerLibraryExtension
 import org.danbrough.kotlinxtras.binaries.sourceDir
+import org.danbrough.kotlinxtras.capitalize
 import org.danbrough.kotlinxtras.core.OPENSSL3_EXTN_NAME
 import org.danbrough.kotlinxtras.core.enableOpenssl
 import org.danbrough.kotlinxtras.core.enableOpenssl3
@@ -120,6 +121,11 @@ fun Project.enableGo(
 
 class GoPlugin : Plugin<Project> {
   override fun apply(project: Project) {
+    project.afterEvaluate {
+      tasks.withType(KotlinJvmTest::class.java){
+        dependsOn("linkKipfsDebugShared${HostManager.host.platformName.capitalize()}")
+      }
+    }
   }
 }
 

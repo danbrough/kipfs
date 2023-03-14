@@ -62,7 +62,7 @@ func GetTime() string {
 
 	t := time.Now()
 	msg := t.Local().Format("15:04:05 2006/01/02")
-	return "The time is: " + msg
+	return msg
 }
 
 func GetMessage2() string {

@@ -1,4 +1,4 @@
-package main
+package test
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	ipfsapi "github.com/ipfs/go-ipfs-api"
 )
 
-func main() {
-	println("running test2")
+func IpfsID() {
+	println("running IpfsID")
 
 	var ipfsURL = "/ip4/127.0.0.1/tcp/5001"
 	s := ipfsapi.NewShell(ipfsURL)

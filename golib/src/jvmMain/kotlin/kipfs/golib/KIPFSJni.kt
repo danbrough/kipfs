@@ -43,12 +43,8 @@ open class KIPFSJni : KIPFS {
 
   external override fun getTime(): String
 
-  external fun getMessage(): String
 
-
-  override fun dagCID(json: String): String {
-    TODO("Not yet implemented")
-  }
+  external override fun dagCID(json: String): String
 
 }
 

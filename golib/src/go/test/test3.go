@@ -1,16 +1,16 @@
-package main
+package test
 
 import (
 	"context"
 	"io"
 	"strings"
-
+	"testing"
 	ipfsapi "github.com/ipfs/go-ipfs-api"
-	files "github.com/ipfs/go-ipfs-files"
+	files "github.com/ipfs/go-libipfs/files"
 )
 
 
-func test1(){
+func Test3(t *testing.T){
 	var ipfsURL = "/ip4/127.0.0.1/tcp/5001"
 	s := ipfsapi.NewShell(ipfsURL)
 	rb := s.Request("multibase/encode")
@@ -34,10 +34,4 @@ func test1(){
 
 	println(string(data))
 }
-func main() {
-	println("running test3")
 
-	test1()
-	
-
-}

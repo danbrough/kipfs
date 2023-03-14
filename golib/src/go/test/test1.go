@@ -1,4 +1,6 @@
-package main
+package test
+
+
 
 import (
 	"github.com/danbrough/kipfs/misc"
@@ -6,8 +8,9 @@ import (
 	"github.com/multiformats/go-multibase"
 )
 
-func main() {
-	println("running test1")
+func Testing1() {
+	println("running Test1()")
+
 
 
 	println("The time is: " +misc.GetTime())

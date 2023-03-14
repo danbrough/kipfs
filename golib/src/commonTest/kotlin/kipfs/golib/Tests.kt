@@ -14,7 +14,8 @@ class Tests {
   
   companion object {
     const val DAG_HELLO_WORLD = "bafyreidfq7gnjnpi7hllpwowrphojoy6hgdgrsgitbnbpty6f2yirqhkom"
-    private val log = klog("TESTS") {
+
+    val log = klog("KIPFS") {
       level = Level.TRACE
       writer = KLogWriters.stdOut
       messageFormatter = KMessageFormatters.verbose.colored
