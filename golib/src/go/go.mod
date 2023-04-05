@@ -3,8 +3,8 @@ module github.com/danbrough/kipfs
 go 1.18
 
 require (
-	github.com/ipfs/go-cid v0.4.0
-	github.com/ipfs/go-ipfs-api v0.4.0
+	github.com/ipfs/go-cid v0.4.1
+	github.com/ipfs/go-ipfs-api v0.5.0
 	github.com/ipfs/go-ipfs-files v0.3.0
 	github.com/ipfs/go-libipfs v0.7.0
 	github.com/ipld/go-ipld-prime v0.20.0
@@ -28,7 +28,7 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
-	github.com/multiformats/go-multiaddr v0.8.0 // indirect
+	github.com/multiformats/go-multiaddr v0.9.0 // indirect
 	github.com/multiformats/go-multicodec v0.8.1 // indirect
 	github.com/multiformats/go-multistream v0.4.1 // indirect
 	github.com/multiformats/go-varint v0.0.7 // indirect
@@ -37,7 +37,7 @@ require (
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/whyrusleeping/tar-utils v0.0.0-20201201191210-20a61371de5b // indirect
 	golang.org/x/crypto v0.7.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
 )
