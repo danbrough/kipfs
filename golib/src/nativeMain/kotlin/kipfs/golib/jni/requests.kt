@@ -6,29 +6,29 @@ import kipfs.golib.copyToKString
 import kotlinx.cinterop.*
 import platform.android.*
 import org.danbrough.kipfs.*
-
+import org.danbrough.kipfs.golib.KRequestSend_return
 
 
 /*JNIEXPORT jbyteArray JNICALL Java_kipfs_golib_jni_JNI_sendRequest
   (JNIEnv *, jclass, jint);*/
 @CName("Java_kipfs_golib_jni_JNI_sendRequest")
-fun sendRequest(env: CPointer<JNIEnvVar>, thiz: jclass, requestRefID: jint): jbyteArray? =
+fun sendRequest(env: CPointer<JNIEnvVar>, thiz: jclass, requestRefID: jint): jbyteArray =
   memScoped {
     jniInit()
     val e = env.pointed.pointed!!
 
-    org.danbrough.kipfs.golib.KRequestSend(requestRefID).useContents {
+    org.danbrough.kipfs.golib.KRequestSend(requestRefID).useContents<KRequestSend_return, jbyteArray> {
       r2?.copyToKString()?.also {
         throw Exception("Request failed: $it")
       }
       return r0!!.readBytes(r1.toInt()).let { bytes ->
         //  log.warn("RESULT: ${bytes.decodeToString()}")
         val jbytes = e.NewByteArray!!(env, r1.toInt())!!
-        
+
         bytes.usePinned {
           e.SetByteArrayRegion!!(env, jbytes, 0, r1.toInt(), it.addressOf(0))
         }
-        
+
         jbytes
       }
     }

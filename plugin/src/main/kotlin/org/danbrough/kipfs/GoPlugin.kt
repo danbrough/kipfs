@@ -28,9 +28,11 @@ import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 import org.jetbrains.kotlin.konan.target.HostManager
 import org.jetbrains.kotlin.konan.target.KonanTarget
+import java.io.File
 
 
 fun Project.enableGo(
+   goDir: File = file("src/go/kipfs"),
   extnName: String = "golib",
   modules: String = "./libs/",
   config: LibraryExtension.() -> Unit = {}
@@ -53,7 +55,6 @@ fun Project.enableGo(
       }
 
       build { target ->
-        val goDir = project.file("src/go")
         val buildDir = buildDir(target)
 
         inputs.dir(goDir)
