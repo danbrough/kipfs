@@ -1,5 +1,4 @@
-//go:build shell
-// +build shell
+
 
 package main
 
@@ -213,4 +212,6 @@ func KMultiBaseDecode(cData *C.char, dataLength C.int32_t) (C.int32_t, *C.char, 
 	return C.int32_t(encoding), C.CString(string(data)), C.int32_t(len(data)), nil
 }
 
-func main() {}
+func main() {
+	println("libkipfs.go")
+}

@@ -3,14 +3,11 @@ package shell
 import (
 	"bytes"
 	"context"
-
-	"github.com/danbrough/kipfs/misc"
 	ipfsapi "github.com/ipfs/go-ipfs-api"
 	files "github.com/ipfs/go-ipfs-files"
 	log "github.com/sirupsen/logrus"
-
+	misc "github.com/danbrough/kipfs/misc"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -134,7 +131,7 @@ func (req *RequestBuilder) Send() ([]byte, error) {
 		return nil, res.Error
 	}
 
-	return ioutil.ReadAll(res.Output)
+	return io.ReadAll(res.Output)
 }
 
 func (req *RequestBuilder) Argument(arg string) {
@@ -243,7 +240,7 @@ func (req *RequestBuilder) post(name string, file files.Node, callback misc.Call
 		log.Errorf("Error: %s", err.Error())
 		callback.OnError(err.Error())
 	} else {
-		respData, _ := ioutil.ReadAll(res.Output)
+		respData, _ := io.ReadAll(res.Output)
 		//testing.TestLog.Info("Response: %s", string(respData))
 		callback.OnResponse(respData)
 	}
@@ -289,7 +286,7 @@ func (req *RequestBuilder) Post2(name string, file files.Node) ([]byte, error) {
 		log.Errorf("Error: %s", err.Error())
 		return nil, err
 	}
-	respData, err := ioutil.ReadAll(res.Output)
+	respData, err := io.ReadAll(res.Output)
 	//testing.TestLog.Info("Response: %s", string(respData))
 	if err != nil {
 		return nil, err

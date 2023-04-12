@@ -1,4 +1,4 @@
-package misc
+package misc 
 
 import "C"
 
@@ -43,8 +43,7 @@ func test(data []int8) {
 }
 
 func Test2(data []byte) {
-	var data2 []int8
-	data2 = make([]int8, len(data))
+	data2 := make([]int8, len(data))
 	for i, b := range data {
 		data2[i] = int8(b)
 	}

@@ -32,9 +32,9 @@ import java.io.File
 
 
 fun Project.enableGo(
-   goDir: File = file("src/go/kipfs"),
+   goDir: File = file("src/go"),
   extnName: String = "golib",
-  modules: String = "./libs/",
+  modules: String = "./libs",
   config: LibraryExtension.() -> Unit = {}
 ): LibraryExtension {
   val openSSL = enableOpenssl3()
