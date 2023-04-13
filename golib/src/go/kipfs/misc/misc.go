@@ -60,7 +60,7 @@ func GetTime() string {
 	//location, _ := time.LoadLocation("NZ")
 
 	t := time.Now()
-	msg := t.Local().Format("15:04:05 2006/01/02")
+	msg := t.Local().Format("2006/01/02 15:04:05")
 	return msg
 }
 
