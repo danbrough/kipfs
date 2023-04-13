@@ -1,20 +1,19 @@
 package kipfs.golib
 
 import kipfs.KIPFS
+import kipfs.KResponse
 import kipfs.KShell
 
 
-actual fun initKIPFSLib(): KIPFS = Instance
+actual fun initKIPFSLib(): KIPFS = JniInstance
 
-object Instance: KIPFSJni()
+private object JniInstance : KIPFSJni()
 
-open class KIPFSJni : KIPFS {
+open class KIPFSJni : KIPFSNative {
 
   //private val log = klog.klog(KIPFSJni::class)
   init {
-    println("INIT KIPFSJni")
     runCatching {
-      println("loading kipfsgo ..")
       System.loadLibrary("kipfsgo")
     }.exceptionOrNull()?.also {
       println("ERROR: ${it.message}")
@@ -31,14 +30,29 @@ open class KIPFSJni : KIPFS {
     println("finished loading native libraries")
   }
 
-  override fun createShell(ipfsAddress: String): KShell {
+  external override fun createNativeShell(address: String): Int
+
+  external override fun disposeGoObject(ref: Int)
+
+  external override fun createRequest(shellRef: Int, command: String, arg: String?): Int
+
+  override fun requestOption(requestRefID: Int, name: String, value: String) {
     TODO("Not yet implemented")
   }
 
-  override fun environment(key: String): String? {
+  external override fun sendRequest(requestRefID: Int): ByteArray
+
+  override fun <T> postString(shellRefID: Int, data: String): KResponse<T> {
     TODO("Not yet implemented")
   }
 
+  override fun <T> postData(shellRefID: Int, data: ByteArray): KResponse<T> {
+    TODO("Not yet implemented")
+  }
+
+  override fun createShell(ipfsAddress: String): KShell = KNativeShell(this, ipfsAddress)
+
+  override fun environment(key: String): String? = System.getenv(key)
 
 
   external override fun getTime(): String

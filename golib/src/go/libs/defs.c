@@ -14,8 +14,6 @@ void testCallback(void *data,int len,const char* err){
 	callback(data,len,err);
 }
 
-
-
 char* return_string() {
   return "C string";
 }
@@ -26,8 +24,6 @@ void StructTest(MyStruct s){
 }
 
 int copy_string(char* str, int size) {
-
-
   *str++ = 'H';
   *str++ = 'e';
   *str++ = 'l';

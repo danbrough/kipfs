@@ -11,7 +11,7 @@ import org.danbrough.kipfs.golib.KRequestSend_return
 
 /*JNIEXPORT jbyteArray JNICALL Java_kipfs_golib_jni_JNI_sendRequest
   (JNIEnv *, jclass, jint);*/
-@CName("Java_kipfs_golib_jni_JNI_sendRequest")
+@CName("Java_kipfs_golib_KIPFSJni_sendRequest")
 fun sendRequest(env: CPointer<JNIEnvVar>, thiz: jclass, requestRefID: jint): jbyteArray =
   memScoped {
     jniInit()
@@ -38,7 +38,7 @@ fun sendRequest(env: CPointer<JNIEnvVar>, thiz: jclass, requestRefID: jint): jby
 JNIEXPORT void JNICALL Java_kipfs_golib_jni_JNI_requestOption
   (JNIEnv *, jclass, jint, jstring, jstring);
 */
-@CName("Java_kipfs_golib_jni_JNI_requestOption")
+@CName("Java_kipfs_golib_KIPFSJni_requestOption")
 fun requestOption(
   env: CPointer<JNIEnvVar>,
   thiz: jclass,
@@ -57,7 +57,7 @@ fun requestOption(
 
 /*JNIEXPORT jbyteArray JNICALL Java_kipfs_golib_jni_JNI_postData
   (JNIEnv *, jclass, jint, jbyteArray);*/
-@CName("Java_kipfs_golib_jni_JNI_postData")
+@CName("Java_kipfs_golib_KIPFSJni_postData")
 fun postData(
   env: CPointer<JNIEnvVar>,
   thiz: jclass,
@@ -88,7 +88,7 @@ fun postData(
 
 /*JNIEXPORT jint JNICALL Java_kipfs_golib_jni_JNI_createRequest
   (JNIEnv *, jclass, jint, jstring, jstring)*/
-@CName("Java_kipfs_golib_jni_JNI_createRequest")
+@CName("Java_kipfs_golib_KIPFSJni_createRequest")
 fun createRequest(
   env: CPointer<JNIEnvVar>,
   thiz: jclass,
