@@ -18,7 +18,7 @@ internal fun jniInit() {
 }
 
 @CName("Java_kipfs_golib_KIPFSJni_dagCID")
-internal fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
+fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   memScoped {
     jniInit()
     val jsonC = env.pointed.pointed!!.GetStringUTFChars!!(env, json, null)
@@ -33,7 +33,7 @@ internal fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstr
 
 
 @CName("Java_kipfs_golib_KIPFSJni_getTime")
-internal fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
+fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     jniInit()
     return org.danbrough.kipfs.golib.GetTime().let { cs ->
@@ -44,13 +44,13 @@ internal fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
 
 
 @CName("Java_kipfs_golib_KIPFSJni_disposeGoObject")
-internal fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
+fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
   org.danbrough.kipfs.golib.KDecRef(refnum)
 }
 
 
 @CName("Java_kipfs_golib_KIPFSJni_createNativeShell")
-internal fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): jint {
+fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring): jint {
   memScoped {
     jniInit()
     val e = env.pointed.pointed!!
@@ -66,7 +66,7 @@ internal fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: 
 }
 
 @CName("Java_kipfs_golib_KIPFSJni_request")
-internal fun request(
+fun request(
   env: CPointer<JNIEnvVar>,
   thiz: jclass,
   shellRefID: jint,

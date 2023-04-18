@@ -15,14 +15,15 @@ open class KIPFSJni : KIPFSNative {
   init {
     runCatching {
       System.loadLibrary("kipfsgo")
+      println("loaded kipfsgo")
     }.exceptionOrNull()?.also {
       println("ERROR: ${it.message}")
       throw it
     }
 
     runCatching {
-      println("loading kipfs ..")
       System.loadLibrary("kipfs")
+      println("loaded kipfs")
     }.exceptionOrNull()?.also {
       println("ERROR: ${it.message}")
       throw it
