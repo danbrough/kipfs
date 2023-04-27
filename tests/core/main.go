@@ -1,11 +1,9 @@
 package main
 
-import "danbrough.org/kipfs/stuff"
-
-
+import "danbrough.org/kipfs/mobile/node"
 
 func main(){
 	println("Running main")
-	println("message: " + stuff.TestMessage())
+	println("message: " + node.TestMessage())	
 }
 
