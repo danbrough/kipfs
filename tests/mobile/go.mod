@@ -7,7 +7,7 @@ require (
 	github.com/ipfs/kubo v0.16.0
 	github.com/libp2p/go-libp2p v0.23.3
 	github.com/libp2p/go-libp2p-record v0.2.0
-	github.com/multiformats/go-multiaddr v0.9.0
+	github.com/multiformats/go-multiaddr v0.7.0
 	github.com/multiformats/go-multiaddr-fmt v0.1.0
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.24.0
@@ -18,6 +18,7 @@ require (
 	bazil.org/fuse v0.0.0-20200117225306-7b5117fecadc // indirect
 	contrib.go.opencensus.io/exporter/prometheus v0.4.0 // indirect
 	github.com/AndreasBriese/bbloom v0.0.0-20190825152654-46b345b51c96 // indirect
+	github.com/Stebalien/go-bitfield v0.0.1 // indirect
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/alexbrainman/goissue34681 v0.0.0-20191006012335-3fc7a47baff5 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
@@ -72,10 +73,11 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.2 // indirect
 	github.com/huin/goupnp v1.1.0 // indirect
 	github.com/ipfs/bbloom v0.0.4 // indirect
-	github.com/ipfs/go-bitfield v1.1.0 // indirect
+	github.com/ipfs/go-bitfield v1.0.0 // indirect
+	github.com/ipfs/go-bitswap v0.10.2 // indirect
 	github.com/ipfs/go-block-format v0.0.3 // indirect
-	github.com/ipfs/go-blockservice v0.5.1 // indirect
-	github.com/ipfs/go-cid v0.4.1 // indirect
+	github.com/ipfs/go-blockservice v0.4.0 // indirect
+	github.com/ipfs/go-cid v0.3.2 // indirect
 	github.com/ipfs/go-cidutil v0.1.0 // indirect
 	github.com/ipfs/go-delegated-routing v0.7.0 // indirect
 	github.com/ipfs/go-ds-badger v0.3.0 // indirect
@@ -94,7 +96,7 @@ require (
 	github.com/ipfs/go-ipfs-exchange-interface v0.2.0 // indirect
 	github.com/ipfs/go-ipfs-exchange-offline v0.3.0 // indirect
 	github.com/ipfs/go-ipfs-keystore v0.0.2 // indirect
-	github.com/ipfs/go-ipfs-pinner v0.3.0 // indirect
+	github.com/ipfs/go-ipfs-pinner v0.2.1 // indirect
 	github.com/ipfs/go-ipfs-posinfo v0.0.1 // indirect
 	github.com/ipfs/go-ipfs-pq v0.0.3 // indirect
 	github.com/ipfs/go-ipfs-provider v0.7.1 // indirect
@@ -108,15 +110,15 @@ require (
 	github.com/ipfs/go-ipns v0.3.0 // indirect
 	github.com/ipfs/go-log v1.0.5 // indirect
 	github.com/ipfs/go-log/v2 v2.5.1 // indirect
-	github.com/ipfs/go-merkledag v0.9.0 // indirect
+	github.com/ipfs/go-merkledag v0.8.1 // indirect
 	github.com/ipfs/go-metrics-interface v0.0.1 // indirect
 	github.com/ipfs/go-mfs v0.2.1 // indirect
 	github.com/ipfs/go-namesys v0.5.0 // indirect
 	github.com/ipfs/go-path v0.3.1 // indirect
 	github.com/ipfs/go-peertaskqueue v0.8.1 // indirect
 	github.com/ipfs/go-pinning-service-http-client v0.1.2 // indirect
-	github.com/ipfs/go-unixfs v0.4.1 // indirect
-	github.com/ipfs/go-unixfsnode v1.5.1 // indirect
+	github.com/ipfs/go-unixfs v0.4.0 // indirect
+	github.com/ipfs/go-unixfsnode v1.4.0 // indirect
 	github.com/ipfs/go-verifcid v0.0.2 // indirect
 	github.com/ipfs/interface-go-ipfs-core v0.7.0 // indirect
 	github.com/ipld/edelweiss v0.2.0 // indirect
@@ -173,7 +175,7 @@ require (
 	github.com/multiformats/go-multibase v0.2.0 // indirect
 	github.com/multiformats/go-multicodec v0.8.1 // indirect
 	github.com/multiformats/go-multihash v0.2.1 // indirect
-	github.com/multiformats/go-multistream v0.4.1 // indirect
+	github.com/multiformats/go-multistream v0.3.3 // indirect
 	github.com/multiformats/go-varint v0.0.7 // indirect
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
