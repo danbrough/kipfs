@@ -1,4 +1,4 @@
-module danbrough.org/kipfs/node
+module danbrough.org/kipfs/mobile
 
 go 1.19
 

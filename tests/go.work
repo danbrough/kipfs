@@ -2,6 +2,6 @@ go 1.19
 
 use (
 	./core
-	./node
+	./mobile
 	./stuff
 )
