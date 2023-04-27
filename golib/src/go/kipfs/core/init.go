@@ -6,7 +6,6 @@ import (
 	// "fmt"
 	"io"
 	"os"
-	"time"
 
 	"github.com/ipfs/interface-go-ipfs-core/options"
 	log "github.com/sirupsen/logrus"
@@ -27,7 +26,7 @@ func initConfig(out io.Writer, nBitsForKeypair int) (*ipfs_config.Config, error)
 		return nil, err
 	}
 
-	datastore := defaultDatastoreConfig()
+	datastore := DefaultDatastoreConfig()
 
 	conf := &ipfs_config.Config{
 		API: ipfs_config.API{
@@ -112,6 +111,67 @@ func initConfig(out io.Writer, nBitsForKeypair int) (*ipfs_config.Config, error)
 	return conf, nil
 }
 
+
+func addressesConfig() ipfs_config.Addresses {
+	return ipfs_config.Addresses{
+		Swarm: []string{
+			"/ip4/0.0.0.0/tcp/4001",
+			"/ip6/::/tcp/4001",
+			"/ip4/0.0.0.0/udp/4001/quic",
+			"/ip4/0.0.0.0/udp/4001/quic-v1",
+			"/ip4/0.0.0.0/udp/4001/quic-v1/webtransport",
+			"/ip6/::/udp/4001/quic",
+			"/ip6/::/udp/4001/quic-v1",
+			"/ip6/::/udp/4001/quic-v1/webtransport",
+		},
+		Announce:       []string{},
+		AppendAnnounce: []string{},
+		NoAnnounce:     []string{},
+		API:            ipfs_config.Strings{"/ip4/127.0.0.1/tcp/5001"},
+		Gateway:        ipfs_config.Strings{"/ip4/127.0.0.1/tcp/8080"},
+	}
+}
+
+func DefaultDatastoreConfig() ipfs_config.Datastore {
+	return  ipfs_config.Datastore{
+		StorageMax:         "10GB",
+		StorageGCWatermark: 90, // 90%
+		GCPeriod:           "1h",
+		BloomFilterSize:    0,
+		Spec:               flatfsSpec(),
+	}
+}
+
+func flatfsSpec() map[string]interface{} {
+	return map[string]interface{}{
+		"type": "mount",
+		"mounts": []interface{}{
+			map[string]interface{}{
+				"mountpoint": "/blocks",
+				"type":       "measure",
+				"prefix":     "flatfs.datastore",
+				"child": map[string]interface{}{
+					"type":      "flatfs",
+					"path":      "blocks",
+					"sync":      true,
+					"shardFunc": "/repo/flatfs/shard/v1/next-to-last/2",
+				},
+			},
+			map[string]interface{}{
+				"mountpoint": "/",
+				"type":       "measure",
+				"prefix":     "leveldb.datastore",
+				"child": map[string]interface{}{
+					"type":        "levelds",
+					"path":        "datastore",
+					"compression": "none",
+				},
+			},
+		},
+	}
+}
+
+
 /*
 // defaultConnMgrHighWater is the default value for the connection managers
 // 'high water' mark
@@ -175,8 +235,9 @@ func defaultDatastoreConfig() ipfs_config.Datastore {
 			},
 		},
 	}
+	}
 	*/
-}
+
 
 // identityConfig initializes a new identity.
 func identityConfig(out io.Writer, nbits int) (ipfs_config.Identity, error) {

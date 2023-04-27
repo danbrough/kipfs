@@ -109,7 +109,7 @@ fun Project.enableGo(
           "-v",
           "-trimpath",
           "-buildmode=c-shared",
-          "-tags=shell,openssl",
+          "-tags=shell,openssl,node",
           "-o",
           libFile,
           modules

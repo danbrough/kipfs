@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 
 	ipfs_config "github.com/ipfs/kubo/config"
@@ -10,6 +11,10 @@ import (
 
 type Config struct {
 	cfg *ipfs_config.Config
+}
+
+func (c *Config) String() string {
+	return fmt.Sprintf("Conf: %v", c.cfg)
 }
 
 func NewDefaultConfig() (*Config, error) {
