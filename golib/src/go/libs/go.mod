@@ -1,10 +1,11 @@
 module github.com/danbrough/kipfs/libs
 
-go 1.20
+go 1.19
 
 replace github.com/danbrough/kipfs => ../kipfs
 
 require (
+	github.com/danbrough/kipfs v0.0.0-00010101000000-000000000000
 	github.com/multiformats/go-multibase v0.2.0
 	golang.org/x/mobile v0.0.0-20230301163155-e0f57694e12c
 )

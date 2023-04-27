@@ -1,0 +1,92 @@
+//go:build node
+// +build node
+
+package main
+
+/*
+#cgo CFLAGS: -fPIC
+#include <stdlib.h>
+*/
+import "C"
+import (
+	"github.com/danbrough/kipfs/core"
+	log "github.com/sirupsen/logrus"
+	"math/rand"
+)
+
+var repo *core.Repo = nil
+var repoPath string = ""
+
+// //export KFree
+// func KFree(s *C.void) {
+// 	if s != nil {
+// 		C.free(unsafe.Pointer(s))
+// 	}
+// }
+
+//export KRepoIsInitialized
+func KRepoIsInitialized(pathC *C.char) bool {
+	return core.RepoIsInitialized(C.GoString(pathC))
+}
+
+//export KInitRepo
+func KInitRepo(path *C.char) *C.char {
+	pathGo := C.GoString(path)
+
+	err := core.InitRepoDefaultConfig(pathGo)
+	if err != nil {
+		return C.CString(err.Error())
+	}
+	return nil
+}
+
+//export KOpenRepo
+func KOpenRepo(path *C.char) *C.char {
+	if repo != nil {
+		return C.CString("A repo is already open at " + repoPath)
+	}
+	repoPath = C.GoString(path)
+	log.Infof("KOpenRepo() %s", repoPath)
+	var err error
+	repo, err = core.OpenRepo(repoPath)
+	if err != nil {
+		return C.CString(err.Error())
+	}
+
+	return nil
+}
+
+//export KCloseRepo
+func KCloseRepo() *C.char {
+	log.Info("KCloseRepo()")
+	if repo != nil {
+		err := repo.Close()
+		if err != nil {
+			return C.CString(err.Error())
+		}
+		repo = nil
+	}
+	return nil
+}
+
+/*
+func init() {
+	log.SetReportCaller(true)
+	log.SetLevel(log.TraceLevel)
+}
+ */
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func RandStringBytesRmndr(n int) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
+	}
+	return string(b)
+}
+
+//export KBigString
+func KBigString(size int) *C.char {
+	return C.CString(RandStringBytesRmndr(size))
+}
