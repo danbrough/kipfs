@@ -5,10 +5,13 @@ import (
 
 	"github.com/danbrough/kipfs/core"
 //	ipfs_fsrepo "github.com/ipfs/kubo/repo/fsrepo"
+log "github.com/sirupsen/logrus"
+
 )
 
 func main() {
-	println("Node demo")
+	
+	log.Info("Node Demo()")
 
 	conf,err := core.NewDefaultConfig()
 	if err != nil {
