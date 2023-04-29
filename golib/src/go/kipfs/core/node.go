@@ -9,11 +9,6 @@ import (
 	ipfs_log "github.com/ipfs/go-log"
 ) */
 
-func init() {
-	println("init() node.go")
-//	ipfs_log.SetDebugLogging()
-}
-
 /*
 import (
 	"context"
