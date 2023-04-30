@@ -8,14 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func init() {
-	log.SetFormatter(&log.TextFormatter{
-		FullTimestamp: false,
-		ForceColors: true,
-	})
-	log.StandardLogger().Level = log.DebugLevel
-}
-
 func main() {
 
 	log.Info("Node Demo()")
