@@ -3,7 +3,7 @@ go 1.20
 use (
 //	./cid_demo
 
-//./kipfs
+./kipfs
 //	./libs
 	./node_demo
 )
