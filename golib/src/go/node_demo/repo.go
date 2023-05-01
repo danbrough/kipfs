@@ -2,8 +2,6 @@ package main
 
 import (
 	kubo_repo "github.com/ipfs/kubo/repo"
-	kubo_fsrepo "github.com/ipfs/kubo/repo/fsrepo"
-	
 )
 
 type RepoMobile struct {
@@ -16,8 +14,4 @@ func NewRepoMobile(path string, repo kubo_repo.Repo) *RepoMobile {
 		Repo: repo,
 		Path: path,
 	}
-}
-
-func RepoIsInitialized(path string) bool {
-	return kubo_fsrepo.IsInitialized(path)
 }
