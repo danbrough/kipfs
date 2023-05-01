@@ -4,6 +4,7 @@ import (
 	"fmt"
 	//"path/filepath"
 	//"sync"
+	"github.com/ipfs/kubo/plugin/loader"
 
 	//ipfs_mobile "github.com/danbrough/kipfs/ipfs_mobile"
 	//"github.com/danbrough/kipfs/core"
@@ -20,6 +21,8 @@ func main() {
 	log.Debug("debug message")
 	log.Trace("trace message")
 
+	
+
 	conf, err := NewDefaultConfig()
 	if err != nil {
 		panic(err)
@@ -29,6 +32,9 @@ func main() {
 
 	repoPath := "/tmp/ipfs"
 	log.Infof("Repo: %s is initialized: %v", repoPath,true)
+
+	loader,_ := loader.NewPluginLoader(repoPath)
+	println("loader:",loader)
 
 	//fmt.Println("Repo initialized: ", ipfs_fsrepo.IsInitialized("/home/dan/.ipfs"))
 	//fmt.Fprintln("Conf is %v",conf.String())
