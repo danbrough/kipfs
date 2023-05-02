@@ -4,15 +4,18 @@ import (
 	// "encoding/base64"
 	//"errors"
 	// "fmt"
+	"encoding/base64"
+	"errors"
+	"fmt"
 	"io"
-	"os"
+	//"os"
 
-	"github.com/ipfs/interface-go-ipfs-core/options"
-	log "github.com/sirupsen/logrus"
+	//"github.com/ipfs/interface-go-ipfs-core/options"
+	//log "github.com/sirupsen/logrus"
 
 	ipfs_config "github.com/ipfs/kubo/config"
-	//libp2p_ci "github.com/libp2p/go-libp2p-core/crypto"
-	//libp2p_peer "github.com/libp2p/go-libp2p-core/peer"
+	libp2p_ci "github.com/libp2p/go-libp2p-core/crypto"
+	libp2p_peer "github.com/libp2p/go-libp2p-core/peer"
 )
 
 
@@ -244,66 +247,33 @@ func defaultDatastoreConfig() ipfs_config.Datastore {
 // identityConfig initializes a new identity.
 func identityConfig(out io.Writer, nbits int) (ipfs_config.Identity, error) {
 	// TODO guard higher up
-	log.Tracef("identityConfig() %d", nbits)
-
-	/*
-		if conf == nil {
-			var err error
-			var identity config.Identity
-			if nBitsGiven {
-				identity, err = config.CreateIdentity(os.Stdout, []options.KeyGenerateOption{
-					options.Key.Size(nBitsForKeypair),
-					options.Key.Type(algorithm),
-				})
-			} else {
-				identity, err = config.CreateIdentity(os.Stdout, []options.KeyGenerateOption{
-					options.Key.Type(algorithm),
-				})
-			}
-			if err != nil {
-				return err
-			}
-			conf, err = config.InitWithIdentity(identity)
-			if err != nil {
-				return err
-			}
-		}
-	*/
-	//old
-
-	ident, err := ipfs_config.CreateIdentity(os.Stdout, []options.KeyGenerateOption{
-		options.Key.Type(options.Ed25519Key),
-	})
-
-	if err != nil {
-		panic(err)
+	
+	ident := ipfs_config.Identity{}
+	if nbits < 2048 {
+		return ident, errors.New("bitsize less than 2048 is considered unsafe")
 	}
 
-	/*  ident := ipfs_config.Identity{}
-	    if nbits < 2048 {
-	      return ident, errors.New("bitsize less than 2048 is considered unsafe")
-	    }
 
-	    fmt.Fprintf(out, "generating %v-bit RSA keypair...", nbits)
-	    sk, pk, err := libp2p_ci.GenerateKeyPair(libp2p_ci.RSA, nbits)
-	    if err != nil {
-	      return ident, err
-	    }
-	    fmt.Fprintf(out, "done\n")
+	fmt.Fprintf(out, "generating %v-bit RSA keypair...", nbits)
+	sk, pk, err := libp2p_ci.GenerateKeyPair(libp2p_ci.RSA, nbits)
+	if err != nil {
+		return ident, err
+	}
+	fmt.Fprintf(out, "done\n")
 
-	    // currently storing key unencrypted. in the future we need to encrypt it.
-	    // TODO(security)
-	    skbytes, err := sk.Raw()
-	    if err != nil {
-	      return ident, err
-	    }
-	    ident.PrivKey = base64.StdEncoding.EncodeToString(skbytes)
+	// currently storing key unencrypted. in the future we need to encrypt it.
+	// TODO(security)
+	skbytes, err := libp2p_ci.MarshalPrivateKey(sk)
+	if err != nil {
+		return ident, err
+	}
+	ident.PrivKey = base64.StdEncoding.EncodeToString(skbytes)
 
-	    id, err := libp2p_peer.IDFromPublicKey(pk)
-	    if err != nil {
-	      return ident, err
-	    }
-	    ident.PeerID = id.Pretty()
-	    fmt.Fprintf(out, "libp2p_peer identity: %s\n", ident.PeerID)*/
+	id, err := libp2p_peer.IDFromPublicKey(pk)
+	if err != nil {
+		return ident, err
+	}
+	ident.PeerID = id.Pretty()
+	fmt.Fprintf(out, "libp2p_peer identity: %s\n", ident.PeerID)
 	return ident, nil
 }
