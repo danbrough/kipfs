@@ -2,12 +2,12 @@ module github.com/danbrough/kipfs/node_demo
 
 go 1.18
 
-//replace github.com/danbrough/kipfs => ../kipfs
+replace github.com/danbrough/kipfs => ../kipfs
 
 require (
-	github.com/ipfs/interface-go-ipfs-core v0.11.0
+	github.com/ipfs/interface-go-ipfs-core v0.11.1
 	github.com/ipfs/kubo v0.19.1
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.9.0
 )
 
 require (
@@ -27,6 +27,7 @@ require (
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/crackcomm/go-gitignore v0.0.0-20170627025303-887ab5e44cc3 // indirect
 	github.com/cskr/pubsub v1.0.2 // indirect
+	github.com/danbrough/kipfs v0.0.0-20221216213012-4efcca31c018 // indirect
 	github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
 	github.com/dgraph-io/badger v1.6.2 // indirect
@@ -105,7 +106,7 @@ require (
 	github.com/ipfs/go-verifcid v0.0.2 // indirect
 	github.com/ipld/edelweiss v0.2.0 // indirect
 	github.com/ipld/go-codec-dagpb v1.5.0 // indirect
-	github.com/ipld/go-ipld-prime v0.19.0 // indirect
+	github.com/ipld/go-ipld-prime v0.20.0 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jbenet/go-temp-err-catcher v0.1.0 // indirect
 	github.com/jbenet/goprocess v0.1.4 // indirect
@@ -147,7 +148,7 @@ require (
 	github.com/multiformats/go-multiaddr-dns v0.3.1 // indirect
 	github.com/multiformats/go-multiaddr-fmt v0.1.0 // indirect
 	github.com/multiformats/go-multibase v0.1.1 // indirect
-	github.com/multiformats/go-multicodec v0.7.0 // indirect
+	github.com/multiformats/go-multicodec v0.8.0 // indirect
 	github.com/multiformats/go-multihash v0.2.1 // indirect
 	github.com/multiformats/go-multistream v0.4.1 // indirect
 	github.com/multiformats/go-varint v0.0.7 // indirect
