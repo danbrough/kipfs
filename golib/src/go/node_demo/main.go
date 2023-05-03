@@ -40,13 +40,21 @@ func main() {
 		}
 		log.Infof("Conf: %s", conf.String())
 
-
-		core.InitRepo(repoPath,conf)
-
-
+		err = core.InitRepo(repoPath,conf)
+		if err != nil {
+			panic(err)
+		}
 	}
-	//ctx := context.Background()
 
-	//fmt.Println("Repo initialized: ", ipfs_fsrepo.IsInitialized("/home/dan/.ipfs"))
-	//fmt.Fprintln("Conf is %v",conf.String())
+	repo,err := core.OpenRepo(repoPath)
+	if err != nil {
+		panic(err)
+	}
+	defer repo.Close()
+
+	println("opened repo",repo)
+	
+
+
+	
 }
