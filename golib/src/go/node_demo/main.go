@@ -2,17 +2,18 @@ package main
 
 import (
 	"fmt"
+
 	//"path/filepath"
 	//"sync"
-	"github.com/ipfs/kubo/plugin/loader"
 
 	//ipfs_mobile "github.com/danbrough/kipfs/ipfs_mobile"
 	//"github.com/danbrough/kipfs/core"
 	//ipfs_loader "github.com/ipfs/kubo/plugin/loader"
-	
+
 	// ipfs_fsrepo "github.com/ipfs/kubo/repo/fsrepo"
 	"github.com/danbrough/kipfs/core"
-	
+
+	//"github.com/danbrough/kipfs/node"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -23,8 +24,6 @@ func main() {
 	log.Debug("debug message")
 	log.Trace("trace message")
 
-	
-
 	conf, err := NewDefaultConfig()
 	if err != nil {
 		panic(err)
@@ -33,28 +32,14 @@ func main() {
 	fmt.Printf("Int is %d\n", 123)
 
 	repoPath := "/tmp/ipfs"
-	log.Infof("Repo: %s is initialized: %v", repoPath,core.RepoIsInitialized(repoPath))
+	repoInitialized := core.RepoIsInitialized(repoPath)
+	log.Infof("Repo: %s is initialized: %v", repoPath, repoInitialized)
 
-	loadPlugins(repoPath)
+	if ! repoInitialized{
+		log.Info("initializing repo at " + repoPath)
+	}
+	//ctx := context.Background()
 
 	//fmt.Println("Repo initialized: ", ipfs_fsrepo.IsInitialized("/home/dan/.ipfs"))
 	//fmt.Fprintln("Conf is %v",conf.String())
-}
-
-
-
-func loadPlugins(repoPath string) (*loader.PluginLoader, error) {
-	plugins, err := loader.NewPluginLoader(repoPath)
-	if err != nil {
-		return nil, fmt.Errorf("error loading plugins: %s", err)
-	}
-
-	if err := plugins.Initialize(); err != nil {
-		return nil, fmt.Errorf("error initializing plugins: %s", err)
-	}
-
-	if err := plugins.Inject(); err != nil {
-		return nil, fmt.Errorf("error initializing plugins: %s", err)
-	}
-	return plugins, nil
 }
