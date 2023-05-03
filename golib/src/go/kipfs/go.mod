@@ -2,6 +2,8 @@ module github.com/danbrough/kipfs
 
 go 1.19
 
+replace github.com/multiformats/go-multiaddr => github.com/gfanton/go-multiaddr v0.7.1-0.20221109002011-e39b3a49e793 // tmp, required for>
+
 require (
 	github.com/ipfs/go-cid v0.3.2
 	github.com/ipfs/go-datastore v0.6.0
