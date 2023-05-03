@@ -4,46 +4,98 @@
 // want to use it in your own gomobile project, you may want to use host/node package directly
 
 package core
-/* 
-import (
-	ipfs_log "github.com/ipfs/go-log"
-) */
 
-/*
+// Main API exposed to the ios/android
+
 import (
 	"context"
-	log "github.com/sirupsen/logrus"
+	"fmt"
+	"log"
 	"net"
 	"sync"
 
-	ipfs_mobile "github.com/danbrough/kipfs/node"
+	"go.uber.org/zap"
+	"github.com/danbrough/kipfs/node"
 
+	p2p_mdns "github.com/libp2p/go-libp2p/p2p/discovery/mdns"
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr/net"
 
-	ipfs_bs "github.com/ipfs/go-ipfs/core/bootstrap"
-	// ipfs_log "github.com/ipfs/go-log"
+	ipfs_config "github.com/ipfs/kubo/config"
+	ipfs_bs "github.com/ipfs/kubo/core/bootstrap"
+	libp2p "github.com/libp2p/go-libp2p"
 )
-
-
 
 type Node struct {
 	listeners   []manet.Listener
 	muListeners sync.Mutex
+	mdnsLocker  sync.Locker
+	mdnsLocked  bool
+	mdnsService p2p_mdns.Service
 
-	ipfsMobile *ipfs_mobile.IpfsMobile
+	ipfsMobile *node.IpfsMobile
 }
 
-func NewNode(r *Repo, online bool) (*Node, error) {
+func NewNode(r *Repo) (*Node, error) {
+
+	var dialer net.Dialer
+	net.DefaultResolver = &net.Resolver{
+		PreferGo: false,
+		Dial: func(context context.Context, _, _ string) (net.Conn, error) {
+			conn, err := dialer.DialContext(context, "udp", "84.200.69.80:53")
+			if err != nil {
+				return nil, err
+			}
+			return conn, nil
+		},
+	}
+
 	ctx := context.Background()
 
 	if _, err := loadPlugins(r.mr.Path); err != nil {
 		return nil, err
 	}
 
-	log.Trace("creating IpfsConfig")
-	ipfscfg := &ipfs_mobile.IpfsConfig{
-		Online:     online,
+	// Set up netdriver.
+	// if config.netDriver != nil {
+	// 	logger, _ := zap.NewDevelopment()
+	// 	inet := &inet{
+	// 		net:    config.netDriver,
+	// 		logger: logger,
+	// 	}
+	// 	ipfsutil.SetNetDriver(inet)
+	// 	manet.SetNetInterface(inet)
+	// }
+
+	var bleOpt libp2p.Option
+
+/* 	switch {
+	// Java embedded driver (android)
+	case config.bleDriver != nil:
+		logger := zap.NewExample()
+		defer func() {
+			if err := logger.Sync(); err != nil {
+				fmt.Println(err)
+			}
+		}()
+		bleOpt = libp2p.Transport(proximity.NewTransport(ctx, logger, config.bleDriver))
+	// Go embedded driver (ios)
+	case ble.Supported:
+		logger := zap.NewExample()
+		defer func() {
+			if err := logger.Sync(); err != nil {
+				fmt.Println(err)
+			}
+		}()
+		bleOpt = libp2p.Transport(proximity.NewTransport(ctx, logger, ble.NewDriver(logger)))
+	default:
+		log.Printf("cannot enable BLE on an unsupported platform")
+	} */
+
+	ipfscfg := &node.IpfsConfig{
+		HostConfig: &node.HostConfig{
+			Options: []libp2p.Option{bleOpt},
+		},
 		RepoMobile: r.mr,
 		ExtraOpts: map[string]bool{
 			"pubsub": true, // enable experimental pubsub feature by default
@@ -51,22 +103,83 @@ func NewNode(r *Repo, online bool) (*Node, error) {
 		},
 	}
 
-	log.Trace(" ipfs_mobile.NewNode(ctx, ipfscfg)")
-	mnode, err := ipfs_mobile.NewNode(ctx, ipfscfg)
+	cfg, err := r.mr.Config()
 	if err != nil {
-		log.Error("Failed in ipfs_mobile.NewNode(ctx, ipfscfg)")
+		panic(err)
+	}
+
+	mdnsLocked := false
+	if cfg.Discovery.MDNS.Enabled && config.mdnsLockerDriver != nil {
+		config.mdnsLockerDriver.Lock()
+		mdnsLocked = true
+
+		// Force disable mDNS so that ipfs_mobile.NewNode doesn't start the service.
+		err := r.mr.ApplyPatchs(func(cfg *ipfs_config.Config) error {
+			cfg.Discovery.MDNS.Enabled = false
+			return nil
+		})
+		if err != nil {
+			return nil, fmt.Errorf("unable to ApplyPatchs to disable mDNS: %w", err)
+		}
+	}
+	mnode, err := node.NewNode(ctx, ipfscfg)
+	if err != nil {
+		if mdnsLocked {
+			config.mdnsLockerDriver.Unlock()
+		}
 		return nil, err
 	}
 
-	if online {
-		log.Trace("mnode.IpfsNode.Bootstrap(ipfs_bs.DefaultBootstrapConfig)")
-		if err := mnode.IpfsNode.Bootstrap(ipfs_bs.DefaultBootstrapConfig); err != nil {
-			log.Printf("failed to bootstrap node: `%s`", err)
+	var mdnsService p2p_mdns.Service = nil
+	if mdnsLocked {
+		// Restore.
+		err := r.mr.ApplyPatchs(func(cfg *ipfs_config.Config) error {
+			cfg.Discovery.MDNS.Enabled = true
+			return nil
+		})
+		if err != nil {
+			return nil, fmt.Errorf("unable to ApplyPatchs to enable mDNS: %w", err)
+		}
+
+		h := mnode.PeerHost()
+		mdnslogger, _ := zap.NewDevelopment()
+
+		dh := ipfsutil.DiscoveryHandler(ctx, mdnslogger, h)
+		mdnsService = ipfsutil.NewMdnsService(mdnslogger, h, ipfsutil.MDNSServiceName, dh)
+
+		// Start the mDNS service.
+		// Get multicast interfaces.
+		ifaces, err := ipfsutil.GetMulticastInterfaces()
+		if err != nil {
+			if mdnsLocked {
+				config.mdnsLockerDriver.Unlock()
+			}
+			return nil, err
+		}
+
+		// If multicast interfaces are found, start the mDNS service.
+		if len(ifaces) > 0 {
+			mdnslogger.Info("starting mdns")
+			if err := mdnsService.Start(); err != nil {
+				if mdnsLocked {
+					config.mdnsLockerDriver.Unlock()
+				}
+				return nil, fmt.Errorf("unable to start mdns service: %w", err)
+			}
+		} else {
+			mdnslogger.Error("unable to start mdns service, no multicast interfaces found")
 		}
 	}
 
+	if err := mnode.IpfsNode.Bootstrap(ipfs_bs.DefaultBootstrapConfig); err != nil {
+		log.Printf("failed to bootstrap node: `%s`", err)
+	}
+
 	return &Node{
-		ipfsMobile: mnode,
+		ipfsMobile:  mnode,
+		mdnsLocker:  config.mdnsLockerDriver,
+		mdnsLocked:  mdnsLocked,
+		mdnsService: mdnsService,
 	}, nil
 }
 
@@ -77,29 +190,44 @@ func (n *Node) Close() error {
 	}
 	n.muListeners.Unlock()
 
+	if n.mdnsLocked {
+		n.mdnsService.Close()
+		n.mdnsLocker.Unlock()
+		n.mdnsLocked = false
+	}
+
 	return n.ipfsMobile.Close()
 }
 
 func (n *Node) ServeUnixSocketAPI(sockpath string) (err error) {
-	_, err = n.ServeMultiaddr("/unix/" + sockpath)
+	_, err = n.ServeAPIMultiaddr("/unix/" + sockpath)
 	return
 }
 
 // ServeTCPAPI on the given port and return the current listening maddr
 func (n *Node) ServeTCPAPI(port string) (string, error) {
-	return n.ServeMultiaddr("/ip4/127.0.0.1/tcp/" + port)
+	return n.ServeAPIMultiaddr("/ip4/127.0.0.1/tcp/" + port)
 }
 
-func (n *Node) ServeConfigAPI() error {
+func (n *Node) ServeConfig() error {
 	cfg, err := n.ipfsMobile.Repo.Config()
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to get config: %s", err.Error())
 	}
 
 	if len(cfg.Addresses.API) > 0 {
 		for _, maddr := range cfg.Addresses.API {
-			if _, err := n.ServeMultiaddr(maddr); err != nil {
-				log.Printf("cannot serve `%s`: %s", maddr, err.Error())
+			if _, err := n.ServeAPIMultiaddr(maddr); err != nil {
+				return fmt.Errorf("cannot serve `%s`: %s", maddr, err.Error())
+			}
+		}
+	}
+
+	if len(cfg.Addresses.Gateway) > 0 {
+		for _, maddr := range cfg.Addresses.Gateway {
+			// public gateway should be readonly by default
+			if _, err := n.ServeGatewayMultiaddr(maddr, false); err != nil {
+				return fmt.Errorf("cannot serve `%s`: %s", maddr, err.Error())
 			}
 		}
 	}
@@ -107,7 +235,40 @@ func (n *Node) ServeConfigAPI() error {
 	return nil
 }
 
-func (n *Node) ServeMultiaddr(smaddr string) (string, error) {
+func (n *Node) ServeUnixSocketGateway(sockpath string, writable bool) (err error) {
+	_, err = n.ServeGatewayMultiaddr("/unix/"+sockpath, writable)
+	return
+}
+
+func (n *Node) ServeTCPGateway(port string, writable bool) (string, error) {
+	return n.ServeGatewayMultiaddr("/ip4/127.0.0.1/tcp/"+port, writable)
+}
+
+func (n *Node) ServeGatewayMultiaddr(smaddr string, writable bool) (string, error) {
+	maddr, err := ma.NewMultiaddr(smaddr)
+	if err != nil {
+		return "", err
+	}
+
+	ml, err := manet.Listen(maddr)
+	if err != nil {
+		return "", err
+	}
+
+	n.muListeners.Lock()
+	n.listeners = append(n.listeners, ml)
+	n.muListeners.Unlock()
+
+	go func(l net.Listener) {
+		if err := n.ipfsMobile.ServeGateway(l, writable); err != nil {
+			log.Printf("serve error: %s", err.Error())
+		}
+	}(manet.NetListener(ml))
+
+	return ml.Multiaddr().String(), nil
+}
+
+func (n *Node) ServeAPIMultiaddr(smaddr string) (string, error) {
 	maddr, err := ma.NewMultiaddr(smaddr)
 	if err != nil {
 		return "", err
@@ -134,4 +295,3 @@ func (n *Node) ServeMultiaddr(smaddr string) (string, error) {
 func init() {
 	//      ipfs_log.SetDebugLogging()
 }
-*/
