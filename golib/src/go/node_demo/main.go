@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 
 	//"path/filepath"
 	//"sync"
@@ -24,19 +24,26 @@ func main() {
 	log.Debug("debug message")
 	log.Trace("trace message")
 
-	conf, err := NewDefaultConfig()
-	if err != nil {
-		panic(err)
-	}
-	println("Conf", conf.String())
-	fmt.Printf("Int is %d\n", 123)
-
 	repoPath := "/tmp/ipfs"
 	repoInitialized := core.RepoIsInitialized(repoPath)
 	log.Infof("Repo: %s is initialized: %v", repoPath, repoInitialized)
+	log.Warn("warning about something..")
+	log.Error("printing an error about something ..")
 
-	if ! repoInitialized{
+	if !repoInitialized {
 		log.Info("initializing repo at " + repoPath)
+		var conf *core.Config
+		var err error
+		conf, err = core.NewDefaultConfig()
+		if err != nil {
+			panic(err)
+		}
+		log.Infof("Conf: %s", conf.String())
+
+
+		core.InitRepo(repoPath,conf)
+
+
 	}
 	//ctx := context.Background()
 
