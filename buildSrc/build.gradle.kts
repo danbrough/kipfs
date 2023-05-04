@@ -8,7 +8,7 @@ plugins {
 
 group = "org.danbrough.kipfs"
 
-val javaLangVersion = 17
+val javaLangVersion = 11
 
 val versionProps = Properties().also{
   it.load(file("../versions.properties").bufferedReader())
