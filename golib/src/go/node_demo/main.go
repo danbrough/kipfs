@@ -26,6 +26,7 @@ func main() {
 
 	repoPath := "/tmp/ipfs"
 	repoInitialized := core.RepoIsInitialized(repoPath)
+	
 	log.Infof("Repo: %s is initialized: %v", repoPath, repoInitialized)
 	log.Warn("warning about something..")
 	log.Error("printing an error about something ..")
