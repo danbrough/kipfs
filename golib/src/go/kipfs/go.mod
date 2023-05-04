@@ -3,7 +3,7 @@ module github.com/danbrough/kipfs
 go 1.19
 
 replace github.com/multiformats/go-multiaddr => ../go-multiaddr
-	
+
 //replace github.com/multiformats/go-multiaddr => github.com/gfanton/go-multiaddr v0.7.1-0.20221109002011-e39b3a49e793
 
 require (
