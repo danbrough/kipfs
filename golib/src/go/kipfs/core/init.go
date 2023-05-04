@@ -145,7 +145,7 @@ func addressesConfig() ipfs_config.Addresses {
 
 func DefaultDatastoreConfig() ipfs_config.Datastore {
 	return  ipfs_config.Datastore{
-		StorageMax:         "10GB",
+		StorageMax:         "4GB",
 		StorageGCWatermark: 90, // 90%
 		GCPeriod:           "1h",
 		BloomFilterSize:    0,
