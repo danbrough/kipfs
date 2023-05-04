@@ -1,8 +1,9 @@
 go 1.20
 
 use (
-	./cid_demo
+	//	./cid_demo
+
 	./kipfs
-	./libs
+	//	./libs
 	./node_demo
 )
