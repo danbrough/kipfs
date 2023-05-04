@@ -40,21 +40,35 @@ func main() {
 		}
 		log.Infof("Conf: %s", conf.String())
 
-		err = core.InitRepo(repoPath,conf)
+		err = core.InitRepo(repoPath, conf)
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	repo,err := core.OpenRepo(repoPath)
+	repo, err := core.OpenRepo(repoPath)
 	if err != nil {
 		panic(err)
 	}
-	defer repo.Close()
 
-	println("opened repo",repo)
-	
+	defer func() {
+		log.Info("Closing repo..")
+		repo.Close()
+	}()
 
+	log.Infof("opened repo: %s", repo)
 
-	
+	n,err := core.NewNode(repo,nil)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Info("created node ")
+	println("n",n)
+
+	defer func() {
+		log.Info("Closing node..")
+		n.Close()
+	}()
+
 }

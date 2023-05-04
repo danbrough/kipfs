@@ -92,6 +92,12 @@ func initConfig(out io.Writer, nBitsForKeypair int) (*ipfs_config.Config, error)
 			DownloadSources: []string{},
 			Keep:            "",
 		},
+
+/* 		Swarm: ipfs_config.SwarmConfig{
+			ConnMgr : ipfs_config.ConnMgr{
+				HighWater: ,
+			}
+		}, */
 	}
 
 /*
