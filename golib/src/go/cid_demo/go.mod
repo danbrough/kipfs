@@ -1,6 +1,6 @@
 module github.com/danbrough/kipfs/cid_demo
 
-go 1.18
+go 1.20
 
 replace github.com/danbrough/kipfs => ../kipfs
 
