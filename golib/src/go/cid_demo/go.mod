@@ -7,6 +7,7 @@ replace github.com/danbrough/kipfs => ../kipfs
 require github.com/danbrough/kipfs v0.0.0-20221216213012-4efcca31c018
 
 require (
+	github.com/gopherjs/gopherjs v0.0.0-20190430165422-3e4dfb77656c // indirect
 	github.com/ipfs/go-cid v0.4.1 // indirect
 	github.com/ipld/go-ipld-prime v0.20.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
