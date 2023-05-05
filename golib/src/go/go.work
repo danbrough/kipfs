@@ -4,6 +4,6 @@ use (
 	./cid_demo
 
 	./kipfs
-	//	./libs
+	./libs
 	./node_demo
 )
