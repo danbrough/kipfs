@@ -11,7 +11,7 @@ require (
 	github.com/ipfs/go-datastore v0.6.0
 	github.com/ipfs/go-ipfs-api v0.5.0
 	github.com/ipfs/go-ipfs-files v0.3.0
-	github.com/ipfs/kubo v0.19.1
+	github.com/ipfs/kubo v0.19.2
 	github.com/ipld/go-ipld-prime v0.20.0
 	github.com/libp2p/go-libp2p v0.26.4
 	github.com/libp2p/go-libp2p-core v0.19.0
