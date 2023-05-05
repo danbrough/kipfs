@@ -1,6 +1,6 @@
 module github.com/danbrough/kipfs/node_demo
 
-go 1.18
+go 1.19
 
 replace github.com/danbrough/kipfs => ../kipfs
 
