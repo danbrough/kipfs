@@ -11,9 +11,10 @@ import (
 	//ipfs_loader "github.com/ipfs/kubo/plugin/loader"
 
 	// ipfs_fsrepo "github.com/ipfs/kubo/repo/fsrepo"
-	"github.com/danbrough/kipfs/core"
+	"os"
+	"path/filepath"
 
-	//"github.com/danbrough/kipfs/node"
+	"github.com/danbrough/kipfs/core"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -64,8 +65,15 @@ func main() {
 		panic(err)
 	}
 
-	log.Info("created node ")
-	println("n",n)
+	
+	log.Info("created node")
+	sockPath := filepath.Join(os.TempDir(),"test.sock")
+	err = n.ServeUnixSocketGateway(sockPath,true) 
+	if err != nil {
+		panic(err)
+	}
+	
+	
 
 	defer func() {
 		log.Info("Closing node..")
