@@ -1,4 +1,4 @@
-import org.danbrough.kipfs.enableGo
+import org.danbrough.go.enableGo
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
@@ -19,7 +19,7 @@ kotlin {
   val commonMain by sourceSets.getting {
     dependencies {
       //implementation(project(":golib"))
-      implementation("org.danbrough:klog:_")
+      implementation(libs.org.danbrough.klog)
     }
   }
 

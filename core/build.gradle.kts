@@ -1,9 +1,10 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
-  kotlin("multiplatform")
-  kotlin("plugin.serialization")
-  //id("com.android.library")
+  alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.org.jetbrains.dokka)
   `maven-publish`
-  id("org.jetbrains.dokka")
 }
 
 
@@ -11,9 +12,9 @@ plugins {
 kotlin {
 
 
-  declareTargets()
   jvm()
 
+  linuxX64()
 
   sourceSets {
 
@@ -31,7 +32,7 @@ kotlin {
 
     val commonMain by getting {
       dependencies {
-        api("org.danbrough:klog:_")
+        api(libs.org.danbrough.klog)
       }
     }
 
@@ -41,6 +42,12 @@ kotlin {
         //dependsOn(baseMain)
         //implementation(KotlinX.coroutines.jdk8)
       }
+    }
+
+    val nativeMain by creating
+
+    targets.withType<KotlinNativeTarget>{
+      compilations["main"].defaultSourceSet.dependsOn(nativeMain)
     }
   }
 

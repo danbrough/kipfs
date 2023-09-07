@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+@file:OptIn(ExperimentalForeignApi::class)
 
 package kipfs.golib.jni
 
@@ -6,7 +7,7 @@ import kipfs.golib.copyToKString
 import kotlinx.cinterop.*
 import platform.android.*
 import org.danbrough.kipfs.*
-import org.danbrough.kipfs.golib.KRequestSend_return
+import libkipfs.KRequestSend_return
 
 
 /*JNIEXPORT jbyteArray JNICALL Java_kipfs_golib_jni_JNI_sendRequest
@@ -17,7 +18,7 @@ fun sendRequest(env: CPointer<JNIEnvVar>, thiz: jclass, requestRefID: jint): jby
     jniInit()
     val e = env.pointed.pointed!!
 
-    org.danbrough.kipfs.golib.KRequestSend(requestRefID).useContents<KRequestSend_return, jbyteArray> {
+    libkipfs.KRequestSend(requestRefID).useContents<KRequestSend_return, jbyteArray> {
       r2?.copyToKString()?.also {
         throw Exception("Request failed: $it")
       }
@@ -50,7 +51,7 @@ fun requestOption(
   val e = env.pointed.pointed!!
   val cName = e.GetStringUTFChars!!(env, jName, null)
   val cValue = e.GetStringUTFChars!!(env, jValue, null)
-  org.danbrough.kipfs.golib.KRequestOption(requestRefID, cName, cValue)
+  libkipfs.KRequestOption(requestRefID, cName, cValue)
   e.ReleaseStringUTFChars!!(env, jName, cName)
   e.ReleaseStringUTFChars!!(env, jValue, cValue)
 }
@@ -68,7 +69,7 @@ fun postData(
   val e = env.pointed.pointed!!
   val cData = e.GetByteArrayElements!!(env, jData, null)
   val dataLength = e.GetArrayLength!!(env, jData)
-  return org.danbrough.kipfs.golib.KRequestPostBytes(requestRefID, cData, dataLength).useContents {
+  return libkipfs.KRequestPostBytes(requestRefID, cData, dataLength).useContents {
     r2?.copyToKString()?.also {
       throw Exception("PostData failed: $it")
     }
@@ -101,7 +102,7 @@ fun createRequest(
     val e = env.pointed.pointed!!
     val cCommand = e.GetStringUTFChars!!(env, jCommand, null)
     val cArg = if (jArg != null) e.GetStringUTFChars!!(env, jArg, null) else null
-    return org.danbrough.kipfs.golib.KCreateRequest(shellRefId, cCommand, cArg).useContents {
+    return libkipfs.KCreateRequest(shellRefId, cCommand, cArg).useContents {
       e.ReleaseStringUTFChars!!(env, jCommand, cCommand)
       if (jArg != null) e.ReleaseStringUTFChars!!(env, jArg, cArg)
       r1?.copyToKString()?.also {

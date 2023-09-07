@@ -2,23 +2,24 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import  org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
-  kotlin("multiplatform") apply false
-  id("org.danbrough.kotlinxtras.sonatype") apply false
-  id("org.danbrough.kotlinxtras.core") apply false
-  id("org.danbrough.kotlinxtras.binaries") apply false
-  id("org.jetbrains.dokka") apply false
-
+//  alias(libs.plugins.kotlinMultiplatform) apply false
+  alias(libs.plugins.kotlin.multiplatform) apply false
+  alias(libs.plugins.org.jetbrains.dokka) apply false
+  alias(libs.plugins.kipfs.go) apply false
 }
 
-println("Using Kotlin compiler version: ${org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION}")
+val kipfsPackage = libs.versions.kipfsPackage.get()
+val kipfsVersion = libs.versions.kipfs.get()
 
 
 allprojects {
-  group = KIPFS_GROUP
-  version = KIPFS_VERSION
+
+  group = kipfsPackage
+  version = kipfsVersion
+
 
   repositories {
-    //maven("/usr/local/kotlinxtras/build/xtras/maven")
+    maven("/usr/local/kotlinxtras/build/xtras/maven")
     maven("https://s01.oss.sonatype.org/content/groups/staging/")
     mavenCentral()
     google()
@@ -35,6 +36,7 @@ allprojects {
       showStandardStreams = true
       showStackTraces = true
     }
+
     outputs.upToDateWhen {
       false
     }

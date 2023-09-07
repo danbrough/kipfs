@@ -1,22 +1,80 @@
-import org.danbrough.kipfs.enableGo
-import org.danbrough.kotlinxtras.SHARED_LIBRARY_PATH_NAME
-import org.danbrough.kotlinxtras.binaries.LibraryExtension
-import org.danbrough.kotlinxtras.capitalize
-import org.danbrough.kotlinxtras.core.enableOpenssl3
-import org.danbrough.kotlinxtras.platformName
-import org.danbrough.kotlinxtras.sharedLibraryPath
+import org.danbrough.kipfs.go.xtrasGoBuilder
+import org.danbrough.xtras.wolfssl.xtrasWolfSSL
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.targets.jvm.tasks.KotlinJvmTest
-import org.jetbrains.kotlin.konan.target.KonanTarget
+import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
-  kotlin("multiplatform")
-  id("org.danbrough.kipfs.go") version KIPFS_VERSION
-  id("org.danbrough.kotlinxtras.sonatype")
-//  id("org.danbrough.kotlinxtras.core")
-
+  alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.xtras.wolfssl)
+  alias(libs.plugins.kipfs.go)
   `maven-publish`
 }
+
+
+val ssl = xtrasWolfSSL()
+
+val golib = xtrasGoBuilder(ssl, projectDir.resolve("src/go"),"kipfs") {
+
+  cinterops {
+    interopsPackage = "libkipfs"
+    headers = """
+          |headers = libkipfsgo.h
+          |linkerOpts = -lkipfsgo
+          |""".trimMargin()
+
+  }
+}
+
+
+kotlin {
+  linuxX64()
+  //linuxArm64()
+
+  sourceSets {
+    val commonMain by getting {
+      dependencies {
+        implementation(libs.org.danbrough.klog)
+        implementation(libs.kotlinx.coroutines.core)
+        implementation(project(":core"))
+      }
+    }
+
+    commonTest {
+      dependencies {
+        implementation(kotlin("test"))
+      }
+    }
+
+    val nativeMain by creating {
+      dependsOn(commonMain)
+    }
+
+    targets.withType<KotlinNativeTarget> {
+      compilations["main"].apply {
+        defaultSourceSet.dependsOn(nativeMain)
+
+        cinterops {
+          create("golib") {
+            packageName = "libkipfs"
+            defFile = rootDir.resolve("build/xtras/cinterops/xtras_kipfs.def")
+          }
+          if (konanTarget.family != Family.ANDROID){
+            create("jni") {
+              packageName = "platform.android"
+              defFile = projectDir.resolve("src/interop/jni.def")
+              includeDirs.allHeaders(projectDir.resolve("src/include"))
+            }
+          }
+        }
+      }
+
+    }
+
+
+  }
+}
+
+/*
 
 
 val golib = enableGo {
@@ -29,7 +87,7 @@ kotlin {
 
   val commonMain by sourceSets.getting {
     dependencies {
-      implementation("org.danbrough:klog:_")
+      implementation(libs.org.danbrough.klog)
       implementation(project(":core"))
     }
   }
@@ -93,3 +151,4 @@ kotlin {
 
 
 
+*/

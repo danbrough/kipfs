@@ -1,4 +1,5 @@
 @file:Suppress("RemoveRedundantCallsOfConversionMethods")
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalForeignApi::class)
 
 package kipfs.golib
 
@@ -34,7 +35,7 @@ fun CPointer<ByteVar>.copyToKString(): String = toKString().let {
 actual fun initKIPFSLib(): KIPFS = object : KIPFSNative {
 
   override fun createNativeShell(address: String): Int =
-    org.danbrough.kipfs.golib.KCreateShell(address.cstr).useContents {
+    libkipfs.KCreateShell(address.cstr).useContents {
       r1?.copyToKString()?.also {
         throw Exception(it)
       }
@@ -42,7 +43,7 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNative {
     }
   
   override fun createRequest(shellRef: Int,command:String,arg:String?): Int =
-    org.danbrough.kipfs.golib.KCreateRequest(shellRef,command.utf8,arg?.utf8).useContents {
+    libkipfs.KCreateRequest(shellRef,command.utf8,arg?.utf8).useContents {
       r1?.copyToKString()?.also {
         throw Exception("Create request failed: $it")
       }
@@ -51,11 +52,12 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNative {
 
 
   override fun requestOption(requestRefID: Int, name: String, value: String) =
-    org.danbrough.kipfs.golib.KRequestOption(requestRefID,name.utf8,value.utf8)
+
+    libkipfs.KRequestOption(requestRefID,name.utf8,value.utf8)
 
 
   override fun sendRequest(requestRefID: Int): ByteArray =
-    org.danbrough.kipfs.golib.KRequestSend(requestRefID).useContents {
+    libkipfs.KRequestSend(requestRefID).useContents {
       r2?.copyToKString()?.also {
         throw Exception("Request failed: $it")
       }
@@ -63,7 +65,7 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNative {
     }
 
   override fun <T> postString(shellRefID: Int, data: String): KResponse<T> =
-    org.danbrough.kipfs.golib.KRequestPostString(shellRefID,data.utf8).useContents {
+   libkipfs.KRequestPostString(shellRefID,data.utf8).useContents {
       r2?.copyToKString()?.also {
         throw Exception("Request failed: $it")
       }
@@ -72,17 +74,17 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNative {
 
 
   override fun <T> postData(shellRefID: Int, data: ByteArray): KResponse<T> =
-    org.danbrough.kipfs.golib.KRequestPostBytes(shellRefID,data.toCValues(),data.size).useContents {
+   libkipfs.KRequestPostBytes(shellRefID,data.toCValues(),data.size).useContents {
       r2?.copyToKString()?.also {
         throw Exception("Request failed: $it")
       }
       KByteResponse<T>(r0!!.readBytes(r1.toInt()))
     }
 
-  override fun disposeGoObject(ref: Int) = org.danbrough.kipfs.golib.KDecRef(ref)
+  override fun disposeGoObject(ref: Int) =libkipfs.KDecRef(ref)
 
 /*  override fun request(shellRefID: Int, cmd: String, arg: String?): ByteArray =
-    org.danbrough.kipfs.golib.KRequest(shellRefID, cmd.utf8, arg?.utf8).useContents {
+   libkipfs.KRequest(shellRefID, cmd.utf8, arg?.utf8).useContents {
       r2?.copyToKString()?.also {
         throw Exception("Request failed: $it")
       }
@@ -94,9 +96,9 @@ actual fun initKIPFSLib(): KIPFS = object : KIPFSNative {
 
   override fun environment(key: String): String? = platform.posix.getenv(key)?.toKString()
 
-  override fun getTime(): String = org.danbrough.kipfs.golib.GetTime()!!.copyToKString()
+  override fun getTime(): String =libkipfs.GetTime()!!.copyToKString()
 
-  override fun dagCID(json: String) = org.danbrough.kipfs.golib.KCID(json.cstr)!!.copyToKString()
+  override fun dagCID(json: String) =libkipfs.KCID(json.cstr)!!.copyToKString()
   
 }
 

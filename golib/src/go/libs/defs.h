@@ -26,6 +26,4 @@ char* return_string();
 int copy_string(char* str, int size);
 
 
-
-
 #endif 

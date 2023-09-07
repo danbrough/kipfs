@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+@file:OptIn(ExperimentalForeignApi::class)
 
 package kipfs.golib.jni
 
@@ -7,11 +8,13 @@ import kotlinx.cinterop.*
 import klog.klog
 import platform.android.*
 import org.danbrough.kipfs.*
+import kotlin.experimental.ExperimentalNativeApi
 
 private object JNIImpl
 
 val log = JNIImpl.klog()
 
+@OptIn(ExperimentalNativeApi::class)
 internal fun jniInit() {
   initRuntimeIfNeeded()
   Platform.isMemoryLeakCheckerActive = true
@@ -22,7 +25,7 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
   memScoped {
     jniInit()
     val jsonC = env.pointed.pointed!!.GetStringUTFChars!!(env, json, null)
-    val s = org.danbrough.kipfs.golib.KCID(jsonC)!!
+    val s = libkipfs.KCID(jsonC)!!
     env.pointed.pointed!!.ReleaseStringUTFChars!!(env, json, jsonC)
     return env.pointed.pointed!!.NewStringUTF!!.invoke(
       env,
@@ -36,7 +39,7 @@ fun dagCID(env: CPointer<JNIEnvVar>, thiz: jclass, json: jstring): jstring {
 fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
   memScoped {
     jniInit()
-    return org.danbrough.kipfs.golib.GetTime().let { cs ->
+    return libkipfs.GetTime().let { cs ->
       env.pointed.pointed!!.NewStringUTF!!.invoke(env, cs!!.getPointer(this))!!
     }
   }
@@ -45,7 +48,7 @@ fun getTime(env: CPointer<JNIEnvVar>, thiz: jclass): jstring {
 
 @CName("Java_kipfs_golib_KIPFSJni_disposeGoObject")
 fun disposeGoObject(env: CPointer<JNIEnvVar>, thiz: jclass, refnum: jint) {
-  org.danbrough.kipfs.golib.KDecRef(refnum)
+  libkipfs.KDecRef(refnum)
 }
 
 
@@ -55,7 +58,7 @@ fun createNativeShell(env: CPointer<JNIEnvVar>, thiz: jclass, address: jstring):
     jniInit()
     val e = env.pointed.pointed!!
     val addrC = e.GetStringUTFChars!!(env, address, null)
-    val s = org.danbrough.kipfs.golib.KCreateShell(addrC).getPointer(this).pointed
+    val s = libkipfs.KCreateShell(addrC).getPointer(this).pointed
     e.ReleaseStringUTFChars!!(env, address, addrC)
     if (s.r1 != null) {
       log.error("An error occurred")
@@ -84,7 +87,7 @@ fun request(
       e.GetStringUTFChars!!(env, arg, null)
     }
 
-    org.danbrough.kipfs.golib.KRequest(shellRefID, cmdC, argC).useContents {
+    libkipfs.KRequest(shellRefID, cmdC, argC).useContents {
       e.ReleaseStringUTFChars!!(env, cmd, cmdC)
 
       if (argC != null) e.ReleaseStringUTFChars!!(env, arg, argC)
