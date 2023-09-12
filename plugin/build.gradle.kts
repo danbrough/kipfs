@@ -10,11 +10,8 @@ group = "org.danbrough.kipfs"
 version = libs.versions.kipfs.get()
 
 repositories {
-
-  property("xtras.dir.maven")?.toString()?.also {
-    maven(it) {
-      name = "xtras"
-    }
+  maven(property("xtras.dir.maven")?.toString() ?: file("../maven")) {
+    name = "xtras"
   }
   maven("https://s01.oss.sonatype.org/content/groups/staging")
   mavenCentral()

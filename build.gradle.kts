@@ -7,8 +7,8 @@ plugins {
   alias(libs.plugins.kipfs.go) apply false
 }
 
-val kipfsPackage = libs.versions.kipfsPackage.get()
-val kipfsVersion = libs.versions.kipfs.get()
+val kipfsPackage = libs.versions.kipfsPackage.get().toString()
+val kipfsVersion = libs.versions.kipfs.get().toString()
 
 
 allprojects {
