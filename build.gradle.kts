@@ -2,7 +2,6 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import  org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
-//  alias(libs.plugins.kotlinMultiplatform) apply false
   alias(libs.plugins.kotlin.multiplatform) apply false
   alias(libs.plugins.org.jetbrains.dokka) apply false
   alias(libs.plugins.kipfs.go) apply false
@@ -17,9 +16,10 @@ allprojects {
   group = kipfsPackage
   version = kipfsVersion
 
-
   repositories {
-    maven("/usr/local/kotlinxtras/build/xtras/maven")
+    maven(property("xtras.dir.maven")?.toString() ?: file("maven")) {
+      name = "xtras"
+    }
     maven("https://s01.oss.sonatype.org/content/groups/staging/")
     mavenCentral()
     google()
@@ -43,5 +43,4 @@ allprojects {
   }
 
 }
-
 

@@ -1,7 +1,8 @@
+import org.gradle.kotlin.dsl.extra
+
 pluginManagement {
 
   repositories {
-    maven("/usr/local/kotlinxtras/build/xtras/maven")
     maven("https://s01.oss.sonatype.org/content/groups/staging")
     mavenCentral()
     gradlePluginPortal()

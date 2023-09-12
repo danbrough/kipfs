@@ -10,7 +10,12 @@ group = "org.danbrough.kipfs"
 version = libs.versions.kipfs.get()
 
 repositories {
-  maven("/usr/local/kotlinxtras/build/xtras/maven")
+
+  property("xtras.dir.maven")?.toString()?.also {
+    maven(it) {
+      name = "xtras"
+    }
+  }
   maven("https://s01.oss.sonatype.org/content/groups/staging")
   mavenCentral()
   gradlePluginPortal()
@@ -19,8 +24,8 @@ repositories {
 
 publishing {
   repositories {
-    maven(rootProject.rootDir.resolve("build/kipfs/maven")) {
-      name = "Kipfs"
+    maven(property("xtras.dir.maven")?.toString() ?: file("../maven")) {
+      name = "xtras"
     }
   }
 }

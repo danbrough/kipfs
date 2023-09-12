@@ -11,19 +11,24 @@ plugins {
 }
 
 
-val ssl = xtrasWolfSSL()
+val ssl = xtrasWolfSSL {
+  resolveBinariesFromMaven = true
+}
 
-val golib = xtrasGoBuilder(ssl, projectDir.resolve("src/go"),"kipfs") {
-
-  cinterops {
-    interopsPackage = "libkipfs"
-    headers = """
-          |headers = libkipfsgo.h
+val golib =
+  xtrasGoBuilder(
+    ssl,
+    goDir = projectDir.resolve("src/go"), name = "kipfs", modules = "./libs"
+  ) {
+    cinterops {
+      interopsPackage = "libkipfs"
+      headers = """
+          |headers = libkipfsgo.h defs.h
           |linkerOpts = -lkipfsgo
           |""".trimMargin()
 
+    }
   }
-}
 
 
 kotlin {
@@ -54,15 +59,20 @@ kotlin {
         defaultSourceSet.dependsOn(nativeMain)
 
         cinterops {
-          create("golib") {
-            packageName = "libkipfs"
-            defFile = rootDir.resolve("build/xtras/cinterops/xtras_kipfs.def")
-          }
-          if (konanTarget.family != Family.ANDROID){
-            create("jni") {
-              packageName = "platform.android"
-              defFile = projectDir.resolve("src/interop/jni.def")
-              includeDirs.allHeaders(projectDir.resolve("src/include"))
+          if (konanTarget.family != org.jetbrains.kotlin.konan.target.Family.ANDROID) {
+            cinterops.create("jni_headers") {
+              packageName("platform.android")
+              defFile = project.file("src/interop/jni.def")
+              if (konanTarget.family.isAppleFamily) {
+                includeDirs(project.file("src/include"))
+                includeDirs(project.file("src/include/darwin"))
+              } else if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW) {
+                includeDirs(project.file("src/include"))
+                includeDirs(project.file("src/include/win32"))
+              } else if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.LINUX) {
+                includeDirs(project.file("src/include"))
+                includeDirs(project.file("src/include/linux"))
+              }
             }
           }
         }
@@ -73,82 +83,3 @@ kotlin {
 
   }
 }
-
-/*
-
-
-val golib = enableGo {
-  deferToPrebuiltPackages = false
-}
-
-kotlin {
-
-  declareTargets()
-
-  val commonMain by sourceSets.getting {
-    dependencies {
-      implementation(libs.org.danbrough.klog)
-      implementation(project(":core"))
-    }
-  }
-
-  val commonTest by sourceSets.getting {
-    dependencies {
-      implementation(kotlin("test"))
-      implementation("org.danbrough.kotlinx:kotlinx-coroutines-core:_")
-    }
-  }
-
-  val nativeMain by sourceSets.creating {
-    dependsOn(commonMain)
-  }
-
-  val jvmMain by sourceSets.getting {
-    dependsOn(commonMain)
-  }
-
-  targets.withType<KotlinNativeTarget> {
-
-    binaries {
-      sharedLib("kipfs") {
-        linkTask.dependsOn(golib.extractArchiveTaskName(konanTarget))
-      }
-    }
-
-    compilations["main"].apply {
-
-
-      defaultSourceSet {
-        dependsOn(nativeMain)
-      }
-
-
-      if (konanTarget.family != org.jetbrains.kotlin.konan.target.Family.ANDROID) {
-        cinterops.create("jni_headers") {
-          packageName("platform.android")
-          defFile = project.file("src/interop/jni.def")
-          if (konanTarget.family.isAppleFamily) {
-            includeDirs(project.file("src/include"))
-            includeDirs(project.file("src/include/darwin"))
-          } else if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW) {
-            includeDirs(project.file("src/include"))
-            includeDirs(project.file("src/include/win32"))
-          } else if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.LINUX) {
-            includeDirs(project.file("src/include"))
-            includeDirs(project.file("src/include/linux"))
-          }
-        }
-      }
-    }
-  }
-}
-
-
-
-
-
-
-
-
-
-*/

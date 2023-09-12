@@ -2,10 +2,9 @@
 
 [plugins]
 
-
 kipfs-go = { id = "org.danbrough.kipfs.go", version.ref = "kipfs" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version = "1.6.0" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 
 xtras = { id = "org.danbrough.xtras", version.ref = "xtras" }
 xtras-wolfssl = { id = "org.danbrough.xtras.wolfssl", version.ref = "wolfssl" }
@@ -15,12 +14,12 @@ xtras-openssl = { id = "org.danbrough.xtras.openssl", version.ref = "openssl" }
 
 org-jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
-
 [versions]
 
 kipfsPackage = "org.danbrough.kipfs"
 kipfs = "0.0.1-beta01"
-kotlin = "1.9.0"
+kotlin ="1.9.10"
+## ⬆ = "1.9.20-Beta"
 xtras = "0.0.4-beta01"
 wolfssl = "0.0.1-beta01"
 wolfssh = "0.0.1-beta01"
@@ -31,11 +30,9 @@ kotlinx-coroutines = "1.7.3"
 
 [libraries]
 
-org-danbrough-klog = "org.danbrough:klog:0.0.2-beta04"
+org-danbrough-klog = "org.danbrough:klog:0.0.2-beta06"
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 kotlinx-coroutines-core = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core",version.ref="kotlinx-coroutines"}
 org-danbrough-kotlinxtras-plugin = { group = "org.danbrough.xtras", name = "plugin", version.ref = "xtras" }
-
-

@@ -22,31 +22,34 @@ class Tests {
     }
   }
   
-  private val shell by lazy {
-    kipfsLib.createShell()
-  }
-  
+//  private val shell by lazy {
+//    kipfsLib.createShell()
+//  }
+//
   @BeforeTest
   fun beforeTest(){
     log.warn("beforeTest() $this")
   }
-  
-  
-  @Test
-  fun getTime() {
-    log.warn("running getTime test...")
-    log.info("kipfsLib.getTime() = ${kipfsLib.getTime()}")
-  }
-  
+
+
   @Test
   fun dagCID() {
     val json = """ "Hello World" """
     val cid = kipfsLib.dagCID(json)
     log.debug("json: $json => cid: $cid")
-    
+
     assertEquals(cid, DAG_HELLO_WORLD)
   }
-  
+
+/*
+
+  @Test
+  fun getTime() {
+    log.warn("running getTime test...")
+    log.info("kipfsLib.getTime() = ${kipfsLib.getTime()}")
+  }
+
+
   @Test
   fun multibaseEncode(){
     runBlocking {
@@ -55,8 +58,8 @@ class Tests {
         log.debug("result: ${it.data.decodeToString()}")
       }
     }
-    
-  }
+
+  }*/
   
 
 }

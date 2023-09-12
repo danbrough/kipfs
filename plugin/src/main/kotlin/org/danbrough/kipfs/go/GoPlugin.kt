@@ -11,21 +11,17 @@ import org.danbrough.xtras.log
 import org.danbrough.xtras.sharedLibExtn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.plugins.ide.internal.tooling.model.TaskNameComparator
 import java.io.File
 
 
 class GoPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     project.log("GoPlugin::apply()")
-    /*    project.afterEvaluate {
-          tasks.withType(KotlinJvmTest::class.java){
-            dependsOn("linkKipfsDebugShared${HostManager.host.platformName.capitalize()}")
-          }
-        }*/
   }
 }
 
-const val GO_EXTN_NAME = "goBuilder"
+const val GO_EXTN_NAME = "gobuild"
 const val GO_EXTN_VERSION = "0.0.1-beta01"
 
 
@@ -34,6 +30,7 @@ fun Project.xtrasGoBuilder(
   ssl: XtrasLibrary,
   goDir: File,
   name: String = GO_EXTN_NAME,
+  modules:String,
   configure: XtrasLibrary.() -> Unit = {},
 ) = xtrasCreateLibrary(name, GO_EXTN_VERSION, ssl) {
 
@@ -41,10 +38,10 @@ fun Project.xtrasGoBuilder(
 
   supportedTargets.forEach { target ->
 
-    val prepareSourceTask = extractSourceTaskName(target)
+    val extractSourceTask = extractSourceTaskName(target)
     val sourceDir = sourcesDir(target)
 
-    tasks.register(prepareSourceTask) {
+    tasks.register(extractSourceTask) {
       group = XTRAS_TASK_GROUP
       inputs.dir(goDir)
       outputs.dir(sourceDir)
@@ -56,8 +53,8 @@ fun Project.xtrasGoBuilder(
       }
     }
 
-    val buildTask = buildTaskName(target)
-    xtrasRegisterSourceTask(buildTask, target) {
+
+    xtrasRegisterSourceTask(XtrasLibrary.TaskName.BUILD, target) {
       inputs.files(fileTree(goDir) {
         include("**/*.go")
         include("**/*.c")
@@ -75,6 +72,7 @@ fun Project.xtrasGoBuilder(
 
 
       val buildDir = buildDir(target)
+      outputs.dir(buildDir)
       val libFile = buildDir.resolve("lib/libkipfsgo.${target.sharedLibExtn}")
 
       doFirst {
@@ -100,7 +98,7 @@ fun Project.xtrasGoBuilder(
         "-tags=shell,openssl,node",
         "-o",
         libFile,
-        "./libs"
+        modules
       )
     }
 

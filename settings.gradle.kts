@@ -1,14 +1,20 @@
+import org.gradle.kotlin.dsl.extra
+
+
 pluginManagement {
 
   repositories {
-    maven(file("build/xtras/maven"))
-    maven("/usr/local/kotlinxtras/build/xtras/maven")
+    //maven(file("build/xtras/maven"))
+    settings.extra.properties["xtras.dir.maven"]?.also { maven(it) }
     maven("https://s01.oss.sonatype.org/content/groups/staging/")
     gradlePluginPortal()
     mavenCentral()
     google()
   }
 }
+
+
+
 
 plugins {
   id("de.fayard.refreshVersions") version "0.60.2"
@@ -24,7 +30,9 @@ include(":core")
 includeBuild("plugin")
 
 if (include == null || include == "golib")
-include(":golib")
+  include(":golib")
+
+//include(":test")
 /*if (publish == null || publish == "plugin") {
   include(":plugin")
 }*/
