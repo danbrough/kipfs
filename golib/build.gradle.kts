@@ -1,4 +1,5 @@
 import org.danbrough.kipfs.go.xtrasGoBuilder
+import org.danbrough.xtras.declareHostTarget
 import org.danbrough.xtras.wolfssl.xtrasWolfSSL
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
@@ -32,7 +33,7 @@ val golib =
 
 
 kotlin {
-  linuxX64()
+  declareHostTarget()
   //linuxArm64()
 
   sourceSets {
