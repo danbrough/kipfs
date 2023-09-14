@@ -2,10 +2,8 @@ import org.gradle.kotlin.dsl.extra
 
 
 pluginManagement {
-
   repositories {
-    //maven(file("build/xtras/maven"))
-    settings.extra.properties["xtras.dir.maven"]?.also { maven(it) }
+    maven("/usr/local/xtras/maven")
     maven("https://s01.oss.sonatype.org/content/groups/staging/")
     gradlePluginPortal()
     mavenCentral()
@@ -20,6 +18,7 @@ plugins {
   id("de.fayard.refreshVersions") version "0.60.2"
   id("org.gradle.toolchains.foojay-resolver-convention") version ("0.7.0")
 }
+
 
 rootProject.name = "kipfs"
 

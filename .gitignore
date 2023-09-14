@@ -10,7 +10,6 @@
 **/*.o
 **/*.so
 **/*.class
-/ndk
 /lint.xml
 /local.properties
 /libs

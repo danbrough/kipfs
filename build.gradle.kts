@@ -1,5 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import  org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.kotlin.konan.target.KonanTarget
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform) apply false
@@ -17,7 +18,7 @@ allprojects {
   version = kipfsVersion
 
   repositories {
-    maven(property("xtras.dir.maven")?.toString() ?: file("maven")) {
+    maven("/usr/local/xtras/maven") {
       name = "xtras"
     }
     maven("https://s01.oss.sonatype.org/content/groups/staging/")

@@ -12,6 +12,7 @@ import org.danbrough.xtras.sharedLibExtn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.plugins.ide.internal.tooling.model.TaskNameComparator
+import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
 
@@ -70,6 +71,9 @@ fun Project.xtrasGoBuilder(
       environment["CGO_LDFLAGS"] = environment["LDFLAGS"]
       environment["CGO_ENABLED"] = 1
 
+      if (target == KonanTarget.MINGW_X64){
+        environment["CC"] = "x86_64-w64-mingw32-gcc"
+      }
 
       val buildDir = buildDir(target)
       outputs.dir(buildDir)
@@ -77,6 +81,9 @@ fun Project.xtrasGoBuilder(
 
       doFirst {
         println("Running go build command <${commandLine.joinToString(" ")}> in $workingDir")
+        environment.keys.forEach {
+          println("ENV: $it:${environment[it]}")
+        }
       }
 
       doLast {

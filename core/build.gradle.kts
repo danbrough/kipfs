@@ -1,9 +1,11 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
-  alias(libs.plugins.kotlin.multiplatform)
+  //alias(libs.plugins.kotlin.multiplatform)
+  id("org.jetbrains.kotlin.multiplatform")
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.org.jetbrains.dokka)
+
   `maven-publish`
 }
 
@@ -11,10 +13,11 @@ plugins {
 
 kotlin {
 
-
-  jvm()
-
   linuxX64()
+  linuxArm64()
+
+  mingwX64()
+  jvm()
 
   sourceSets {
 

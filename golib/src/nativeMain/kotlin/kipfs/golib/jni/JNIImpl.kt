@@ -16,7 +16,6 @@ val log = JNIImpl.klog()
 
 @OptIn(ExperimentalNativeApi::class)
 internal fun jniInit() {
-  initRuntimeIfNeeded()
   Platform.isMemoryLeakCheckerActive = true
 }
 
