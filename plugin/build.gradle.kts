@@ -9,8 +9,15 @@ group = "org.danbrough.kipfs"
 
 version = libs.versions.kipfs.get()
 
+val xtrasMavenDir = if (hasProperty("xtras.dir.maven"))
+  File(property("xtras.dir.maven").toString())
+else if (hasProperty("xtras.dir"))
+  File(property("xtras.dir").toString()).resolve("maven")
+else error("Neither xtras.dir.maven or xtras.dir are set")
+
 repositories {
-  maven("/usr/local/xtras/maven") {
+
+  maven(xtrasMavenDir){
     name = "xtras"
   }
   maven("https://s01.oss.sonatype.org/content/groups/staging")
@@ -21,7 +28,8 @@ repositories {
 
 publishing {
   repositories {
-    maven("/usr/local/xtras/maven") {
+
+    maven(xtrasMavenDir){
       name = "xtras"
     }
   }

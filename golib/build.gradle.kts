@@ -1,21 +1,23 @@
 import org.danbrough.kipfs.go.xtrasGoBuilder
 import org.danbrough.xtras.declareHostTarget
-import org.danbrough.xtras.wolfssl.xtrasWolfSSL
+import org.danbrough.xtras.openssl.xtrasOpenSSL
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import org.jetbrains.kotlin.konan.target.Family
+import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
   kotlin("multiplatform")
-  alias(libs.plugins.xtras.wolfssl)
+  alias(libs.plugins.xtras.openssl)
   alias(libs.plugins.kipfs.go)
   `maven-publish`
 }
 
 
-val ssl = xtrasWolfSSL {
+val ssl = xtrasOpenSSL {
   resolveBinariesFromMaven = true
 }
+
 
 val golib =
   xtrasGoBuilder(
@@ -33,10 +35,10 @@ val golib =
   }
 
 
+
 kotlin {
   declareHostTarget()
-  linuxArm64()
-  mingwX64()
+//  linuxArm64()
 
 
   val commonMain by sourceSets.getting {
@@ -63,17 +65,17 @@ kotlin {
       defaultSourceSet.dependsOn(nativeMain)
 
       cinterops {
-        if (konanTarget.family != org.jetbrains.kotlin.konan.target.Family.ANDROID) {
+        if (konanTarget.family != Family.ANDROID) {
           cinterops.create("jniHeaders") {
             packageName("platform.android")
             defFile = project.file("src/interop/jni.def")
             if (konanTarget.family.isAppleFamily) {
               includeDirs(project.file("src/include"))
               includeDirs(project.file("src/include/darwin"))
-            } else if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW) {
+            } else if (konanTarget.family == Family.MINGW) {
               includeDirs(project.file("src/include"))
               includeDirs(project.file("src/include/win32"))
-            } else if (konanTarget.family == org.jetbrains.kotlin.konan.target.Family.LINUX) {
+            } else if (konanTarget.family == Family.LINUX) {
               includeDirs(project.file("src/include"))
               includeDirs(project.file("src/include/linux"))
             }
@@ -81,10 +83,5 @@ kotlin {
         }
       }
     }
-  }
-
-
-  tasks.withType<KotlinNativeTest>{
-    println("TEST TARGET: $this")
   }
 }

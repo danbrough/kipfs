@@ -7,9 +7,8 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 
 xtras = { id = "org.danbrough.xtras", version.ref = "xtras" }
-xtras-wolfssl = { id = "org.danbrough.xtras.wolfssl", version.ref = "wolfssl" }
+
 xtras-curl = { id = "org.danbrough.xtras.curl", version.ref = "curl" }
-xtras-wolfssh = { id = "org.danbrough.xtras.wolfssh", version.ref = "wolfssh" }
 xtras-openssl = { id = "org.danbrough.xtras.openssl", version.ref = "openssl" }
 
 org-jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
@@ -21,8 +20,6 @@ kipfs = "0.0.1-beta01"
 kotlin ="1.9.10"
 ## ⬆ = "1.9.20-Beta"
 xtras = "0.0.4-beta01"
-wolfssl = "0.0.1-beta01"
-wolfssh = "0.0.1-beta01"
 curl = "0.0.3-beta02"
 openssl = "0.0.3-beta02"
 dokka = "1.9.0"

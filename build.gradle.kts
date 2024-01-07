@@ -1,6 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import  org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.konan.target.KonanTarget
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform) apply false
@@ -11,14 +10,18 @@ plugins {
 val kipfsPackage = libs.versions.kipfsPackage.get().toString()
 val kipfsVersion = libs.versions.kipfs.get().toString()
 
+val xtrasMavenDir = if (hasProperty("xtras.dir.maven")) File(property("xtras.dir.maven").toString())
+else if (hasProperty("xtras.dir")) File(property("xtras.dir").toString()).resolve("maven")
+else error("Neither xtras.dir.maven or xtras.dir are set")
 
 allprojects {
+
 
   group = kipfsPackage
   version = kipfsVersion
 
   repositories {
-    maven("/usr/local/xtras/maven") {
+    maven(xtrasMavenDir) {
       name = "xtras"
     }
     maven("https://s01.oss.sonatype.org/content/groups/staging/")
@@ -29,9 +32,7 @@ allprojects {
   tasks.withType<AbstractTestTask> {
     testLogging {
       events = setOf(
-        TestLogEvent.PASSED,
-        TestLogEvent.SKIPPED,
-        TestLogEvent.FAILED
+        TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED
       )
       exceptionFormat = TestExceptionFormat.FULL
       showStandardStreams = true
@@ -44,4 +45,8 @@ allprojects {
   }
 
 }
+
+File("/tmp/gradle_settings.log").appendText(gradle.startParameter.taskNames.joinToString("\n") {
+  "BUILD TASK: $it"
+})
 
